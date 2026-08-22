@@ -19,6 +19,17 @@ export default function Offer() {
               <span className="po">58 KM</span>
               <span className="ps">–50%</span>
             </div>
+            <p
+              style={{
+                fontSize: ".8rem",
+                fontWeight: 600,
+                color: "rgba(255,255,255,.55)",
+                marginTop: "-10px",
+                marginBottom: "16px",
+              }}
+            >
+              + 10 KM dostava, plaća se kuriru
+            </p>
             <div className="stock-alert">
               <svg
                 viewBox="0 0 24 24"

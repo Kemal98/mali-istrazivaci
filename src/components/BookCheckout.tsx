@@ -15,6 +15,9 @@ export default function BookCheckout() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
+  const DELIVERY = 10;
+  const productPrice = 15;
+  const total = productPrice + DELIVERY;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,14 +36,14 @@ export default function BookCheckout() {
       uzrast: "",
       napomena: formData.get("napomena"),
       proizvod: "Interaktivna Montessori knjiga",
-      cijena: "15 KM",
+      cijena: `${total} KM`,
       status: "Novo",
     };
 
     if (window.fbq) {
       window.fbq("track", "Lead", {
         content_name: "Interaktivna Montessori knjiga",
-        value: 15,
+        value: total,
         currency: "BAM",
       });
     }
@@ -53,7 +56,7 @@ export default function BookCheckout() {
         body: JSON.stringify(data),
       });
       router.push(
-        `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=15`
+        `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}`
       );
     } catch {
       setError(true);
@@ -212,13 +215,11 @@ export default function BookCheckout() {
                   </ul>
                   <div className="sum-row">
                     <span>Dostava</span>
-                    <span style={{ color: "var(--green-d)", fontWeight: 700 }}>
-                      Besplatno
-                    </span>
+                    <span>{DELIVERY} KM</span>
                   </div>
                   <div className="sum-row sum-total">
                     <span>Ukupno</span>
-                    <span>15 KM</span>
+                    <span>{total} KM</span>
                   </div>
 
                   <div className="pay-label">Način plaćanja</div>

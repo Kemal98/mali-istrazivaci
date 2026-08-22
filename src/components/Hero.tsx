@@ -59,6 +59,17 @@ export default function Hero() {
             <span className="price-old">58 KM</span>
             <span className="price-save">UŠTEDA 29 KM</span>
           </div>
+          <p
+            style={{
+              fontSize: ".8rem",
+              fontWeight: 600,
+              color: "var(--ink3)",
+              marginTop: "-14px",
+              marginBottom: "18px",
+            }}
+          >
+            + 10 KM dostava, plaća se kuriru
+          </p>
           <div className="hero-actions">
             <a href="#naruci" className="btn btn-primary">
               <svg

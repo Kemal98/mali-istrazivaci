@@ -16,7 +16,9 @@ export default function Checkout() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   const [extraSet, setExtraSet] = useState(false);
-  const total = extraSet ? 49 : 29;
+  const DELIVERY = 10;
+  const productPrice = extraSet ? 49 : 29;
+  const total = productPrice + DELIVERY;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -257,9 +259,7 @@ export default function Checkout() {
 
                   <div className="sum-row">
                     <span>Dostava</span>
-                    <span style={{ color: "var(--green-d)", fontWeight: 700 }}>
-                      Besplatno
-                    </span>
+                    <span>{DELIVERY} KM</span>
                   </div>
                   <div className="sum-row sum-total">
                     <span>Ukupno</span>

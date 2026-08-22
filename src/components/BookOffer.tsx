@@ -20,6 +20,17 @@ export default function BookOffer() {
             <div className="offer-price">
               <span className="pm">15 KM</span>
             </div>
+            <p
+              style={{
+                fontSize: ".8rem",
+                fontWeight: 600,
+                color: "rgba(255,255,255,.55)",
+                marginTop: "-10px",
+                marginBottom: "16px",
+              }}
+            >
+              + 10 KM dostava, plaća se kuriru
+            </p>
             <ul className="offer-points">
               <li>
                 <svg
