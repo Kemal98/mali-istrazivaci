@@ -32,7 +32,7 @@ export default function Nav() {
             <a href="#kontakt">Kontakt</a>
           </nav>
           <a href="#naruci" className="btn btn-primary">
-            Naruči – 24 KM
+            Naruči – 29 KM
           </a>
         </div>
       </header>

@@ -44,14 +44,14 @@ export default function Checkout() {
       uzrast: formData.get("uzrast"),
       napomena: formData.get("napomena"),
       proizvod: "SAT MIRA set 3u1",
-      cijena: "24 KM",
+      cijena: "29 KM",
       status: "Novo",
     };
 
     if (window.fbq) {
       window.fbq("track", "Lead", {
         content_name: "SAT MIRA set",
-        value: 24,
+        value: 29,
         currency: "BAM",
       });
     }
@@ -257,7 +257,7 @@ export default function Checkout() {
                   </div>
                   <div className="sum-row sum-total">
                     <span>Ukupno</span>
-                    <span>24 KM</span>
+                    <span>29 KM</span>
                   </div>
 
                   <div className="pay-label">Način plaćanja</div>

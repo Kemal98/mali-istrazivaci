@@ -7,7 +7,7 @@ export default function Offer() {
         <span className="kicker" style={{ color: "#7BB8FF" }}>
           Akcijska cijena
         </span>
-        <h2 className="h-sec">Sve tri igre za 24 KM</h2>
+        <h2 className="h-sec">Sve tri igre za 29 KM</h2>
         <div className="offer-card">
           <div className="offer-img">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -17,9 +17,9 @@ export default function Offer() {
             <h3>SAT MIRA – set 3u1</h3>
             <p className="osub">Montessori set za djecu 2–6 godina</p>
             <div className="offer-price">
-              <span className="pm">24 KM</span>
-              <span className="po">44 KM</span>
-              <span className="ps">–45%</span>
+              <span className="pm">29 KM</span>
+              <span className="po">45 KM</span>
+              <span className="ps">–36%</span>
             </div>
             <div className="stock-alert">
               <svg
@@ -79,7 +79,7 @@ export default function Offer() {
               </li>
             </ul>
             <a href="#naruci" className="btn btn-primary" style={{ width: "100%" }}>
-              Naruči set – 24 KM
+              Naruči set – 29 KM
             </a>
             <p className="offer-note">
               <strong>Akcija vrijedi do isteka zalihe.</strong> Trebaš više

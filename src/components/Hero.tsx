@@ -25,7 +25,7 @@ export default function Hero() {
         </div>
         <div className="hero-media">
           <div className="hero-badge">
-            <b>24</b>KM
+            <b>29</b>KM
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -53,9 +53,9 @@ export default function Hero() {
             igra i uči, ti napokon popiješ kafu na miru.
           </p>
           <div className="hero-price">
-            <span className="price-main">24 KM</span>
-            <span className="price-old">44 KM</span>
-            <span className="price-save">UŠTEDA 20 KM</span>
+            <span className="price-main">29 KM</span>
+            <span className="price-old">45 KM</span>
+            <span className="price-save">UŠTEDA 16 KM</span>
           </div>
           <div className="hero-actions">
             <a href="#naruci" className="btn btn-primary">

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title:
     "SAT MIRA – Montessori set 3u1 za djecu 2–6 godina | Mali Istraživači",
   description:
-    "SAT MIRA: Montessori set od 3 igračke za djecu 2–6 godina. Knjiga na čičak, drvena igračka i mozgalica. 60 minuta igre bez ekrana. 24 KM, plaćanje pouzećem, dostava po BiH.",
+    "SAT MIRA: Montessori set od 3 igračke za djecu 2–6 godina. Knjiga na čičak, drvena igračka i mozgalica. 60 minuta igre bez ekrana. 29 KM, plaćanje pouzećem, dostava po BiH.",
 };
 
 export default function RootLayout({

@@ -6,7 +6,7 @@ export default function StickyBar() {
       </div>
       <div className="sticky-row">
         <div className="sticky-price">
-          24 KM <small>44 KM</small>
+          29 KM <small>45 KM</small>
         </div>
         <a href="#naruci" className="btn btn-primary">
           Naruči set

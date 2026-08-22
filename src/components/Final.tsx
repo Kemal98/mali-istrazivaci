@@ -4,11 +4,11 @@ export default function Final() {
       <div className="wrap">
         <h2>Pokloni djetetu sat mira – i sebi.</h2>
         <p>
-          24 KM umjesto 44 KM. Tri igre u poklon kutiji, plaćanje pouzećem,
+          29 KM umjesto 45 KM. Tri igre u poklon kutiji, plaćanje pouzećem,
           dostava po cijeloj BiH.
         </p>
         <a href="#naruci" className="btn btn-primary">
-          Naruči set – 24 KM
+          Naruči set – 29 KM
         </a>
         <div className="final-strip">
           <div className="stitch">
