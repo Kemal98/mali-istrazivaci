@@ -2,7 +2,22 @@
 
 import { useEffect, useState } from "react";
 
-export default function Nav() {
+const DEFAULT_LINKS = [
+  { href: "#set", label: "Šta dobijaš" },
+  { href: "#knjiga", label: "Iz knjige" },
+  { href: "#recenzije", label: "Recenzije" },
+  { href: "#kontakt", label: "Kontakt" },
+];
+
+export default function Nav({
+  price = "29 KM",
+  links = DEFAULT_LINKS,
+  logoHref = "#",
+}: {
+  price?: string;
+  links?: { href: string; label: string }[];
+  logoHref?: string;
+}) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -20,19 +35,20 @@ export default function Nav() {
 
       <header className={`nav${scrolled ? " scrolled" : ""}`} id="siteNav">
         <div className="nav-inner">
-          <a href="#" className="logo">
+          <a href={logoHref} className="logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/img/logo.png" alt="Mali Istraživači" />
             Mali Istraživači
           </a>
           <nav className="nav-links">
-            <a href="#set">Šta dobijaš</a>
-            <a href="#knjiga">Iz knjige</a>
-            <a href="#recenzije">Recenzije</a>
-            <a href="#kontakt">Kontakt</a>
+            {links.map((l) => (
+              <a href={l.href} key={l.href}>
+                {l.label}
+              </a>
+            ))}
           </nav>
           <a href="#naruci" className="btn btn-primary">
-            Naruči – 29 KM
+            Naruči – {price}
           </a>
         </div>
       </header>

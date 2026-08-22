@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-export default function Checkout() {
+export default function BookCheckout() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
@@ -38,17 +38,17 @@ export default function Checkout() {
       telefon: formData.get("tel"),
       adresa: formData.get("adresa"),
       grad: formData.get("grad"),
-      uzrast: formData.get("uzrast"),
+      uzrast: "",
       napomena: formData.get("napomena"),
-      proizvod: "SAT MIRA set 3u1",
-      cijena: "29 KM",
+      proizvod: "Interaktivna Montessori knjiga",
+      cijena: "15 KM",
       status: "Novo",
     };
 
     if (window.fbq) {
       window.fbq("track", "Lead", {
-        content_name: "SAT MIRA set",
-        value: 29,
+        content_name: "Interaktivna Montessori knjiga",
+        value: 15,
         currency: "BAM",
       });
     }
@@ -147,18 +147,6 @@ export default function Checkout() {
                     />
                   </div>
                   <div className="field">
-                    <label htmlFor="uzrast">
-                      Koliko godina ima dijete? *
-                    </label>
-                    <input
-                      type="text"
-                      id="uzrast"
-                      name="uzrast"
-                      required
-                      placeholder="npr. 4 godine – biramo igračku po uzrastu"
-                    />
-                  </div>
-                  <div className="field">
                     <label htmlFor="napomena">
                       Napomena{" "}
                       <span
@@ -171,7 +159,7 @@ export default function Checkout() {
                       id="napomena"
                       name="napomena"
                       rows={2}
-                      placeholder="npr. trebam 2 seta, ili ostavi prazno"
+                      placeholder="npr. trebam 2 knjige, ili ostavi prazno"
                     />
                   </div>
                 </div>
@@ -194,10 +182,13 @@ export default function Checkout() {
                 <div className="card-body">
                   <div className="sum-prod">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/img/kutija.jpg" alt="SAT MIRA set" />
+                    <img
+                      src="/img/knjiga.jpg"
+                      alt="Interaktivna Montessori knjiga"
+                    />
                     <div>
-                      <div className="spn">SAT MIRA – set 3u1</div>
-                      <div className="spq">Montessori set 2–6 godina</div>
+                      <div className="spn">Interaktivna Montessori knjiga</div>
+                      <div className="spq">Svijet malih istraživača</div>
                     </div>
                   </div>
                   <ul className="sum-inc">
@@ -210,7 +201,7 @@ export default function Checkout() {
                       >
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
-                      Montessori igra na čičak
+                      Deset strana zadataka na čičak
                     </li>
                     <li>
                       <svg
@@ -221,29 +212,7 @@ export default function Checkout() {
                       >
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
-                      Drvena igračka po uzrastu
-                    </li>
-                    <li>
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      Drvena mozgalica
-                    </li>
-                    <li>
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      Poklon kutija
+                      Sve na bosanskom jeziku
                     </li>
                   </ul>
                   <div className="sum-row">
@@ -254,7 +223,7 @@ export default function Checkout() {
                   </div>
                   <div className="sum-row sum-total">
                     <span>Ukupno</span>
-                    <span>29 KM</span>
+                    <span>15 KM</span>
                   </div>
 
                   <div className="pay-label">Način plaćanja</div>
@@ -353,7 +322,7 @@ export default function Checkout() {
             </h3>
             <p style={{ fontWeight: 500, color: "var(--ink2s)" }}>
               Zovemo te uskoro na broj koji si ostavio/la da potvrdimo
-              dostavu i uzrast djeteta. Hvala ti! 🙏
+              dostavu. Hvala ti! 🙏
             </p>
           </div>
         )}

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 
-const faqs = [
+export type FaqItem = { q: string; a: string };
+
+const defaultFaqs: FaqItem[] = [
   {
     q: "Koju tačno drvenu igračku dobijam?",
     a: "Biramo je prema uzrastu tvog djeteta koji upišeš pri narudžbi. Za mlađu djecu (2–3 god.) šaljemo sortirku oblika ili slaganje, za stariju (4–6 god.) drveni sat sa brojevima ili sličnu razvojnu igračku. Uvijek je kvalitetno drvo i uvijek odgovara uzrastu.",
@@ -29,7 +31,7 @@ const faqs = [
   },
 ];
 
-export default function Faq() {
+export default function Faq({ items = defaultFaqs }: { items?: FaqItem[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
@@ -38,7 +40,7 @@ export default function Faq() {
         <span className="kicker k-orange">Pitanja</span>
         <h2 className="h-sec">Često postavljana pitanja</h2>
         <div className="faq-list">
-          {faqs.map((item, i) => {
+          {items.map((item, i) => {
             const open = openIndex === i;
             return (
               <div className={`faq-item${open ? " open" : ""}`} key={item.q}>
