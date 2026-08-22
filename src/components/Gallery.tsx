@@ -1,0 +1,78 @@
+const items = [
+  {
+    badge: "01",
+    src: "/img/animals.jpg",
+    alt: "Životinje sa farme",
+    cap: "Životinje sa farme",
+    skill: "Nazivi, boje i zvukovi životinja",
+    gs: "gs1",
+  },
+  {
+    badge: "02",
+    src: "/img/alphabet.jpg",
+    alt: "Bosanska abeceda",
+    cap: "Bosanska abeceda",
+    skill: "Prve asocijacije slova i glasova",
+    gs: "gs2",
+  },
+  {
+    badge: "03",
+    src: "/img/emotions.jpg",
+    alt: "Emocije",
+    cap: "Emocije i osjećaji",
+    skill: "Prepoznaje i imenuje kako se osjeća",
+    gs: "gs3",
+  },
+  {
+    badge: "04",
+    src: "/img/weather.jpg",
+    alt: "Vrijeme i priroda",
+    cap: "Vrijeme i priroda",
+    skill: "Povezivanje pojmova i logika",
+    gs: "gs4",
+  },
+  {
+    badge: "05",
+    src: "/img/food.jpg",
+    alt: "Voće i povrće",
+    cap: "Voće i povrće",
+    skill: "Razvrstavanje i kategorije",
+    gs: "gs1",
+  },
+  {
+    badge: "06",
+    src: "/img/numbers.jpg",
+    alt: "Brojevi i boje",
+    cap: "Brojevi i boje",
+    skill: "Uvod u brojanje i sparivanje",
+    gs: "gs2",
+  },
+];
+
+export default function Gallery() {
+  return (
+    <section className="gal-bg" id="knjiga">
+      <div className="wrap">
+        <span className="kicker k-green">Pogledaj iznutra</span>
+        <h2 className="h-sec">Svaka stranica knjige = nova vještina</h2>
+        <p className="sub-sec">
+          Prave fotografije knjige iz seta. Sve na bosanskom – i dijete i
+          roditelj razumiju svaki zadatak.
+        </p>
+        <div className="gal-grid">
+          {items.map((item) => (
+            <div className="gal-item" key={item.badge}>
+              <div className="stitch">
+                <span className="tab-badge">{item.badge}</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={item.src} alt={item.alt} />
+              </div>
+              <div className="gal-cap">{item.cap}</div>
+              <p className={`gal-skill ${item.gs}`}>{item.skill}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
