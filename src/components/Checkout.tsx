@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 // Zamijeni sa svojim Google Apps Script Web App URL-om (vidi SHEETS_SCRIPT.js za upute)
-const GOOGLE_SCRIPT_URL = "ZAMIJENI_SA_TVOJIM_GOOGLE_SCRIPT_URL";
+const GOOGLE_SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbw2HAwC4MF3Z37SstIPtvMj60Z_KTkXVVD6JCA0gMBQbPCmdE7pKd9iLYbigsbsLgwv/exec";
 
 declare global {
   interface Window {
