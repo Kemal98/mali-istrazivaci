@@ -1,7 +1,9 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import { GOOGLE_SCRIPT_URL } from "@/lib/constants";
+import GuaranteeBadge from "./GuaranteeBadge";
 
 declare global {
   interface Window {
@@ -10,19 +12,11 @@ declare global {
 }
 
 export default function Checkout() {
+  const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
-  const successRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (submitted) {
-      successRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, [submitted]);
+  const [extraSet, setExtraSet] = useState(false);
+  const total = extraSet ? 49 : 29;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,15 +34,15 @@ export default function Checkout() {
       grad: formData.get("grad"),
       uzrast: formData.get("uzrast"),
       napomena: formData.get("napomena"),
-      proizvod: "SAT MIRA set 3u1",
-      cijena: "29 KM",
+      proizvod: extraSet ? "SAT MIRA set 3u1 x2" : "SAT MIRA set 3u1",
+      cijena: `${total} KM`,
       status: "Novo",
     };
 
     if (window.fbq) {
       window.fbq("track", "Lead", {
         content_name: "SAT MIRA set",
-        value: 29,
+        value: total,
         currency: "BAM",
       });
     }
@@ -60,7 +54,9 @@ export default function Checkout() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      setSubmitted(true);
+      router.push(
+        `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}`
+      );
     } catch {
       setError(true);
     } finally {
@@ -87,8 +83,9 @@ export default function Checkout() {
           Dostava i plaćanje
         </p>
 
-        {!submitted && (
-          <form onSubmit={handleSubmit}>
+        <GuaranteeBadge />
+
+        <form onSubmit={handleSubmit}>
             <div className="co-grid">
               <div className="co-card">
                 <div className="card-head">
@@ -246,6 +243,18 @@ export default function Checkout() {
                       Poklon kutija
                     </li>
                   </ul>
+                  <label className="upsell">
+                    <input
+                      type="checkbox"
+                      checked={extraSet}
+                      onChange={(e) => setExtraSet(e.target.checked)}
+                    />
+                    <span>
+                      Dodaj još jedan set – 49 KM za dva (ušteda 9 KM)
+                      <small>Za drugo dijete ili kao poklon.</small>
+                    </span>
+                  </label>
+
                   <div className="sum-row">
                     <span>Dostava</span>
                     <span style={{ color: "var(--green-d)", fontWeight: 700 }}>
@@ -254,7 +263,7 @@ export default function Checkout() {
                   </div>
                   <div className="sum-row sum-total">
                     <span>Ukupno</span>
-                    <span>29 KM</span>
+                    <span>{total} KM</span>
                   </div>
 
                   <div className="pay-label">Način plaćanja</div>
@@ -319,44 +328,13 @@ export default function Checkout() {
                     >
                       <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
                     </svg>
-                    Bez plaćanja unaprijed · Zovemo te da potvrdimo
+                    Bez plaćanja unaprijed · Zovemo te da potvrdimo · 14
+                    dana garancija povrata
                   </p>
                 </div>
               </div>
             </div>
           </form>
-        )}
-
-        {submitted && (
-          <div
-            ref={successRef}
-            style={{
-              display: "block",
-              maxWidth: "520px",
-              margin: "30px auto 0",
-              background: "var(--green-bg)",
-              border: "2px solid var(--green)",
-              borderRadius: "var(--r)",
-              padding: "32px",
-              textAlign: "center",
-            }}
-          >
-            <div style={{ fontSize: "2.4rem", marginBottom: "10px" }}>✅</div>
-            <h3
-              style={{
-                fontSize: "1.35rem",
-                marginBottom: "8px",
-                color: "var(--green-d)",
-              }}
-            >
-              Narudžba primljena!
-            </h3>
-            <p style={{ fontWeight: 500, color: "var(--ink2s)" }}>
-              Zovemo te uskoro na broj koji si ostavio/la da potvrdimo
-              dostavu i uzrast djeteta. Hvala ti! 🙏
-            </p>
-          </div>
-        )}
       </div>
     </section>
   );

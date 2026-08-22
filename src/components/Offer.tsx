@@ -1,5 +1,3 @@
-import { STOCK_LEFT } from "@/lib/socialProof";
-
 export default function Offer() {
   return (
     <section className="offer-bg" id="ponuda">
@@ -18,8 +16,8 @@ export default function Offer() {
             <p className="osub">Montessori set za djecu 2–6 godina</p>
             <div className="offer-price">
               <span className="pm">29 KM</span>
-              <span className="po">45 KM</span>
-              <span className="ps">–36%</span>
+              <span className="po">58 KM</span>
+              <span className="ps">–50%</span>
             </div>
             <div className="stock-alert">
               <svg
@@ -30,7 +28,7 @@ export default function Offer() {
               >
                 <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
               </svg>
-              Ostalo još samo {STOCK_LEFT} kompleta na zalihi
+              Akcija traje do isteka zalihe
             </div>
             <ul className="offer-points">
               <li>

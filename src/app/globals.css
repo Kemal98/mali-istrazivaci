@@ -160,6 +160,28 @@ section{padding:66px 0}
 .set-note b{display:block;margin-bottom:4px;font-family:'Bitter';font-size:1rem;color:var(--ink)}
 .set-note p{font-size:.93rem;color:var(--ink2s);font-weight:500;line-height:1.6}
 
+/* GUARANTEE */
+.guarantee{background:var(--green-bg);border:2px dashed var(--green);border-radius:var(--r);
+  padding:18px 22px;max-width:760px;margin:0 auto 26px;display:flex;gap:14px;align-items:flex-start}
+.guarantee svg{width:26px;height:26px;color:var(--green-d);flex-shrink:0;margin-top:2px}
+.guarantee b{display:block;margin-bottom:4px;font-family:'Bitter';font-size:1rem;color:var(--ink)}
+.guarantee p{font-size:.93rem;color:var(--ink2s);font-weight:500;line-height:1.6}
+
+/* PRE-ORDER NOTICE */
+.preorder-bg{background:var(--warm)}
+.preorder-list{max-width:680px;margin:0 auto;background:var(--card);border-radius:var(--rsm);
+  padding:20px 26px;box-shadow:var(--sh)}
+.preorder-list li{padding:8px 0 8px 22px;position:relative;font-size:.89rem;font-weight:500;
+  color:var(--ink2s);line-height:1.6}
+.preorder-list li::before{content:"•";position:absolute;left:4px;color:var(--ink3);font-weight:800}
+
+/* UPSELL */
+.upsell{display:flex;align-items:flex-start;gap:10px;background:var(--yellow-bg);
+  border:1.5px dashed var(--yellow);border-radius:var(--rsm);padding:12px 14px;
+  margin:14px 0;font-size:.85rem;font-weight:600;color:var(--ink);cursor:pointer}
+.upsell input{margin-top:3px;flex-shrink:0;width:16px;height:16px;cursor:pointer}
+.upsell small{display:block;font-weight:500;color:var(--ink3);margin-top:2px}
+
 /* INFOGRAPHIC */
 .info-bg{background:var(--blue-bg)}
 .info-img{max-width:720px;margin:0 auto;border-radius:20px;overflow:hidden;box-shadow:var(--sh2)}

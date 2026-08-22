@@ -29,6 +29,22 @@ const defaultFaqs: FaqItem[] = [
     q: "Mogu li naručiti više setova?",
     a: "Naravno – napiši u polje Napomena koliko setova želiš i uzraste djece. Javimo se telefonom i dogovorimo detalje. Odličan je poklon za rođendane.",
   },
+  {
+    q: "Šta ako se djetetu ne svidi?",
+    a: "Javi se u roku od 14 dana od preuzimanja i vraćamo ti novac – bez objašnjavanja.",
+  },
+  {
+    q: "Koliko dugo traje knjiga? Da li se čičak istroši?",
+    a: "Knjiga je za višekratnu upotrebu – čičak izresci se skidaju i ponovo lijepe stotine puta, ne gube ljepljivost preko noći.",
+  },
+  {
+    q: "Da li mogu naručiti ako živim van većeg grada?",
+    a: "Da, dostavljamo po cijeloj Bosni i Hercegovini, ne samo u veće gradove.",
+  },
+  {
+    q: "Treba li baterije ili aplikacija?",
+    a: "Ne – set je 100% bez ekrana, aplikacije i baterija. Samo igra rukama.",
+  },
 ];
 
 export default function Faq({ items = defaultFaqs }: { items?: FaqItem[] }) {

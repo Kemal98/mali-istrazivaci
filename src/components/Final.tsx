@@ -4,7 +4,7 @@ export default function Final() {
       <div className="wrap">
         <h2>Pokloni djetetu sat mira – i sebi.</h2>
         <p>
-          29 KM umjesto 45 KM. Tri igre u poklon kutiji, plaćanje pouzećem,
+          29 KM umjesto 58 KM. Tri igre u poklon kutiji, plaćanje pouzećem,
           dostava po cijeloj BiH.
         </p>
         <a href="#naruci" className="btn btn-primary">

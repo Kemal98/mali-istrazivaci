@@ -15,7 +15,9 @@ export default function Hero() {
             </svg>
             Izbor {FAMILIES_COUNT}+ porodica u BiH
           </div>
-          <div className="hero-tag">Montessori set · Uzrast 2–6 godina</div>
+          <div className="hero-tag">
+            Jedini Montessori set na bosanskom jeziku · 2–6 godina
+          </div>
           <h1>
             SAT MIRA
             <span className="sub">
@@ -54,8 +56,8 @@ export default function Hero() {
           </p>
           <div className="hero-price">
             <span className="price-main">29 KM</span>
-            <span className="price-old">45 KM</span>
-            <span className="price-save">UŠTEDA 16 KM</span>
+            <span className="price-old">58 KM</span>
+            <span className="price-save">UŠTEDA 29 KM</span>
           </div>
           <div className="hero-actions">
             <a href="#naruci" className="btn btn-primary">

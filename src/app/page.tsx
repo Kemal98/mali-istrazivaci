@@ -7,6 +7,7 @@ import Infographic from "@/components/Infographic";
 import Gallery from "@/components/Gallery";
 import Offer from "@/components/Offer";
 import Reviews from "@/components/Reviews";
+import PreOrderNotice from "@/components/PreOrderNotice";
 import Checkout from "@/components/Checkout";
 import Faq from "@/components/Faq";
 import Final from "@/components/Final";
@@ -25,6 +26,7 @@ export default function Home() {
       <Gallery />
       <Offer />
       <Reviews />
+      <PreOrderNotice />
       <Checkout />
       <Faq />
       <Final />

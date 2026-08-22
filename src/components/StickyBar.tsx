@@ -1,6 +1,6 @@
 export default function StickyBar({
   price = "29 KM",
-  oldPrice = "45 KM",
+  oldPrice = "58 KM",
   rib = "3 igre · 60 minuta · 0 ekrana – akcija do isteka zalihe",
   ctaLabel = "Naruči set",
 }: {

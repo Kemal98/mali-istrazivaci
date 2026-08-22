@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import PixelEvents from "@/components/PixelEvents";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title:
-    "SAT MIRA – Montessori set 3u1 za djecu 2–6 godina | Mali Istraživači",
+    "SAT MIRA – Montessori set 3u1 na bosanskom jeziku | Mali Istraživači",
   description:
-    "SAT MIRA: Montessori set od 3 igračke za djecu 2–6 godina. Knjiga na čičak, drvena igračka i mozgalica. 60 minuta igre bez ekrana. 29 KM, plaćanje pouzećem, dostava po BiH.",
+    "Jedini Montessori set na bosanskom jeziku. SAT MIRA: 3 igračke za djecu 2–6 godina – knjiga na čičak, drvena igračka i mozgalica. 29 KM, plaćanje pouzećem, dostava po BiH.",
 };
 
 export default function RootLayout({
@@ -50,6 +51,7 @@ export default function RootLayout({
             alt=""
           />
         </noscript>
+        <PixelEvents />
         {children}
       </body>
     </html>

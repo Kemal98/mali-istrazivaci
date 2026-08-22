@@ -1,7 +1,9 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import { GOOGLE_SCRIPT_URL } from "@/lib/constants";
+import GuaranteeBadge from "./GuaranteeBadge";
 
 declare global {
   interface Window {
@@ -10,19 +12,9 @@ declare global {
 }
 
 export default function BookCheckout() {
+  const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
-  const successRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (submitted) {
-      successRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, [submitted]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -60,7 +52,9 @@ export default function BookCheckout() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      setSubmitted(true);
+      router.push(
+        `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=15`
+      );
     } catch {
       setError(true);
     } finally {
@@ -87,8 +81,9 @@ export default function BookCheckout() {
           Dostava i plaćanje
         </p>
 
-        {!submitted && (
-          <form onSubmit={handleSubmit}>
+        <GuaranteeBadge />
+
+        <form onSubmit={handleSubmit}>
             <div className="co-grid">
               <div className="co-card">
                 <div className="card-head">
@@ -288,44 +283,13 @@ export default function BookCheckout() {
                     >
                       <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
                     </svg>
-                    Bez plaćanja unaprijed · Zovemo te da potvrdimo
+                    Bez plaćanja unaprijed · Zovemo te da potvrdimo · 14
+                    dana garancija povrata
                   </p>
                 </div>
               </div>
             </div>
           </form>
-        )}
-
-        {submitted && (
-          <div
-            ref={successRef}
-            style={{
-              display: "block",
-              maxWidth: "520px",
-              margin: "30px auto 0",
-              background: "var(--green-bg)",
-              border: "2px solid var(--green)",
-              borderRadius: "var(--r)",
-              padding: "32px",
-              textAlign: "center",
-            }}
-          >
-            <div style={{ fontSize: "2.4rem", marginBottom: "10px" }}>✅</div>
-            <h3
-              style={{
-                fontSize: "1.35rem",
-                marginBottom: "8px",
-                color: "var(--green-d)",
-              }}
-            >
-              Narudžba primljena!
-            </h3>
-            <p style={{ fontWeight: 500, color: "var(--ink2s)" }}>
-              Zovemo te uskoro na broj koji si ostavio/la da potvrdimo
-              dostavu. Hvala ti! 🙏
-            </p>
-          </div>
-        )}
       </div>
     </section>
   );
