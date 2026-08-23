@@ -65,7 +65,13 @@ export default function EdukativnaKnjigaPage() {
       <BookCheckout />
       <Faq items={bookFaqs} />
       <BookFinal />
-      <Footer />
+      <Footer
+        pageLinks={[
+          { href: "#set", label: "Šta dobijaš" },
+          { href: "#knjiga", label: "Iz knjige" },
+          { href: "#naruci", label: "Naruči" },
+        ]}
+      />
       <StickyBar
         price="15 KM"
         oldPrice=""

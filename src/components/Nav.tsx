@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 const DEFAULT_LINKS = [
   { href: "#set", label: "Šta dobijaš" },
   { href: "#knjiga", label: "Iz knjige" },
+  { href: "#kako-radi", label: "Kako radi" },
   { href: "#recenzije", label: "Recenzije" },
   { href: "#kontakt", label: "Kontakt" },
 ];

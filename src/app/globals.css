@@ -202,6 +202,17 @@ section{padding:66px 0}
 .gal-skill{margin-top:2px;text-align:center;font-size:.82rem;font-weight:600}
 .gs1{color:var(--blue-l)}.gs2{color:var(--orange-d)}.gs3{color:var(--green-d)}.gs4{color:#B08000}
 
+/* HOW IT WORKS */
+.how-bg{background:var(--warm)}
+.how-img{max-width:900px;margin:0 auto 24px;border-radius:20px;overflow:hidden;box-shadow:var(--sh2)}
+.how-img img{width:100%;display:block}
+.how-trust{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;
+  font-size:.84rem;font-weight:700;color:var(--ink2s);margin-bottom:26px}
+.how-cta{display:flex;justify-content:center}
+@media(max-width:430px){
+  .how-trust{gap:10px 16px}
+}
+
 /* OFFER */
 .offer-bg{background:linear-gradient(135deg,#153A63 0%,#0F1B2A 100%);color:#fff}
 .offer-bg .h-sec{color:#fff}

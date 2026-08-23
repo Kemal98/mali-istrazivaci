@@ -1,4 +1,16 @@
-export default function Footer() {
+const DEFAULT_PAGE_LINKS = [
+  { href: "#set", label: "Šta dobijaš" },
+  { href: "#knjiga", label: "Iz knjige" },
+  { href: "#kako-radi", label: "Kako radi" },
+  { href: "#recenzije", label: "Recenzije" },
+  { href: "#naruci", label: "Naruči" },
+];
+
+export default function Footer({
+  pageLinks = DEFAULT_PAGE_LINKS,
+}: {
+  pageLinks?: { href: string; label: string }[];
+}) {
   return (
     <footer id="kontakt">
       <div className="wrap">
@@ -49,18 +61,11 @@ export default function Footer() {
           <div className="foot-col">
             <h4>Stranica</h4>
             <ul>
-              <li>
-                <a href="#set">Šta dobijaš</a>
-              </li>
-              <li>
-                <a href="#knjiga">Iz knjige</a>
-              </li>
-              <li>
-                <a href="#recenzije">Recenzije</a>
-              </li>
-              <li>
-                <a href="#naruci">Naruči</a>
-              </li>
+              {pageLinks.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
