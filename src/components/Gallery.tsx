@@ -49,16 +49,17 @@ const items = [
   },
 ];
 
-export default function Gallery() {
+export default function Gallery({
+  subtitle = "Prave fotografije knjige iz seta. Sve na bosanskom – i dijete i roditelj razumiju svaki zadatak.",
+}: {
+  subtitle?: string;
+}) {
   return (
     <section className="gal-bg" id="knjiga">
       <div className="wrap">
         <span className="kicker k-green">Pogledaj iznutra</span>
         <h2 className="h-sec">Svaka stranica knjige = nova vještina</h2>
-        <p className="sub-sec">
-          Prave fotografije knjige iz seta. Sve na bosanskom – i dijete i
-          roditelj razumiju svaki zadatak.
-        </p>
+        <p className="sub-sec">{subtitle}</p>
         <div className="gal-grid">
           {items.map((item) => (
             <div className="gal-item" key={item.badge}>

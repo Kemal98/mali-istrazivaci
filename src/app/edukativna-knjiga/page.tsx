@@ -60,7 +60,7 @@ export default function EdukativnaKnjigaPage() {
       <BookHero />
       <TrustStrip />
       <BookAbout />
-      <Gallery />
+      <Gallery subtitle="Prave fotografije iz knjige. Sve na bosanskom – i dijete i roditelj razumiju svaki zadatak." />
       <BookOffer />
       <BookCheckout />
       <Faq items={bookFaqs} />
