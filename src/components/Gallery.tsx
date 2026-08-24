@@ -1,8 +1,8 @@
 const items = [
   {
     badge: "01",
-    src: "/img/animals.jpg",
-    alt: "Životinje sa farme",
+    src: "/img/farma.png",
+    alt: "Životinje sa farme u Montessori knjizi – magarac, ćurka, krava na čičak",
     cap: "Životinje sa farme",
     skill: "Nazivi, boje i zvukovi životinja",
     gs: "gs1",
