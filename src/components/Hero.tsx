@@ -31,7 +31,7 @@ export default function Hero() {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/img/set_hero.jpg"
+            src="/img/set_hero.png"
             alt="SAT MIRA Montessori set 3u1 – knjiga, drvena igračka i mozgalica"
           />
         </div>
