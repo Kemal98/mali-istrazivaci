@@ -9,7 +9,7 @@ const items = [
   },
   {
     badge: "02",
-    src: "/img/alphabet.webp",
+    src: "/img/alphabet.png",
     alt: "Bosanska abeceda u Montessori knjizi – slova DŽ, Ć, Đ na čičak",
     cap: "Bosanska abeceda",
     skill: "Sva bosanska slova – Č, Ć, Dž, Đ, Š, Ž",
