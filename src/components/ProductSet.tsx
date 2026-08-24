@@ -14,14 +14,30 @@ export default function ProductSet() {
             <div className="set-media">
               <span className="set-num n1">1</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/knjiga.jpg" alt="Montessori knjiga na čičak" />
+              <img
+                src="/img/knjiga-proizvod.webp"
+                alt="Montessori knjiga na čičak"
+              />
             </div>
             <div className="set-body">
               <h3>Montessori igra na čičak</h3>
+              <div className="set-spec">
+                <div className="set-spec-item">
+                  <b>10</b>
+                  <small>strana</small>
+                </div>
+                <div className="set-spec-item">
+                  <b>65</b>
+                  <small>čičaka</small>
+                </div>
+                <div className="set-spec-item">
+                  <b>6</b>
+                  <small>tema</small>
+                </div>
+              </div>
               <p>
-                Interaktivna knjiga &ldquo;Svijet malih istraživača&rdquo; sa
-                deset strana zadataka – životinje, slova, emocije, brojevi.
-                Sve na bosanskom jeziku.
+                Životinje, abeceda, emocije, vrijeme, hrana i brojevi – sve
+                na bosanskom jeziku. Kartice se skidaju i lijepe iznova.
               </p>
               <span className="set-skill sk1">Govor i rječnik</span>
             </div>
@@ -35,6 +51,20 @@ export default function ProductSet() {
             </div>
             <div className="set-body">
               <h3>Montessori drvena igračka</h3>
+              <div className="set-spec">
+                <div className="set-spec-item">
+                  <b>100%</b>
+                  <small>drvo</small>
+                </div>
+                <div className="set-spec-item">
+                  <b>2–6</b>
+                  <small>godina</small>
+                </div>
+                <div className="set-spec-item">
+                  <b>1</b>
+                  <small>po uzrastu</small>
+                </div>
+              </div>
               <p>
                 Kvalitetna drvena igračka koju biramo{" "}
                 <strong>prema uzrastu tvog djeteta</strong> – sat sa
@@ -52,6 +82,20 @@ export default function ProductSet() {
             </div>
             <div className="set-body">
               <h3>Drvena mozgalica</h3>
+              <div className="set-spec">
+                <div className="set-spec-item">
+                  <b>7</b>
+                  <small>pločica</small>
+                </div>
+                <div className="set-spec-item">
+                  <b>100+</b>
+                  <small>oblika</small>
+                </div>
+                <div className="set-spec-item">
+                  <b>1</b>
+                  <small>knjižica</small>
+                </div>
+              </div>
               <p>
                 Magnetni Tangram sa knjižicom zadataka. Dijete slaže stotine
                 oblika – mačku, kuću, brod, pticu – od sedam šarenih pločica.
