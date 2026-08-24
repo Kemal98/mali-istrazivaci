@@ -17,8 +17,8 @@ const items = [
   },
   {
     badge: "03",
-    src: "/img/emotions.jpg",
-    alt: "Emocije",
+    src: "/img/emocije.png",
+    alt: "Emocije u Montessori knjizi – sretan, tužan, ljut, zaljubljen na čičak",
     cap: "Emocije i osjećaji",
     skill: "Prepoznaje i imenuje kako se osjeća",
     gs: "gs3",
