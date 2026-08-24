@@ -73,6 +73,26 @@ export default function Gallery({
             </div>
           ))}
         </div>
+        <div className="gal-feature">
+          <div className="gal-feature-img">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/img/spelovanje.png"
+              alt="Dijete slaže prve riječi slova na čičak"
+            />
+          </div>
+          <div className="gal-feature-body">
+            <span className="gal-feature-badge">
+              Za stariju djecu · 4–6 godina
+            </span>
+            <h3>Spelovanje riječi</h3>
+            <p>
+              Najnapredniji zadatak u knjizi – dijete slaže cijelu riječ,
+              slovo po slovo. Isti set koji dvogodišnjak koristi za
+              životinje, šestogodišnjak koristi za prve riječi.
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
