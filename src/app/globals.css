@@ -379,7 +379,7 @@ footer{background:var(--navy);color:#8494A6;padding-top:48px}
 
 @media(max-width:900px){
   .hero-grid,.pain-grid,.offer-card,.co-grid{grid-template-columns:1fr}
-  .hero-grid{grid-template-areas:"head" "media" "body"}
+  .hero-grid{grid-template-areas:"head" "media" "body";row-gap:22px}
   .hero h1,.hero-sub,.hero-price,.hero-actions,.hero-trust{text-align:center}
   .hero-actions,.hero-trust{justify-content:center}
   .hero-stats{display:none}
@@ -412,4 +412,8 @@ footer{background:var(--navy);color:#8494A6;padding-top:48px}
   .set-spec-item{padding:8px 2px}
   .set-spec-item b{font-size:1rem}
   .set-spec-item small{font-size:.58rem;letter-spacing:.02em}
+  .nav-inner{padding:10px 14px;gap:8px}
+  .logo{font-size:.85rem;gap:6px}
+  .logo img{width:32px;height:32px}
+  .nav .btn-primary{padding:9px 13px;font-size:.76rem}
 }
