@@ -13,15 +13,15 @@ export default function Final() {
         <div className="final-strip">
           <div className="stitch">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/knjiga.jpg" alt="Knjiga" />
+            <img src="/img/knjiga_proizvod.png" alt="Knjiga" />
           </div>
           <div className="stitch">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/sat.jpg" alt="Drvena igračka" />
+            <img src="/img/igracke-izbor.png" alt="Drvena igračka" />
           </div>
           <div className="stitch">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/mozgalica.jpg" alt="Mozgalica" />
+            <img src="/img/tangaram.png" alt="Mozgalica" />
           </div>
         </div>
       </div>
