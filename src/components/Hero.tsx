@@ -31,9 +31,21 @@ export default function Hero() {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/img/set_hero.png"
-            alt="SAT MIRA Montessori set 3u1 – knjiga, drvena igračka i mozgalica"
+            src="/img/set_hero2.png"
+            alt="Montessori set 3u1 na bosanskom – knjiga na čičak, drveni sat i magnetni tangram u poklon kutiji"
           />
+          <p
+            style={{
+              fontSize: ".78rem",
+              fontWeight: 500,
+              color: "var(--ink3)",
+              textAlign: "center",
+              marginTop: "10px",
+            }}
+          >
+            Drvena igračka na slici je primjer – biramo je prema uzrastu
+            djeteta.
+          </p>
         </div>
         <div className="hero-body">
           <div className="hero-stats">
