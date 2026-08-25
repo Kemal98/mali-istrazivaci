@@ -21,7 +21,7 @@ export default function Final() {
           </div>
           <div className="stitch">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/tangaram1.png" alt="Mozgalica" />
+            <img src="/img/tangram2.png" alt="Mozgalica" />
           </div>
         </div>
       </div>
