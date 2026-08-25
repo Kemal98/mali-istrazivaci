@@ -17,11 +17,11 @@ export default function Final() {
           </div>
           <div className="stitch">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/igracke-izbor.png" alt="Drvena igračka" />
+            <img src="/img/igracke-izbor1.png" alt="Drvena igračka" />
           </div>
           <div className="stitch">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/tangaram.png" alt="Mozgalica" />
+            <img src="/img/tangaram1.png" alt="Mozgalica" />
           </div>
         </div>
       </div>
