@@ -6,6 +6,7 @@ import ProductSet from "@/components/ProductSet";
 import Infographic from "@/components/Infographic";
 import Gallery from "@/components/Gallery";
 import HowItWorks from "@/components/HowItWorks";
+import WhereToUse from "@/components/WhereToUse";
 import Offer from "@/components/Offer";
 import Reviews from "@/components/Reviews";
 import PreOrderNotice from "@/components/PreOrderNotice";
@@ -26,6 +27,7 @@ export default function Home() {
       <Infographic />
       <Gallery />
       <HowItWorks />
+      <WhereToUse />
       <Offer />
       <Reviews />
       <PreOrderNotice />

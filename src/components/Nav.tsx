@@ -6,6 +6,7 @@ const DEFAULT_LINKS = [
   { href: "#set", label: "Šta dobijaš" },
   { href: "#knjiga", label: "Iz knjige" },
   { href: "#kako-radi", label: "Kako radi" },
+  { href: "#gdje", label: "Gdje se koristi" },
   { href: "#recenzije", label: "Recenzije" },
   { href: "#kontakt", label: "Kontakt" },
 ];

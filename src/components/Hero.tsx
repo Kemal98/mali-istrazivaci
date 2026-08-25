@@ -16,14 +16,24 @@ export default function Hero() {
             Izbor {FAMILIES_COUNT}+ porodica u BiH
           </div>
           <div className="hero-tag">
-            Jedini Montessori set na bosanskom jeziku · 2–6 godina
+            Jedini Montessori set na bosanskom · 3–6 godina
           </div>
           <h1>
-            SAT MIRA
-            <span className="sub">
-              3 igre koje zaokupe dijete – bez ijednog ekrana.
-            </span>
+            Sat mira za tebe.
+            <br />
+            Sat učenja za njega.
           </h1>
+          <p className="hero-sub">
+            Tri igre u jednoj kutiji – knjiga na čičak sa 65 kartica,
+            drvena igračka po uzrastu i magnetni tangram. Bez ekrana, bez
+            baterija, sve na bosanskom.
+          </p>
+          <div className="hero-trust">
+            <span>🎒 Priprema za vrtić</span>
+            <span>🚗 Za put i čekanje</span>
+            <span>🎁 Stiže u poklon kutiji</span>
+            <span>🔤 Č, Ć, Dž, Đ</span>
+          </div>
         </div>
         <div className="hero-media">
           <div className="hero-badge">
@@ -62,26 +72,23 @@ export default function Hero() {
               <small>ekrana</small>
             </div>
           </div>
-          <p className="hero-sub">
-            Tri igre u jednoj <strong>poklon kutiji</strong> – dok se dijete
-            igra i uči, ti napokon popiješ kafu na miru.
-          </p>
           <div className="hero-price">
-            <span className="price-main">29 KM</span>
+            <span className="price-main">
+              29 KM
+              <span
+                style={{
+                  fontSize: ".42em",
+                  fontWeight: 600,
+                  color: "var(--ink3)",
+                  marginLeft: "7px",
+                }}
+              >
+                + 10 KM dostava
+              </span>
+            </span>
             <span className="price-old">58 KM</span>
             <span className="price-save">UŠTEDA 29 KM</span>
           </div>
-          <p
-            style={{
-              fontSize: ".8rem",
-              fontWeight: 600,
-              color: "var(--ink3)",
-              marginTop: "-14px",
-              marginBottom: "18px",
-            }}
-          >
-            + 10 KM dostava, plaća se kuriru
-          </p>
           <div className="hero-actions">
             <a href="#naruci" className="btn btn-primary">
               <svg
