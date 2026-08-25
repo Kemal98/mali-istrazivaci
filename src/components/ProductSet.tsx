@@ -15,7 +15,7 @@ export default function ProductSet() {
               <span className="set-num n1">1</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/img/knjiga-proizvod.webp"
+                src="/img/knjiga_proizvod.png"
                 alt="Montessori knjiga na čičak"
               />
             </div>
