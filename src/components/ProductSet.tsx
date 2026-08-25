@@ -52,18 +52,6 @@ export default function ProductSet() {
                 alt="Izbor drvenih Montessori igračaka – biramo jednu prema uzrastu djeteta"
               />
             </div>
-            <p
-              style={{
-                fontSize: ".78rem",
-                color: "var(--ink3)",
-                fontWeight: 500,
-                lineHeight: 1.5,
-                padding: "10px 22px 0",
-              }}
-            >
-              Igračke na slici su primjeri. Dobijaš <strong>JEDNU</strong>,
-              biranu prema uzrastu koji upišeš pri narudžbi.
-            </p>
             <div className="set-body">
               <h3>Montessori drvena igračka</h3>
               <div className="set-spec">
