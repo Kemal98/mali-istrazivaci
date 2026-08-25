@@ -194,6 +194,7 @@ section{padding:66px 0}
 /* INFOGRAPHIC */
 .info-bg{background:var(--blue-bg)}
 .info-img{max-width:720px;margin:0 auto;border-radius:20px;overflow:hidden;box-shadow:var(--sh2)}
+.info-img video{width:100%;display:block}
 
 /* GALLERY */
 .gal-bg{background:var(--green-bg)}

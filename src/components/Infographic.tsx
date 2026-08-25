@@ -8,8 +8,14 @@ export default function Infographic() {
           Stiže spakovano i spremno za poklon – ne treba ti ništa dodatno.
         </p>
         <div className="info-img">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/img/set_full.jpg" alt="SAT MIRA set – sve što dobijaš" />
+          <video
+            src="/video/video_lop.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-label="SAT MIRA set – sve što dobijaš, raspakovano"
+          />
         </div>
       </div>
     </section>
