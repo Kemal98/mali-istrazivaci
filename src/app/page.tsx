@@ -27,7 +27,7 @@ export default function Home() {
       <Infographic />
       <Gallery />
       <HowItWorks />
-      <WhereToUse />
+      {/* <WhereToUse /> — vrati kad slike (gdje-kuca/auto/kafic/baka) budu spremne */}
       <Offer />
       <Reviews />
       <PreOrderNotice />
