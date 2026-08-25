@@ -81,7 +81,7 @@ export default function ProductSet() {
             <div className="set-media">
               <span className="set-num n3">3</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/mozgalica.jpg" alt="Drvena mozgalica Tangram" />
+              <img src="/img/tangaram.png" alt="Drvena mozgalica Tangram" />
             </div>
             <div className="set-body">
               <h3>Drvena mozgalica</h3>
