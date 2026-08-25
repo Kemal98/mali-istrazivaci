@@ -31,8 +31,13 @@ export default function Nav({
   return (
     <>
       <div className="topbar">
-        Stiže u <strong>poklon kutiji</strong> &nbsp;·&nbsp; Plaćanje
-        pouzećem &nbsp;·&nbsp; Dostava po cijeloj BiH
+        <span className="topbar-full">
+          Stiže u <strong>poklon kutiji</strong> &nbsp;·&nbsp; Plaćanje
+          pouzećem &nbsp;·&nbsp; Dostava po cijeloj BiH
+        </span>
+        <span className="topbar-short">
+          Poklon kutija &nbsp;·&nbsp; Pouzeće &nbsp;·&nbsp; Dostava po BiH
+        </span>
       </div>
 
       <header className={`nav${scrolled ? " scrolled" : ""}`} id="siteNav">
