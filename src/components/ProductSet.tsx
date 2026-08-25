@@ -47,8 +47,23 @@ export default function ProductSet() {
             <div className="set-media">
               <span className="set-num n2">2</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/sat.jpg" alt="Drvena Montessori igračka" />
+              <img
+                src="/img/igracke-izbor.png"
+                alt="Izbor drvenih Montessori igračaka – biramo jednu prema uzrastu djeteta"
+              />
             </div>
+            <p
+              style={{
+                fontSize: ".78rem",
+                color: "var(--ink3)",
+                fontWeight: 500,
+                lineHeight: 1.5,
+                padding: "10px 22px 0",
+              }}
+            >
+              Igračke na slici su primjeri. Dobijaš <strong>JEDNU</strong>,
+              biranu prema uzrastu koji upišeš pri narudžbi.
+            </p>
             <div className="set-body">
               <h3>Montessori drvena igračka</h3>
               <div className="set-spec">
@@ -57,11 +72,11 @@ export default function ProductSet() {
                   <small>drvo</small>
                 </div>
                 <div className="set-spec-item">
-                  <b>2–6</b>
+                  <b>3–6</b>
                   <small>godina</small>
                 </div>
                 <div className="set-spec-item">
-                  <b>1</b>
+                  <b>✓</b>
                   <small>po uzrastu</small>
                 </div>
               </div>
