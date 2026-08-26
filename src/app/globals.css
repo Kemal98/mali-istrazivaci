@@ -53,7 +53,16 @@ ul{list-style:none}
 .nav-links a{color:var(--ink2s);transition:color .15s}
 .nav-links a:hover{color:var(--orange)}
 .nav .btn-primary{padding:11px 24px;font-size:.9rem}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.nav-phone{display:none}
 @media(max-width:900px){.nav-links{display:none}}
+@media(min-width:768px){.nav-links-full{display:flex}}
+@media(max-width:767px){
+  .nav-phone{display:flex;align-items:center;justify-content:center;
+    width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);
+    color:var(--blue);flex-shrink:0}
+  .nav-phone svg{width:17px;height:17px}
+}
 
 /* HERO */
 .hero{background:linear-gradient(165deg,#EAF3FC 0%,#F8FAFD 50%,#EDF7E6 100%);
@@ -453,6 +462,18 @@ footer{background:var(--navy);color:#8494A6;padding-top:48px}
   text-decoration:line-through;font-size:.74rem}
 .sticky-row .btn-primary{padding:13px 26px;font-size:.92rem}
 
+.sticky-row-v2{padding:10px 16px;display:flex;align-items:center;gap:10px}
+.sticky-price-v2{flex:1;min-width:0;line-height:1.2}
+.sticky-price-v2-top{display:flex;align-items:baseline;gap:8px}
+.sticky-price-main{font-family:'Bitter';font-weight:800;color:var(--green-d);font-size:1.1rem}
+.sticky-price-old{font-size:.74rem;color:var(--ink3);text-decoration:line-through;font-weight:600}
+.sticky-price-delivery{font-size:.68rem;font-weight:600;color:var(--ink2s)}
+.sticky-phone{display:flex;align-items:center;justify-content:center;
+  width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);
+  color:var(--blue);flex-shrink:0}
+.sticky-phone svg{width:18px;height:18px}
+.sticky-row-v2 .btn-primary{padding:12px 18px;font-size:.86rem;flex-shrink:0}
+
 @media(max-width:900px){
   .hero-grid,.book-hero-grid,.pain-grid,.offer-card,.co-grid{grid-template-columns:1fr}
   .hero-grid{grid-template-areas:"badge" "h1" "sub" "med" "sta" "pri" "cta" "tru";row-gap:14px}
@@ -472,6 +493,7 @@ footer{background:var(--navy);color:#8494A6;padding-top:48px}
   .titem{border-right:none;border-bottom:1px solid var(--line)}
   .titem:last-child{border-bottom:none}
   .sum-card{position:static}
+  .co-grid{padding-bottom:100px}
   .foot-grid{grid-template-columns:1fr;gap:28px}
   section{padding:48px 0}
   .sticky{display:flex}

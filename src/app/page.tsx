@@ -1,4 +1,5 @@
 import Nav from "@/components/Nav";
+import { PHONE_TEL } from "@/lib/constants";
 import Hero from "@/components/Hero";
 import TrustStrip from "@/components/TrustStrip";
 import Pain from "@/components/Pain";
@@ -20,7 +21,11 @@ import StickyBar from "@/components/StickyBar";
 export default function Home() {
   return (
     <>
-      <Nav />
+      <Nav
+        phone={PHONE_TEL}
+        topbarFull="🚚 Dostava po BiH · 💵 Plaćanje pouzećem · ↩️ 14 dana povrat novca"
+        topbarShort="Pouzeće · Dostava po BiH · 14 dana povrat"
+      />
       <Hero />
       <TrustStrip />
       <Pain />
@@ -37,7 +42,7 @@ export default function Home() {
       <Faq />
       <Final />
       <Footer />
-      <StickyBar />
+      <StickyBar phone={PHONE_TEL} />
     </>
   );
 }
