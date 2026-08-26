@@ -428,10 +428,6 @@ section{padding:66px 0}
 
 /* CHECKOUT */
 .co-bg{background:var(--warm2)}
-.co-crumbs{text-align:center;font-weight:700;color:var(--ink3);font-size:.85rem;
-  margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px}
-.co-crumbs .done{color:var(--green-d)}
-.co-crumbs svg{width:13px;height:13px}
 .co-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;max-width:940px;margin:0 auto;align-items:start}
 .co-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
   overflow:hidden;border:1px solid var(--line)}
@@ -445,6 +441,26 @@ section{padding:66px 0}
   border-radius:var(--rsm);font-family:'Karla';font-size:.96rem;font-weight:500;
   background:var(--warm);transition:border .15s;color:var(--ink)}
 .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--blue-l)}
+.field-error{color:var(--orange-d);font-size:.8rem;font-weight:700;margin-top:6px}
+.field-row{display:flex;flex-direction:column}
+@media(min-width:480px){
+  .field-row{flex-direction:row;gap:12px}
+  .field-row .field{flex:1}
+}
+.age-btns{display:flex;flex-wrap:wrap;gap:8px}
+.age-btn{padding:11px 18px;border:1.5px solid var(--line);border-radius:var(--rsm);
+  background:var(--warm);font-family:'Karla';font-weight:700;font-size:.92rem;
+  color:var(--ink);cursor:pointer;transition:all .15s}
+.age-btn:hover{border-color:var(--blue-l)}
+.age-btn.active{background:var(--blue-l);border-color:var(--blue-l);color:#fff}
+.age-btn-multi{padding:11px 16px}
+.next-steps{background:var(--blue-bg);border-radius:var(--rsm);padding:14px 16px;margin:16px 0}
+.next-steps-title{font-weight:800;font-size:.83rem;color:var(--blue);margin-bottom:8px}
+.next-steps-list{display:flex;flex-direction:column;gap:7px}
+.next-steps-list li{font-size:.84rem;font-weight:600;color:var(--ink2s);line-height:1.4}
+.co-commit{text-align:center;font-weight:800;font-size:.84rem;color:var(--green-d);margin-top:8px}
+.co-viber{text-align:center;margin-top:22px;font-size:.92rem;font-weight:600;color:var(--ink2s)}
+.co-viber a{color:var(--blue);font-weight:800;text-decoration:underline}
 .sum-card{position:sticky;top:88px}
 .sum-prod{display:flex;gap:13px;align-items:center;margin-bottom:14px}
 .sum-prod img{width:62px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;border:1px solid var(--line)}

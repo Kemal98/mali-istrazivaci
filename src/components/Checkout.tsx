@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GOOGLE_SCRIPT_URL } from "@/lib/constants";
+import { GOOGLE_SCRIPT_URL, PHONE_TEL, PHONE_DISPLAY } from "@/lib/constants";
 import GuaranteeBadge from "./GuaranteeBadge";
 
 declare global {
@@ -11,43 +11,70 @@ declare global {
   }
 }
 
+const AGE_OPTIONS = [
+  { value: "2 godine", label: "2" },
+  { value: "3 godine", label: "3" },
+  { value: "4 godine", label: "4" },
+  { value: "5 godina", label: "5" },
+  { value: "6 godina", label: "6" },
+];
+
+function isValidBHPhone(raw: string) {
+  const digits = raw.replace(/[\s-]/g, "");
+  return /^06\d{7}$/.test(digits) || /^\+3876\d{7}$/.test(digits);
+}
+
+const viberHref = `viber://chat?number=${encodeURIComponent(
+  PHONE_TEL.replace(/[\s-]/g, "")
+)}`;
+
 export default function Checkout() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   const [extraSet, setExtraSet] = useState(false);
+  const [selectedAge, setSelectedAge] = useState("");
+  const [dvoje, setDvoje] = useState(false);
+  const [dvojeGodine, setDvojeGodine] = useState("");
+  const [ageError, setAgeError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
   const DELIVERY = 10;
   const productPrice = extraSet ? 49 : 29;
   const total = productPrice + DELIVERY;
+  const uzrastValue = dvoje
+    ? dvojeGodine.trim()
+      ? `Dvoje djece: ${dvojeGodine.trim()}`
+      : ""
+    : selectedAge;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitting(true);
     setError(false);
 
     const form = e.currentTarget;
     const formData = new FormData(form);
+    const telValue = String(formData.get("tel") || "");
+
+    const ageOk = Boolean(uzrastValue);
+    const phoneOk = isValidBHPhone(telValue);
+    setAgeError(!ageOk);
+    setPhoneError(!phoneOk);
+    if (!ageOk || !phoneOk) return;
+
+    setSubmitting(true);
 
     const data = {
       datum: new Date().toLocaleString("bs-BA"),
       ime: formData.get("ime"),
-      telefon: formData.get("tel"),
+      telefon: telValue,
       adresa: formData.get("adresa"),
       grad: formData.get("grad"),
-      uzrast: formData.get("uzrast"),
+      uzrast: uzrastValue,
       napomena: formData.get("napomena"),
       proizvod: extraSet ? "SAT MIRA set 3u1 x2" : "SAT MIRA set 3u1",
       cijena: `${total} KM`,
       status: "Novo",
     };
-
-    if (window.fbq) {
-      window.fbq("track", "Lead", {
-        content_name: "SAT MIRA set",
-        value: total,
-        currency: "BAM",
-      });
-    }
 
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
@@ -56,6 +83,13 @@ export default function Checkout() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (window.fbq) {
+        window.fbq("track", "Lead", {
+          content_name: "SAT MIRA set",
+          value: total,
+          currency: "BAM",
+        });
+      }
       router.push(
         `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}`
       );
@@ -70,20 +104,7 @@ export default function Checkout() {
     <section className="co-bg" id="naruci">
       <div className="wrap">
         <span className="kicker k-green">Posljednji korak</span>
-        <h2 className="h-sec">Popuni – javljamo se na Viber</h2>
-        <p className="co-crumbs">
-          <span className="done">Košarica</span>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-          Dostava i plaćanje
-        </p>
+        <h2 className="h-sec">Ostavi podatke — ne plaćaš ništa sada</h2>
 
         <GuaranteeBadge />
 
@@ -119,46 +140,93 @@ export default function Checkout() {
                     <label htmlFor="tel">Broj telefona *</label>
                     <input
                       type="tel"
+                      inputMode="numeric"
                       id="tel"
                       name="tel"
                       required
                       placeholder="npr. 061 123 456"
+                      onChange={() => setPhoneError(false)}
                     />
+                    {phoneError && (
+                      <p className="field-error">
+                        Unesi ispravan broj (npr. 061 123 456 ili +38761 123
+                        456).
+                      </p>
+                    )}
+                  </div>
+                  <div className="field-row">
+                    <div className="field">
+                      <label htmlFor="adresa">Ulica i broj *</label>
+                      <input
+                        type="text"
+                        id="adresa"
+                        name="adresa"
+                        required
+                        placeholder="npr. Titova 15"
+                      />
+                    </div>
+                    <div className="field">
+                      <label htmlFor="grad">Grad *</label>
+                      <input
+                        type="text"
+                        id="grad"
+                        name="grad"
+                        required
+                        placeholder="npr. Sarajevo"
+                      />
+                    </div>
                   </div>
                   <div className="field">
-                    <label htmlFor="adresa">Ulica i broj *</label>
-                    <input
-                      type="text"
-                      id="adresa"
-                      name="adresa"
-                      required
-                      placeholder="npr. Titova 15"
-                    />
-                  </div>
-                  <div className="field">
-                    <label htmlFor="grad">Grad *</label>
-                    <input
-                      type="text"
-                      id="grad"
-                      name="grad"
-                      required
-                      placeholder="npr. Sarajevo"
-                    />
-                  </div>
-                  <div className="field">
-                    <label htmlFor="uzrast">
-                      Koliko godina ima dijete? *
-                    </label>
-                    <select id="uzrast" name="uzrast" required defaultValue="">
-                      <option value="" disabled>
-                        Izaberi uzrast
-                      </option>
-                      <option value="2 godine">2 godine</option>
-                      <option value="3 godine">3 godine</option>
-                      <option value="4 godine">4 godine</option>
-                      <option value="5 godina">5 godina</option>
-                      <option value="6 godina">6 godina</option>
-                    </select>
+                    <label>Koliko godina ima dijete? *</label>
+                    <div className="age-btns">
+                      {AGE_OPTIONS.map((opt) => (
+                        <button
+                          type="button"
+                          key={opt.value}
+                          className={`age-btn${
+                            !dvoje && selectedAge === opt.value
+                              ? " active"
+                              : ""
+                          }`}
+                          onClick={() => {
+                            setDvoje(false);
+                            setSelectedAge(opt.value);
+                            setAgeError(false);
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className={`age-btn age-btn-multi${
+                          dvoje ? " active" : ""
+                        }`}
+                        onClick={() => {
+                          setDvoje(true);
+                          setSelectedAge("");
+                          setAgeError(false);
+                        }}
+                      >
+                        Dvoje djece
+                      </button>
+                    </div>
+                    {dvoje && (
+                      <input
+                        type="text"
+                        required
+                        value={dvojeGodine}
+                        onChange={(e) => {
+                          setDvojeGodine(e.target.value);
+                          setAgeError(false);
+                        }}
+                        placeholder="Koliko godina imaju? npr. 3 i 5 godina"
+                        style={{ marginTop: "10px" }}
+                      />
+                    )}
+                    {ageError && (
+                      <p className="field-error">Izaberi uzrast djeteta.</p>
+                    )}
                   </div>
                   <div className="field">
                     <label htmlFor="napomena">
@@ -295,6 +363,23 @@ export default function Checkout() {
                     </div>
                   </div>
 
+                  <div className="next-steps">
+                    <div className="next-steps-title">
+                      Šta se dešava dalje:
+                    </div>
+                    <ul className="next-steps-list">
+                      <li>
+                        1️⃣ Zovemo te za par sati — potvrdimo uzrast djeteta
+                      </li>
+                      <li>
+                        2️⃣ Pakujemo set ručno, šaljemo isti ili sljedeći dan
+                      </li>
+                      <li>
+                        3️⃣ Kurir stiže za 2–4 dana — platiš njemu {total} KM
+                      </li>
+                    </ul>
+                  </div>
+
                   <button
                     type="submit"
                     className="btn btn-green"
@@ -340,13 +425,21 @@ export default function Checkout() {
                     >
                       <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
                     </svg>
-                    Bez plaćanja unaprijed · Javljamo se na Viber · 14
+                    Bez plaćanja unaprijed · Zovemo te da potvrdimo · 14
                     dana garancija povrata
+                  </p>
+                  <p className="co-commit">
+                    Slanjem ne preuzimaš obavezu — možeš odustati kad te
+                    nazovemo.
                   </p>
                 </div>
               </div>
             </div>
           </form>
+        <p className="co-viber">
+          Ne voliš forme? Piši nam na Viber:{" "}
+          <a href={viberHref}>{PHONE_DISPLAY}</a> — dogovorimo za minut.
+        </p>
       </div>
     </section>
   );

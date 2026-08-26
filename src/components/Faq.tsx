@@ -7,65 +7,92 @@ export type FaqItem = { q: string; a: string };
 
 const defaultFaqs: FaqItem[] = [
   {
+    q: "Šta ako se djetetu ne svidi?",
+    a: "Javi se u roku od 14 dana od preuzimanja i vraćamo novac. Bez objašnjavanja i bez pitanja. Trošak povrata snosimo mi.",
+  },
+  {
+    q: "Šta tačno plaćam i kada?",
+    a: "Set je 29 KM, dostava 10 KM — ukupno 39 KM. Ne plaćaš ništa unaprijed. Platiš kuriru gotovinom kad ti donese paket na vrata.",
+  },
+  {
+    q: "Zaigra li se dijete duže od dva dana?",
+    a: "Zato su tri igre, ne jedna. Kad se zasiti čička, prelazi na tangram. Kad riješi tangram, uzima drvenu igračku. Roditelji nam javljaju da se set koristi mjesecima — jer se kartice svaki put slažu drugačije. A ako se kod tvog djeteta ipak ne desi, imaš 14 dana povrat.",
+  },
+  {
     q: "Koju tačno drvenu igračku dobijam?",
-    a: "Biramo je prema uzrastu tvog djeteta koji upišeš pri narudžbi. Za mlađu djecu (2–3 god.) šaljemo sortirku oblika ili slaganje, za stariju (4–6 god.) drveni sat sa brojevima ili sličnu razvojnu igračku. Uvijek je kvalitetno drvo i uvijek odgovara uzrastu.",
+    a: "Biramo je prema uzrastu koji upišeš. Za 2–3 godine šaljemo sortirku oblika ili slaganje. Za 4–6 godina drveni sat sa brojevima ili sličnu razvojnu igračku. Zovemo te prije slanja da potvrdimo — ako želiš nešto konkretno, reci nam tada.",
+  },
+  {
+    q: "Kako znam da je ovo prava firma?",
+    a: "Mi smo [NAZIV FIRME] iz [GRAD]. Zovi nas na [TELEFON] prije narudžbe ako želiš — javljamo se 9–20h. I plaćaš tek kad kurir donese paket, tako da ne rizikuješ ništa.",
+  },
+  {
+    q: "Je li sve sigurno za malu djecu?",
+    a: "Drvo je brušeno, bez oštrih ivica, boje su netoksične. Tangram pločice su oko 5 cm — prevelike za gutanje. Za djecu mlađu od 3 godine preporučujemo igru uz nadzor, kao i kod svake igračke sa dijelovima.",
   },
   {
     q: "Za koji uzrast je set?",
-    a: "Set je za djecu od 2 do 6 godina. Mlađa djeca uživaju u slikama, čičku i slaganju oblika, a starija rješavaju zadatke sa slovima, brojevima i mozgalicom. Set raste zajedno s djetetom.",
-  },
-  {
-    q: "Kako funkcioniše plaćanje pouzećem?",
-    a: "Ne plaćaš ništa unaprijed. Kada kurir donese paket, platiš gotovinom na kućnom pragu – i to je sve. Ne treba ti kartica ni internet plaćanje.",
+    a: "Za djecu 2–6 godina. Mlađa uživaju u slikama, čičku i slaganju oblika; starija rješavaju zadatke sa slovima, brojevima i mozgalicom. Isti set raste s djetetom.",
   },
   {
     q: "Koliko traje dostava?",
     a: "Dostava po cijeloj BiH traje 2 do 4 radna dana. Javljamo se na Viber isti ili sljedeći dan da potvrdimo narudžbu i uzrast djeteta.",
   },
   {
-    q: "Je li sve sigurno za malu djecu?",
-    a: "Da. Drvo je glatko obrađeno bez oštrih ivica, boje su netoksične, a knjiga je od čvrstog materijala otpornog na kidanje. Sve je dizajnirano upravo za male ruke.",
+    q: "Šta ako paket stigne oštećen?",
+    a: "Ne preuzimaj ga i ne plaćaj. Javi nam se — šaljemo novi o našem trošku.",
   },
   {
-    q: "Mogu li naručiti više setova?",
-    a: "Naravno – napiši u polje Napomena koliko setova želiš i uzraste djece. Javimo se telefonom i dogovorimo detalje. Odličan je poklon za rođendane.",
+    q: "Mogu li naručiti dva ili više setova?",
+    a: "Da — dva seta su 49 KM umjesto 58 KM. Označi opciju u formi ili napiši u napomenu koliko setova i uzraste djece. Odličan je poklon za rođendane.",
   },
   {
-    q: "Šta ako se djetetu ne svidi?",
-    a: "Javi se u roku od 14 dana od preuzimanja i vraćamo ti novac – bez objašnjavanja.",
-  },
-  {
-    q: "Koliko dugo traje knjiga? Da li se čičak istroši?",
+    q: "Koliko dugo traje čičak?",
     a: "Knjiga je za višekratnu upotrebu – čičak izresci se skidaju i ponovo lijepe stotine puta, ne gube ljepljivost preko noći.",
   },
   {
-    q: "Da li mogu naručiti ako živim van većeg grada?",
+    q: "Dostavljate li i van većih gradova?",
     a: "Da, dostavljamo po cijeloj Bosni i Hercegovini, ne samo u veće gradove.",
-  },
-  {
-    q: "Treba li baterije ili aplikacija?",
-    a: "Ne – set je 100% bez ekrana, aplikacije i baterija. Samo igra rukama.",
-  },
-  {
-    q: "Je li set samo na bosanskom?",
-    a: "Knjiga koristi latinicu i sva slova koja postoje u bosanskom, hrvatskom i srpskom jeziku, uključujući Č, Ć, Dž, Đ, Š i Ž. Nazivi su svakodnevne riječi koje su iste u sva tri jezika, pa set jednako odgovara svakoj porodici u BiH i regiji.",
   },
 ];
 
 export default function Faq({
   items = defaultFaqs,
+  title = "Često postavljana pitanja",
   ctaText,
+  defaultOpenIndex = null,
+  schemaMarkup = false,
 }: {
   items?: FaqItem[];
+  title?: string;
   ctaText?: string;
+  defaultOpenIndex?: number | null;
+  schemaMarkup?: boolean;
 }) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(
+    defaultOpenIndex
+  );
+
+  const schema = schemaMarkup
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: items.map((item) => ({
+          "@type": "Question",
+          name: item.q,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: item.a,
+          },
+        })),
+      }
+    : null;
 
   return (
     <section className="faq-bg">
       <div className="wrap">
         <span className="kicker k-orange">Pitanja</span>
-        <h2 className="h-sec">Često postavljana pitanja</h2>
+        <h2 className="h-sec">{title}</h2>
         <div className="faq-list">
           {items.map((item, i) => {
             const open = openIndex === i;
@@ -86,6 +113,12 @@ export default function Faq({
         </div>
         {ctaText && <CtaButton text={ctaText} />}
       </div>
+      {schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      )}
     </section>
   );
 }

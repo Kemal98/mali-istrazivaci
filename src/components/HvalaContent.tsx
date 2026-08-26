@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/constants";
 
 declare global {
   interface Window {
@@ -52,8 +53,8 @@ export default function HvalaContent() {
             Narudžba primljena!
           </h1>
           <p style={{ fontWeight: 500, color: "var(--ink2s)" }}>
-            Javljamo se na Viber danas ili sutra da potvrdimo uzrast djeteta i
-            dostavu. Hvala ti! 🙏
+            Zovemo te za par sati da potvrdimo uzrast djeteta i dostavu.
+            Hvala ti! 🙏
           </p>
           <p
             style={{
@@ -64,6 +65,19 @@ export default function HvalaContent() {
             }}
           >
             {proizvod} · {value} KM
+          </p>
+          <p
+            style={{
+              fontWeight: 600,
+              color: "var(--ink3)",
+              fontSize: ".85rem",
+              marginTop: "10px",
+            }}
+          >
+            Pitanja u međuvremenu?{" "}
+            <a href={`tel:${PHONE_TEL}`} style={{ color: "var(--blue)" }}>
+              {PHONE_DISPLAY}
+            </a>
           </p>
           <Link
             href="/"

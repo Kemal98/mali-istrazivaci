@@ -42,7 +42,12 @@ export default function Home() {
       <HowItWorks />
       <Offer />
       <Guarantee />
-      <Faq ctaText="Sve jasno? Naruči – 29 KM + dostava" />
+      <Faq
+        title="Sve što roditelji pitaju prije narudžbe"
+        ctaText="Sve jasno? Naruči – 29 KM + dostava"
+        defaultOpenIndex={0}
+        schemaMarkup
+      />
       <Checkout />
       <PreOrderNotice />
       <Final />
