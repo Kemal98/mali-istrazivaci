@@ -534,10 +534,10 @@ footer{background:var(--navy);color:#8494A6;padding-top:48px}
   .sub-short{display:block}
   .hero-grid h1{font-size:1.55rem;margin-bottom:0;line-height:1.15}
   .hero-grid .hero-sub{font-size:.85rem;margin-bottom:0;line-height:1.4}
-  .hero-grid .hero-media{max-width:105px;margin:0 auto}
-  .hero-grid .hero-badge{width:44px;height:44px;font-size:.5rem;bottom:-6px;right:-4px;
+  .hero-grid .hero-media{max-width:124px;margin:0 auto}
+  .hero-grid .hero-badge{width:48px;height:48px;font-size:.52rem;bottom:-6px;right:-4px;
     border-width:2px}
-  .hero-grid .hero-badge b{font-size:.78rem}
+  .hero-grid .hero-badge b{font-size:.82rem}
   .hero-price{flex-wrap:wrap}
   .pb-full{margin-bottom:0}
   .pb-price{font-size:1.7rem}
