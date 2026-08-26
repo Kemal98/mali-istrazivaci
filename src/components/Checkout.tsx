@@ -149,13 +149,16 @@ export default function Checkout() {
                     <label htmlFor="uzrast">
                       Koliko godina ima dijete? *
                     </label>
-                    <input
-                      type="text"
-                      id="uzrast"
-                      name="uzrast"
-                      required
-                      placeholder="npr. 4 godine – biramo igračku po uzrastu"
-                    />
+                    <select id="uzrast" name="uzrast" required defaultValue="">
+                      <option value="" disabled>
+                        Izaberi uzrast
+                      </option>
+                      <option value="2 godine">2 godine</option>
+                      <option value="3 godine">3 godine</option>
+                      <option value="4 godine">4 godine</option>
+                      <option value="5 godina">5 godina</option>
+                      <option value="6 godina">6 godina</option>
+                    </select>
                   </div>
                   <div className="field">
                     <label htmlFor="napomena">

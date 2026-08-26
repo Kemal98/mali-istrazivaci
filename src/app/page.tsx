@@ -5,6 +5,7 @@ import Pain from "@/components/Pain";
 import ProductSet from "@/components/ProductSet";
 import Infographic from "@/components/Infographic";
 import Gallery from "@/components/Gallery";
+import AgeStages from "@/components/AgeStages";
 import HowItWorks from "@/components/HowItWorks";
 import WhereToUse from "@/components/WhereToUse";
 import Offer from "@/components/Offer";
@@ -26,6 +27,7 @@ export default function Home() {
       <ProductSet />
       <Infographic />
       <Gallery />
+      <AgeStages />
       <HowItWorks />
       {/* <WhereToUse /> — vrati kad slike (gdje-kuca/auto/kafic/baka) budu spremne */}
       <Offer />
