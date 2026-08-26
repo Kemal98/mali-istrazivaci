@@ -193,7 +193,7 @@ export default function Checkout() {
                 <div className="card-body">
                   <div className="sum-prod">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/img/kutija.jpg" alt="SAT MIRA set" />
+                    <img src="/img/set_hero2.png" alt="SAT MIRA set" />
                     <div>
                       <div className="spn">SAT MIRA – set 3u1</div>
                       <div className="spq">Montessori set 2–6 godina</div>

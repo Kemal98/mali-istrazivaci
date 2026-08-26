@@ -9,7 +9,10 @@ export default function Offer() {
         <div className="offer-card">
           <div className="offer-img">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/kutija.jpg" alt="SAT MIRA poklon kutija" />
+            <img
+              src="/img/set_hero2.png"
+              alt="SAT MIRA Montessori set 3u1 – knjiga na čičak, drveni sat i magnetni tangram u poklon kutiji"
+            />
           </div>
           <div className="offer-info">
             <h3>SAT MIRA – set 3u1</h3>
