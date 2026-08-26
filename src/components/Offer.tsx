@@ -1,5 +1,17 @@
 import PriceBlock from "./PriceBlock";
 import CtaButton from "./CtaButton";
+import ValueStack from "./ValueStack";
+import { BONUS_DEADLINE } from "@/lib/constants";
+
+// TODO: provjeri jesu li 28/24/16/5 KM stvarne pojedinačne vrijednosti
+// prije objave. Ako nisu, promijeni ih ovdje — ali zbir mora ostati veći
+// od 58 KM (trenutne "redovne" cijene) da anchor ima smisla.
+const valueStackItems = [
+  { label: "Knjiga na čičak (65 kartica)", price: "28 KM" },
+  { label: "Drvena igračka po uzrastu", price: "24 KM" },
+  { label: "Magnetni tangram + knjižica", price: "16 KM" },
+  { label: "Poklon kutija", price: "5 KM" },
+];
 
 export default function Offer() {
   return (
@@ -11,6 +23,8 @@ export default function Offer() {
         <h2 className="h-sec">Sve tri igre za 29 KM</h2>
         <div className="offer-card">
           <div className="offer-img">
+            {/* TODO: zamijeniti fotografijom OTVORENE kutije sa svim
+                sadržajem raspoređenim — konvertuje bolje od zatvorene kutije */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/img/set_hero2.png"
@@ -20,18 +34,11 @@ export default function Offer() {
           <div className="offer-info">
             <h3>SAT MIRA – set 3u1</h3>
             <p className="osub">Montessori set za djecu 2–6 godina</p>
+
+            <ValueStack items={valueStackItems} total="73 KM" />
+
             <PriceBlock dark />
-            <div className="stock-alert">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-              </svg>
-              Akcija traje do isteka zalihe
-            </div>
+
             <ul className="offer-points">
               <li>
                 <svg
@@ -77,14 +84,39 @@ export default function Offer() {
                 </svg>
                 Plaćanje pouzećem – platiš kad preuzmeš
               </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                14 dana garancija povrata novca
+              </li>
             </ul>
+
+            <div className="offer-bonus">
+              <div className="offer-bonus-title">
+                <span aria-hidden="true">🎁</span> BONUS uz narudžbe do{" "}
+                {BONUS_DEADLINE}
+              </div>
+              <p>
+                PDF vodič &ldquo;30 igara sa setom&rdquo; — šta raditi sa
+                setom svaki dan mjesec dana, po uzrastu djeteta. Šaljemo na
+                Viber odmah nakon potvrde narudžbe, prije nego što paket i
+                stigne.
+              </p>
+            </div>
+
             <CtaButton
-              text="Naruči set – 29 KM + dostava"
+              text="Naruči – 29 KM + dostava"
               style={{ width: "100%" }}
             />
             <p className="offer-note">
-              <strong>Akcija vrijedi do isteka zalihe.</strong> Trebaš više
-              setova? Napiši u napomeni.
+              Trebaš dva seta? <strong>49 KM za dva</strong> (ušteda 9 KM) –
+              označi u formi ili napiši u napomeni.
             </p>
           </div>
         </div>
