@@ -6,7 +6,8 @@ import HvalaContent from "@/components/HvalaContent";
 
 export const metadata: Metadata = {
   title: "Narudžba primljena | Mali Istraživači",
-  description: "Hvala na narudžbi — zovemo te uskoro da potvrdimo detalje.",
+  description:
+    "Hvala na narudžbi — javljamo se uskoro na Viber da potvrdimo detalje.",
 };
 
 export default function HvalaPage() {

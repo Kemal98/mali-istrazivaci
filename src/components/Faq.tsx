@@ -20,7 +20,7 @@ const defaultFaqs: FaqItem[] = [
   },
   {
     q: "Koliko traje dostava?",
-    a: "Dostava po cijeloj BiH traje 2 do 4 radna dana. Zovemo te isti ili sljedeći dan da potvrdimo narudžbu i uzrast djeteta.",
+    a: "Dostava po cijeloj BiH traje 2 do 4 radna dana. Javljamo se na Viber isti ili sljedeći dan da potvrdimo narudžbu i uzrast djeteta.",
   },
   {
     q: "Je li sve sigurno za malu djecu?",

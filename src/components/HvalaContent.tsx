@@ -52,8 +52,8 @@ export default function HvalaContent() {
             Narudžba primljena!
           </h1>
           <p style={{ fontWeight: 500, color: "var(--ink2s)" }}>
-            Zovemo te danas ili sutra da potvrdimo uzrast djeteta i dostavu.
-            Hvala ti! 🙏
+            Javljamo se na Viber danas ili sutra da potvrdimo uzrast djeteta i
+            dostavu. Hvala ti! 🙏
           </p>
           <p
             style={{

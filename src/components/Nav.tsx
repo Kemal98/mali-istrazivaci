@@ -16,6 +16,7 @@ export default function Nav({
   links = DEFAULT_LINKS,
   logoHref = "#",
   phone,
+  simplified = false,
   topbarFull = (
     <>
       Stiže u <strong>poklon kutiji</strong> &nbsp;·&nbsp; Plaćanje pouzećem
@@ -28,6 +29,7 @@ export default function Nav({
   links?: { href: string; label: string }[];
   logoHref?: string;
   phone?: string;
+  simplified?: boolean;
   topbarFull?: ReactNode;
   topbarShort?: ReactNode;
 }) {
@@ -53,7 +55,7 @@ export default function Nav({
             <img src="/img/logo.png" alt="Mali Istraživači" />
             Mali Istraživači
           </a>
-          <nav className={`nav-links${phone ? " nav-links-full" : ""}`}>
+          <nav className={`nav-links${simplified ? " nav-links-full" : ""}`}>
             {links.map((l) => (
               <a href={l.href} key={l.href}>
                 {l.label}

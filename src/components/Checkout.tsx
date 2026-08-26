@@ -70,7 +70,7 @@ export default function Checkout() {
     <section className="co-bg" id="naruci">
       <div className="wrap">
         <span className="kicker k-green">Posljednji korak</span>
-        <h2 className="h-sec">Popuni – zovemo te isti dan</h2>
+        <h2 className="h-sec">Popuni – javljamo se na Viber</h2>
         <p className="co-crumbs">
           <span className="done">Košarica</span>
           <svg
@@ -327,7 +327,8 @@ export default function Checkout() {
                         textAlign: "center",
                       }}
                     >
-                      Greška – pokušaj ponovo ili nas nazovi direktno.
+                      Greška – pokušaj ponovo ili nam piši na
+                      info@maliistrazivaci.ba.
                     </p>
                   )}
                   <p className="sub-note">
@@ -339,7 +340,7 @@ export default function Checkout() {
                     >
                       <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
                     </svg>
-                    Bez plaćanja unaprijed · Zovemo te da potvrdimo · 14
+                    Bez plaćanja unaprijed · Javljamo se na Viber · 14
                     dana garancija povrata
                   </p>
                 </div>
