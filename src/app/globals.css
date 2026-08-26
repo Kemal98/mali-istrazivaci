@@ -377,6 +377,20 @@ section{padding:66px 0}
 .rev-who b{display:block;font-size:.92rem}
 .rev-who small{color:var(--ink3);font-weight:600;font-size:.81rem}
 
+/* REASSURE (biggest-fear section) */
+.reassure-bg{background:var(--green-bg);border-top:1px solid rgba(61,155,47,.25);
+  border-bottom:1px solid rgba(61,155,47,.25)}
+.reassure-p{max-width:640px;margin:0 auto;text-align:center;font-size:1.03rem;
+  line-height:1.7;color:var(--ink2s)}
+.reassure-quote{background:var(--card);border-left:4px solid var(--green);
+  border-radius:var(--rsm);box-shadow:var(--sh);max-width:600px;margin:28px auto 0;
+  padding:22px 26px;font-family:'Bitter';font-style:italic;font-size:1.08rem;
+  line-height:1.6;color:var(--ink)}
+.reassure-quote cite{display:block;margin-top:12px;font-family:'Karla';
+  font-style:normal;font-weight:700;font-size:.82rem;color:var(--ink3)}
+.reassure-guarantee{max-width:600px;margin:26px auto 0;text-align:center;
+  font-weight:800;font-size:1.03rem;color:var(--green-d)}
+
 /* CHECKOUT */
 .co-bg{background:var(--warm2)}
 .co-crumbs{text-align:center;font-weight:700;color:var(--ink3);font-size:.85rem;
