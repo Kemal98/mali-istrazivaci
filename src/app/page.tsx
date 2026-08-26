@@ -7,13 +7,16 @@ import ProductSet from "@/components/ProductSet";
 import Infographic from "@/components/Infographic";
 import Gallery from "@/components/Gallery";
 import AgeStages from "@/components/AgeStages";
-import HowItWorks from "@/components/HowItWorks";
-import WhereToUse from "@/components/WhereToUse";
-import Offer from "@/components/Offer";
 import Reviews from "@/components/Reviews";
-import PreOrderNotice from "@/components/PreOrderNotice";
-import Checkout from "@/components/Checkout";
+import WhatIfBored from "@/components/WhatIfBored";
+import WhereToUse from "@/components/WhereToUse";
+import AboutUs from "@/components/AboutUs";
+import HowItWorks from "@/components/HowItWorks";
+import Offer from "@/components/Offer";
+import Guarantee from "@/components/Guarantee";
 import Faq from "@/components/Faq";
+import Checkout from "@/components/Checkout";
+import PreOrderNotice from "@/components/PreOrderNotice";
 import Final from "@/components/Final";
 import Footer from "@/components/Footer";
 import StickyBar from "@/components/StickyBar";
@@ -33,13 +36,16 @@ export default function Home() {
       <Infographic />
       <Gallery />
       <AgeStages />
-      <HowItWorks />
-      {/* <WhereToUse /> — vrati kad slike (gdje-kuca/auto/kafic/baka) budu spremne */}
-      <Offer />
       <Reviews />
-      <PreOrderNotice />
-      <Checkout />
+      <WhatIfBored />
+      {/* <WhereToUse /> — vrati kad slike (gdje-kuca/auto/kafic/baka) budu spremne */}
+      <AboutUs />
+      <HowItWorks />
+      <Offer />
+      <Guarantee />
       <Faq />
+      <Checkout />
+      <PreOrderNotice />
       <Final />
       <Footer />
       <StickyBar phone={PHONE_TEL} />
