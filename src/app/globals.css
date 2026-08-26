@@ -57,45 +57,55 @@ ul{list-style:none}
 
 /* HERO */
 .hero{background:linear-gradient(165deg,#EAF3FC 0%,#F8FAFD 50%,#EDF7E6 100%);
-  padding:48px 0 56px;position:relative;overflow:hidden}
+  padding:32px 0 40px;position:relative;overflow:hidden}
 .hero-grid{display:grid;grid-template-columns:1fr 1.05fr;column-gap:46px;row-gap:0;
   align-items:center;grid-template-areas:
-    "soc med"
-    "tag med"
-    "h1  med"
-    "sub med"
-    "tags med"
-    "sta med"
-    "pri med"
-    "cta med"
-    "tru med"}
-.hero-tag{grid-area:tag;display:inline-flex;align-items:center;gap:8px;background:#fff;
-  color:var(--blue);font-weight:800;font-size:.74rem;letter-spacing:.07em;
-  text-transform:uppercase;padding:8px 16px;border-radius:var(--rsm);
-  box-shadow:var(--sh);margin-bottom:18px;border:1px solid var(--blue-bg);
-  text-align:center}
-.tag-short{display:none}
-.hero-social{grid-area:soc;display:inline-flex;align-items:center;gap:7px;color:var(--orange-d);
-  font-weight:800;font-size:.82rem;margin-bottom:10px}
-.hero-social svg{width:15px;height:15px;color:var(--orange)}
-.hero h1{grid-area:h1;font-size:clamp(2rem,4.2vw,3.05rem);margin-bottom:8px;color:var(--blue)}
+    "badge med"
+    "h1    med"
+    "sub   med"
+    "sta   med"
+    "pri   med"
+    "cta   med"
+    "tru   med"}
+.hero-top-badge{grid-area:badge;display:inline-flex;align-items:center;gap:8px;
+  background:#fff;color:var(--blue);font-weight:800;font-size:.8rem;
+  padding:9px 16px;border-radius:var(--rsm);box-shadow:var(--sh);
+  margin-bottom:16px;border:1px solid var(--blue-bg)}
+.hero-top-badge svg{width:15px;height:15px;color:var(--yellow);flex-shrink:0}
+.badge-short{display:none}
+.hero h1{grid-area:h1;font-size:clamp(2rem,4.2vw,3.05rem);margin-bottom:10px;color:var(--blue)}
 .hero h1 .sub{display:block;font-size:.52em;color:var(--ink);
   font-weight:700;letter-spacing:-.01em;margin-top:6px}
-.hero-stats{grid-area:sta;display:flex;gap:0;margin:20px 0;border-radius:12px;overflow:hidden;
+.hero-stats{grid-area:sta;display:flex;gap:0;margin:14px 0;border-radius:12px;overflow:hidden;
   border:1px solid var(--line);background:#fff;max-width:400px}
 .hstat{flex:1;text-align:center;padding:12px 8px;border-right:1px solid var(--line)}
 .hstat:last-child{border-right:none}
 .hstat b{display:block;font-family:'Bitter';font-size:1.35rem;color:var(--orange);line-height:1}
 .hstat small{font-size:.72rem;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
-.hero-sub{grid-area:sub;font-size:1.08rem;font-weight:500;color:var(--ink2s);max-width:44ch;
-  margin-bottom:20px;line-height:1.65}
+.hero-sub{grid-area:sub;font-size:1.05rem;font-weight:500;color:var(--ink2s);max-width:44ch;
+  margin-bottom:14px;line-height:1.55}
 .hero-sub strong{color:var(--green-d);font-weight:700}
 .sub-short{display:none}
-.hero-price{grid-area:pri;display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.hero-cta-block{grid-area:cta;margin-bottom:18px}
+.hero-cta-note{font-size:.8rem;font-weight:600;color:var(--ink3);margin-top:10px}
+.hero-cta-link{display:inline-block;margin-top:8px;font-size:.9rem;font-weight:700;
+  color:var(--blue-l);text-decoration:underline}
+
+/* book landing page hero (independent from the SAT MIRA hero-grid above) */
+.book-hero-grid{display:grid;grid-template-columns:1fr 1.05fr;column-gap:46px;
+  align-items:center;grid-template-areas:"head med" "body med"}
+.hero-head{grid-area:head}
+.hero-body{grid-area:body}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:#fff;
+  color:var(--blue);font-weight:800;font-size:.74rem;letter-spacing:.07em;
+  text-transform:uppercase;padding:8px 16px;border-radius:var(--rsm);
+  box-shadow:var(--sh);margin-bottom:18px;border:1px solid var(--blue-bg)}
+.hero-price{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
 .price-main{font-family:'Bitter';font-weight:800;font-size:2.5rem;color:var(--green-d);line-height:1}
 .price-old{font-size:1.15rem;color:var(--ink3);text-decoration:line-through;font-weight:600}
 .price-save{background:var(--orange);color:#fff;font-weight:800;font-size:.74rem;
   padding:5px 11px;border-radius:6px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:13px;margin-bottom:22px}
 
 /* PRICE BLOCK */
 .pb-full{margin-bottom:18px}
@@ -114,14 +124,12 @@ ul{list-style:none}
 .pb-compact-delivery{font-family:'Karla';font-size:.6em;font-weight:700;color:var(--ink2s)}
 .pb-compact-old{font-family:'Karla';font-size:.6em;font-weight:600;color:var(--ink3);
   text-decoration:line-through}
-.hero-actions{grid-area:cta;display:flex;flex-wrap:wrap;gap:13px;margin-bottom:22px}
 .hero-trust{display:flex;flex-wrap:wrap;gap:16px;font-size:.84rem;font-weight:700;color:var(--ink2s)}
-.hero-trust-tags{grid-area:tags;margin-bottom:22px}
 .hero-trust-pay{grid-area:tru;font-size:.73rem;gap:11px;flex-wrap:nowrap}
 .hero-trust span{display:flex;align-items:center;gap:6px}
 .hero-trust svg{width:15px;height:15px;flex-shrink:0}
 .tg svg{color:var(--green)}.tb svg{color:var(--blue-l)}.to svg{color:var(--orange)}.ty svg{color:var(--yellow)}
-.hero-media{grid-area:med}
+.hero-media{grid-area:med;position:relative}
 .hero-media-img{position:relative}
 .hero-media img{width:100%;border-radius:20px;box-shadow:var(--sh2)}
 .hero-badge{position:absolute;top:-14px;left:-14px;background:var(--green);color:#fff;
@@ -134,14 +142,14 @@ ul{list-style:none}
 
 /* TRUST STRIP */
 .tstrip{background:var(--warm);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.tstrip-in{display:grid;grid-template-columns:repeat(4,1fr)}
+.tstrip-in{display:grid;grid-template-columns:repeat(3,1fr)}
 .titem{display:flex;align-items:center;justify-content:center;gap:10px;
   font-weight:700;font-size:.86rem;padding:18px 14px;border-right:1px solid var(--line);
   text-align:left}
 .titem:last-child{border-right:none}
 .titem svg{width:22px;height:22px;flex-shrink:0}
 .ti1 svg{color:var(--orange)}.ti2 svg{color:var(--green)}
-.ti3 svg{color:var(--blue-l)}.ti4 svg{color:var(--yellow)}
+.ti3 svg{color:var(--blue-l)}
 
 /* SECTION */
 section{padding:66px 0}
@@ -446,22 +454,23 @@ footer{background:var(--navy);color:#8494A6;padding-top:48px}
 .sticky-row .btn-primary{padding:13px 26px;font-size:.92rem}
 
 @media(max-width:900px){
-  .hero-grid,.pain-grid,.offer-card,.co-grid{grid-template-columns:1fr}
-  .hero-grid{grid-template-areas:"soc" "tag" "h1" "sub" "tags" "med" "sta" "pri" "cta" "tru";row-gap:22px}
-  .hero h1,.hero-sub,.hero-price,.hero-actions,.hero-trust{text-align:center}
-  .hero-actions,.hero-trust,.hero-social{justify-content:center}
+  .hero-grid,.book-hero-grid,.pain-grid,.offer-card,.co-grid{grid-template-columns:1fr}
+  .hero-grid{grid-template-areas:"badge" "h1" "sub" "med" "sta" "pri" "cta" "tru";row-gap:14px}
+  .book-hero-grid{grid-template-areas:"head" "med" "body";row-gap:14px}
+  .hero h1,.hero-sub,.hero-price,.hero-actions,.hero-trust,.hero-top-badge,.hero-cta-block{text-align:center}
+  .hero-actions,.hero-trust{justify-content:center}
+  .hero-top-badge{justify-content:center}
   .hero-stats{display:none}
-  .hero-media{max-width:460px;margin:8px auto}
+  .hero-media{max-width:400px;margin:0 auto}
   .hero-badge{width:74px;height:74px;font-size:.72rem;top:-10px;left:-8px}
   .hero-badge b{font-size:1.2rem}
   .set-grid,.gal-grid,.rev-grid,.gdje-grid{grid-template-columns:1fr}
   .gal-feature{flex-direction:column}
   .gal-feature-img{flex:none;width:100%;aspect-ratio:16/10;min-height:0}
   .gal-feature-body{padding:22px 24px}
-  .tstrip-in{grid-template-columns:1fr 1fr}
+  .tstrip-in{grid-template-columns:1fr}
   .titem{border-right:none;border-bottom:1px solid var(--line)}
-  .titem:nth-child(odd){border-right:1px solid var(--line)}
-  .titem:nth-last-child(-n+2){border-bottom:none}
+  .titem:last-child{border-bottom:none}
   .sum-card{position:static}
   .foot-grid{grid-template-columns:1fr;gap:28px}
   section{padding:48px 0}
@@ -475,16 +484,28 @@ footer{background:var(--navy);color:#8494A6;padding-top:48px}
   .topbar{font-size:.72rem;padding:7px 10px}
   .topbar-full{display:none}
   .topbar-short{display:inline}
-  .hero-grid{grid-template-areas:"tag" "h1" "med" "sub" "tags" "pri" "cta" "soc" "tru"}
-  .tag-full,.sub-full{display:none}
-  .tag-short{display:inline}
+  .hero{padding:10px 0 16px}
+  .hero-grid{row-gap:8px}
+  .hero-top-badge{font-size:.7rem;padding:6px 12px;gap:5px;margin-bottom:0;
+    white-space:nowrap}
+  .badge-full{display:none}
+  .badge-short{display:inline}
+  .sub-full{display:none}
   .sub-short{display:block}
-  .hero-tag{background:none;border:none;box-shadow:none;padding:0;
-    margin-bottom:14px;font-size:.66rem}
+  .hero-grid h1{font-size:1.55rem;margin-bottom:0;line-height:1.15}
+  .hero-grid .hero-sub{font-size:.85rem;margin-bottom:0;line-height:1.4}
+  .hero-grid .hero-media{max-width:105px;margin:0 auto}
+  .hero-grid .hero-badge{width:44px;height:44px;font-size:.5rem;bottom:-6px;right:-4px;
+    border-width:2px}
+  .hero-grid .hero-badge b{font-size:.78rem}
   .hero-price{flex-wrap:wrap}
-  .hero-badge{top:auto;left:auto;bottom:-8px;right:-6px;width:58px;height:58px;
-    border-width:3px}
-  .hero-badge b{font-size:1rem}
+  .pb-full{margin-bottom:0}
+  .pb-price{font-size:1.7rem}
+  .pb-delivery{font-size:12px;margin-top:2px}
+  .hero-cta-block{margin-bottom:0}
+  .hero-cta-block .btn{padding:12px 24px;font-size:.92rem}
+  .hero-cta-note{font-size:.68rem;margin-top:5px}
+  .hero-cta-link{font-size:.78rem;margin-top:3px}
   .hero-trust-pay{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
 }
 @media(max-width:430px){

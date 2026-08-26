@@ -1,7 +1,7 @@
 export default function BookHero() {
   return (
     <header className="hero" id="top">
-      <div className="wrap hero-grid">
+      <div className="wrap book-hero-grid">
         <div className="hero-head">
           <div className="hero-tag">Montessori knjiga · Uzrast 2–6 godina</div>
           <h1>

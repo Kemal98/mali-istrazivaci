@@ -40,6 +40,9 @@ export default function ProductSet() {
                 na bosanskom jeziku. Kartice se skidaju i lijepe iznova.
               </p>
               <span className="set-skill sk1">Govor i rječnik</span>
+              <span className="set-skill sk1" style={{ marginTop: "8px" }}>
+                Razvija pažnju i govor
+              </span>
             </div>
           </div>
 
