@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { GOOGLE_SCRIPT_URL, PHONE_TEL, PHONE_DISPLAY } from "@/lib/constants";
 import GuaranteeBadge from "./GuaranteeBadge";
+import ShippingCutoff from "./ShippingCutoff";
 
 declare global {
   interface Window {
@@ -107,6 +108,9 @@ export default function Checkout() {
         <h2 className="h-sec">Ostavi podatke — ne plaćaš ništa sada</h2>
 
         <GuaranteeBadge />
+        <p className="co-cutoff">
+          ⏰ <ShippingCutoff />
+        </p>
 
         <form onSubmit={handleSubmit}>
             <div className="co-grid">

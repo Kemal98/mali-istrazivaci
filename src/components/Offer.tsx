@@ -1,7 +1,8 @@
 import PriceBlock from "./PriceBlock";
 import CtaButton from "./CtaButton";
 import ValueStack from "./ValueStack";
-import { BONUS_DEADLINE } from "@/lib/constants";
+import BonusDeadline from "./BonusDeadline";
+import { SEASONAL_MESSAGE } from "@/lib/constants";
 
 // TODO: provjeri jesu li 28/24/16/5 KM stvarne pojedinačne vrijednosti
 // prije objave. Ako nisu, promijeni ih ovdje — ali zbir mora ostati veći
@@ -38,6 +39,7 @@ export default function Offer() {
             <ValueStack items={valueStackItems} total="73 KM" />
 
             <PriceBlock dark />
+            <p className="offer-seasonal">{SEASONAL_MESSAGE}</p>
 
             <ul className="offer-points">
               <li>
@@ -99,14 +101,16 @@ export default function Offer() {
 
             <div className="offer-bonus">
               <div className="offer-bonus-title">
-                <span aria-hidden="true">🎁</span> BONUS uz narudžbe do{" "}
-                {BONUS_DEADLINE}
+                <span aria-hidden="true">🎁</span>
+                <span>
+                  PDF vodič &ldquo;30 igara sa setom&rdquo; uz narudžbe do
+                  nedjelje, <BonusDeadline />
+                </span>
               </div>
               <p>
-                PDF vodič &ldquo;30 igara sa setom&rdquo; — šta raditi sa
-                setom svaki dan mjesec dana, po uzrastu djeteta. Šaljemo na
-                Viber odmah nakon potvrde narudžbe, prije nego što paket i
-                stigne.
+                Šta raditi sa setom svaki dan mjesec dana, po uzrastu
+                djeteta. Šaljemo na Viber odmah nakon potvrde narudžbe,
+                prije nego što paket i stigne.
               </p>
             </div>
 

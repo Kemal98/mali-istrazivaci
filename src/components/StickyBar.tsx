@@ -1,4 +1,5 @@
 import PriceBlock from "./PriceBlock";
+import ShippingCutoff from "./ShippingCutoff";
 
 export default function StickyBar({
   price = "29 KM",
@@ -20,6 +21,9 @@ export default function StickyBar({
   if (simplified) {
     return (
       <div className="sticky sticky-v2">
+        <div className="sticky-cutoff-v2">
+          <ShippingCutoff />
+        </div>
         <div className="sticky-row-v2">
           <div className="sticky-price-v2">
             <div className="sticky-price-v2-top">

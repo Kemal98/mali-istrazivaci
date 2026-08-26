@@ -1,4 +1,5 @@
 import CtaButton from "./CtaButton";
+import BonusDeadline from "./BonusDeadline";
 
 export default function Final() {
   return (
@@ -8,6 +9,10 @@ export default function Final() {
         <p>
           29 KM + 10 KM dostava, umjesto 58 KM. Tri igre u poklon kutiji,
           plaćanje pouzećem, dostava po cijeloj BiH.
+        </p>
+        <p className="final-bonus">
+          🎁 PDF vodič &ldquo;30 igara sa setom&rdquo; uz narudžbe do
+          nedjelje, <BonusDeadline />
         </p>
         <CtaButton text="Naruči set – 29 KM + dostava" />
         <div className="final-strip">
