@@ -1,3 +1,5 @@
+import PriceBlock from "./PriceBlock";
+
 export default function Offer() {
   return (
     <section className="offer-bg" id="ponuda">
@@ -17,22 +19,7 @@ export default function Offer() {
           <div className="offer-info">
             <h3>SAT MIRA – set 3u1</h3>
             <p className="osub">Montessori set za djecu 2–6 godina</p>
-            <div className="offer-price">
-              <span className="pm">29 KM</span>
-              <span className="po">58 KM</span>
-              <span className="ps">–50%</span>
-            </div>
-            <p
-              style={{
-                fontSize: ".8rem",
-                fontWeight: 600,
-                color: "rgba(255,255,255,.55)",
-                marginTop: "-10px",
-                marginBottom: "16px",
-              }}
-            >
-              + 10 KM dostava, plaća se kuriru
-            </p>
+            <PriceBlock dark />
             <div className="stock-alert">
               <svg
                 viewBox="0 0 24 24"
@@ -91,7 +78,7 @@ export default function Offer() {
               </li>
             </ul>
             <a href="#naruci" className="btn btn-primary" style={{ width: "100%" }}>
-              Naruči set – 29 KM
+              Naruči set – 29 KM + dostava
             </a>
             <p className="offer-note">
               <strong>Akcija vrijedi do isteka zalihe.</strong> Trebaš više

@@ -55,7 +55,7 @@ export default function Nav({
             ))}
           </nav>
           <a href="#naruci" className="btn btn-primary">
-            Naruči – {price}
+            Naruči – {price} + dostava
           </a>
         </div>
       </header>

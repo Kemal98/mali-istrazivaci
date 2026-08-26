@@ -258,11 +258,17 @@ export default function Checkout() {
                   </label>
 
                   <div className="sum-row">
+                    <span>
+                      SAT MIRA set 3u1{extraSet ? " x2" : ""}
+                    </span>
+                    <span>{productPrice} KM</span>
+                  </div>
+                  <div className="sum-row">
                     <span>Dostava</span>
                     <span>{DELIVERY} KM</span>
                   </div>
                   <div className="sum-row sum-total">
-                    <span>Ukupno</span>
+                    <span>UKUPNO — platiš kuriru</span>
                     <span>{total} KM</span>
                   </div>
 
@@ -304,7 +310,9 @@ export default function Checkout() {
                     >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                    {submitting ? "Šaljem..." : "Potvrdi narudžbu"}
+                    {submitting
+                      ? "Šaljem..."
+                      : `POŠALJI NARUDŽBU — ${total} KM POUZEĆEM`}
                   </button>
                   {error && (
                     <p

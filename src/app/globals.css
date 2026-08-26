@@ -96,6 +96,24 @@ ul{list-style:none}
 .price-old{font-size:1.15rem;color:var(--ink3);text-decoration:line-through;font-weight:600}
 .price-save{background:var(--orange);color:#fff;font-weight:800;font-size:.74rem;
   padding:5px 11px;border-radius:6px}
+
+/* PRICE BLOCK */
+.pb-full{margin-bottom:18px}
+.pb-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:12px}
+.pb-price{font-family:'Bitter';font-weight:800;font-size:2.5rem;line-height:1;color:var(--green-d)}
+.pb-dark .pb-price{color:#7BE86E}
+.pb-old{font-size:1.1rem;color:var(--ink3);text-decoration:line-through;font-weight:600}
+.pb-dark .pb-old{color:rgba(255,255,255,.5)}
+.pb-discount{background:var(--orange);color:#fff;font-weight:800;font-size:.74rem;
+  padding:5px 11px;border-radius:6px}
+.pb-delivery{font-size:14px;font-weight:700;color:var(--ink2s);margin-top:6px}
+.pb-dark .pb-delivery{color:rgba(255,255,255,.9)}
+
+.pb-compact{display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:5px 8px;
+  font-family:'Bitter';font-weight:800;color:var(--green-d);font-size:1.14rem}
+.pb-compact-delivery{font-family:'Karla';font-size:.6em;font-weight:700;color:var(--ink2s)}
+.pb-compact-old{font-family:'Karla';font-size:.6em;font-weight:600;color:var(--ink3);
+  text-decoration:line-through}
 .hero-actions{grid-area:cta;display:flex;flex-wrap:wrap;gap:13px;margin-bottom:22px}
 .hero-trust{display:flex;flex-wrap:wrap;gap:16px;font-size:.84rem;font-weight:700;color:var(--ink2s)}
 .hero-trust-tags{grid-area:tags;margin-bottom:22px}
@@ -337,8 +355,9 @@ section{padding:66px 0}
 .sum-row{display:flex;justify-content:space-between;font-weight:600;font-size:.9rem;
   color:var(--ink2s);padding:6px 0}
 .sum-total{border-top:1.5px dashed var(--line);margin-top:8px;padding-top:14px;
-  font-family:'Bitter';font-weight:800;font-size:1.28rem;color:var(--ink)}
-.sum-total span:last-child{color:var(--green-d)}
+  font-family:'Bitter';font-weight:800;font-size:1.28rem;color:var(--ink);
+  align-items:baseline;gap:10px}
+.sum-total span:last-child{color:var(--green-d);white-space:nowrap}
 .pay-label{font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;
   color:var(--ink3);margin:16px 0 9px}
 .pay-row{display:flex;align-items:center;gap:11px;border:1.5px solid var(--green);

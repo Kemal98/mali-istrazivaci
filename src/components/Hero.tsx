@@ -1,4 +1,5 @@
 import { FAMILIES_COUNT } from "@/lib/socialProof";
+import PriceBlock from "./PriceBlock";
 
 export default function Hero() {
   return (
@@ -130,23 +131,8 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="hero-price">
-          <span className="price-main">
-            29 KM
-            <span
-              style={{
-                fontSize: ".42em",
-                fontWeight: 600,
-                color: "var(--ink3)",
-                marginLeft: "7px",
-                whiteSpace: "nowrap",
-              }}
-            >
-              + 10 KM dostava
-            </span>
-          </span>
-          <span className="price-old">58 KM</span>
-          <span className="price-save">UŠTEDA 29 KM</span>
+        <div style={{ gridArea: "pri", marginBottom: "22px" }}>
+          <PriceBlock />
         </div>
 
         <div className="hero-actions">

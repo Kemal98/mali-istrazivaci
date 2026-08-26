@@ -53,7 +53,7 @@ export default function HowItWorks() {
         </div>
         <div className="how-cta">
           <a href="#naruci" className="btn btn-ghost">
-            Naruči set – 29 KM
+            Naruči set – 29 KM + dostava
           </a>
         </div>
       </div>
