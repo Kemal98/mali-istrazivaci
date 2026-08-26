@@ -1,4 +1,5 @@
 import { FAMILIES_COUNT } from "@/lib/socialProof";
+import CtaButton from "./CtaButton";
 
 const reviews = [
   {
@@ -57,6 +58,7 @@ export default function Reviews() {
             </div>
           ))}
         </div>
+        <CtaButton text="Naruči – 14 dana povrat novca" />
       </div>
     </section>
   );

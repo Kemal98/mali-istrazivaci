@@ -1,3 +1,5 @@
+import CtaButton from "./CtaButton";
+
 export default function Final() {
   return (
     <section className="final-bg">
@@ -7,9 +9,7 @@ export default function Final() {
           29 KM + 10 KM dostava, umjesto 58 KM. Tri igre u poklon kutiji,
           plaćanje pouzećem, dostava po cijeloj BiH.
         </p>
-        <a href="#naruci" className="btn btn-primary">
-          Naruči set – 29 KM + dostava
-        </a>
+        <CtaButton text="Naruči set – 29 KM + dostava" />
         <div className="final-strip">
           <div className="stitch">
             {/* eslint-disable-next-line @next/next/no-img-element */}

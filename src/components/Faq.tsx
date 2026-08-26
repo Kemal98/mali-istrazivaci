@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import CtaButton from "./CtaButton";
 
 export type FaqItem = { q: string; a: string };
 
@@ -51,7 +52,13 @@ const defaultFaqs: FaqItem[] = [
   },
 ];
 
-export default function Faq({ items = defaultFaqs }: { items?: FaqItem[] }) {
+export default function Faq({
+  items = defaultFaqs,
+  ctaText,
+}: {
+  items?: FaqItem[];
+  ctaText?: string;
+}) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
@@ -77,6 +84,7 @@ export default function Faq({ items = defaultFaqs }: { items?: FaqItem[] }) {
             );
           })}
         </div>
+        {ctaText && <CtaButton text={ctaText} />}
       </div>
     </section>
   );

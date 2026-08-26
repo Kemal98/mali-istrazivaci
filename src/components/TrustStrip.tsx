@@ -1,4 +1,37 @@
-export default function TrustStrip() {
+import { RATING, REVIEWS_COUNT, FAMILIES_COUNT } from "@/lib/socialProof";
+
+const statItems = [
+  { icon: "⭐", main: `${RATING}/5`, sub: `${REVIEWS_COUNT} ocjena` },
+  { icon: "👪", main: `${FAMILIES_COUNT}+`, sub: "porodica u BiH" },
+  { icon: "🚚", main: "2–4 dana", sub: "po cijeloj BiH" },
+  { icon: "🇧🇦", main: "Ručno pakujemo", sub: "u Bosni" },
+];
+
+export default function TrustStrip({
+  variant = "default",
+}: {
+  variant?: "default" | "stats";
+}) {
+  if (variant === "stats") {
+    return (
+      <div className="tstrip">
+        <div className="wrap">
+          <div className="tstrip-in tstrip-in-4">
+            {statItems.map((item) => (
+              <div className="titem titem-stat" key={item.main}>
+                <span className="titem-icon">{item.icon}</span>
+                <div className="titem-text">
+                  <span className="titem-main">{item.main}</span>
+                  <span className="titem-sub">{item.sub}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="tstrip">
       <div className="wrap">

@@ -1,3 +1,5 @@
+import CtaButton from "./CtaButton";
+
 export default function ProductSet() {
   return (
     <section id="set">
@@ -132,6 +134,7 @@ export default function ProductSet() {
             </p>
           </div>
         </div>
+        <CtaButton text="Naruči – 29 KM + dostava" />
       </div>
     </section>
   );

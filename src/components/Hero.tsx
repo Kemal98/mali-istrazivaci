@@ -74,7 +74,7 @@ export default function Hero() {
             Naruči – 29 KM + dostava
           </a>
           <p className="hero-cta-note">
-            Bez plaćanja unaprijed · Zovemo te isti dan
+            Bez plaćanja unaprijed · 14 dana povrat
           </p>
           <a href="#set" className="hero-cta-link">
             Šta je u setu?

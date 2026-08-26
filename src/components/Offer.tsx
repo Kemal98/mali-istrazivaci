@@ -1,4 +1,5 @@
 import PriceBlock from "./PriceBlock";
+import CtaButton from "./CtaButton";
 
 export default function Offer() {
   return (
@@ -77,9 +78,10 @@ export default function Offer() {
                 Plaćanje pouzećem – platiš kad preuzmeš
               </li>
             </ul>
-            <a href="#naruci" className="btn btn-primary" style={{ width: "100%" }}>
-              Naruči set – 29 KM + dostava
-            </a>
+            <CtaButton
+              text="Naruči set – 29 KM + dostava"
+              style={{ width: "100%" }}
+            />
             <p className="offer-note">
               <strong>Akcija vrijedi do isteka zalihe.</strong> Trebaš više
               setova? Napiši u napomeni.

@@ -30,7 +30,7 @@ export default function Home() {
         topbarShort="Pouzeće · Dostava po BiH · 14 dana povrat"
       />
       <Hero />
-      <TrustStrip />
+      <TrustStrip variant="stats" />
       <Pain />
       <ProductSet />
       <Infographic />
@@ -43,7 +43,7 @@ export default function Home() {
       <HowItWorks />
       <Offer />
       <Guarantee />
-      <Faq />
+      <Faq ctaText="Sve jasno? Naruči – 29 KM + dostava" />
       <Checkout />
       <PreOrderNotice />
       <Final />

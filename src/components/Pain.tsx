@@ -1,3 +1,5 @@
+import CtaButton from "./CtaButton";
+
 export default function Pain() {
   return (
     <section className="pain-bg" id="zasto">
@@ -40,6 +42,7 @@ export default function Pain() {
             </ul>
           </div>
         </div>
+        <CtaButton text="Želim set – 29 KM + dostava" />
       </div>
     </section>
   );
