@@ -370,6 +370,26 @@ section{padding:66px 0}
 .offer-note{font-size:.81rem;color:rgba(255,255,255,.55);margin-top:13px;text-align:center;font-weight:500}
 .offer-note strong{color:#FFD97A}
 
+/* GUARANTEE SECTION */
+.guarantee-bg{background:var(--green-bg);padding:48px 0}
+.guarantee-bg .wrap{max-width:560px;text-align:center}
+.guarantee-seal{width:118px;height:118px;border-radius:50%;background:#fff;
+  border:3px solid var(--green);box-shadow:0 8px 20px rgba(61,155,47,.25);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;margin:0 auto 20px;position:relative}
+.guarantee-seal-ring{position:absolute;inset:-7px;border-radius:50%;
+  border:2px dashed var(--green);opacity:.5}
+.guarantee-seal svg{width:20px;height:20px;color:var(--green-d);margin-bottom:2px}
+.guarantee-seal-num{font-family:'Bitter';font-weight:800;font-size:1.85rem;
+  color:var(--green-d);line-height:1}
+.guarantee-seal-txt{font-size:.55rem;font-weight:800;letter-spacing:.03em;
+  color:var(--green-d);line-height:1.3;text-transform:uppercase}
+.guarantee-bg .h-sec{margin-bottom:14px}
+.guarantee-bg .sub-sec{margin-bottom:12px}
+.guarantee-p{max-width:560px;margin:0 auto;text-align:center;font-size:1.03rem;
+  color:var(--ink2s);line-height:1.6}
+.guarantee-p strong{color:var(--green-d)}
+
 /* REVIEWS */
 .rev-bg{background:var(--warm)}
 .rev-score{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:38px}
