@@ -4,15 +4,16 @@ import ValueStack from "./ValueStack";
 import BonusDeadline from "./BonusDeadline";
 import { SEASONAL_MESSAGE } from "@/lib/constants";
 
-// TODO: provjeri jesu li 28/24/16/5 KM stvarne pojedinačne vrijednosti
-// prije objave. Ako nisu, promijeni ih ovdje — ali zbir mora ostati veći
-// od 58 KM (trenutne "redovne" cijene) da anchor ima smisla.
 const valueStackItems = [
-  { label: "Knjiga na čičak (65 kartica)", price: "28 KM" },
-  { label: "Drvena igračka po uzrastu", price: "24 KM" },
+  { label: "Knjiga na čičak (65 kartica)", price: "15 KM" },
+  { label: "Drvena igračka po uzrastu", price: "20 KM" },
   { label: "Magnetni tangram + knjižica", price: "16 KM" },
   { label: "Poklon kutija", price: "5 KM" },
 ];
+const valueStackTotal = valueStackItems.reduce(
+  (sum, item) => sum + parseInt(item.price, 10),
+  0
+);
 
 export default function Offer() {
   return (
@@ -36,7 +37,10 @@ export default function Offer() {
             <h3>SAT MIRA – set 3u1</h3>
             <p className="osub">Montessori set za djecu 2–6 godina</p>
 
-            <ValueStack items={valueStackItems} total="73 KM" />
+            <ValueStack
+              items={valueStackItems}
+              total={`${valueStackTotal} KM`}
+            />
 
             <PriceBlock dark />
             <p className="offer-seasonal">{SEASONAL_MESSAGE}</p>

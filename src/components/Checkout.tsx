@@ -373,13 +373,10 @@ export default function Checkout() {
                     </div>
                     <ul className="next-steps-list">
                       <li>
-                        1️⃣ Zovemo te za par sati — potvrdimo uzrast djeteta
+                        1️⃣ Pakujemo set ručno, šaljemo isti ili sljedeći dan
                       </li>
                       <li>
-                        2️⃣ Pakujemo set ručno, šaljemo isti ili sljedeći dan
-                      </li>
-                      <li>
-                        3️⃣ Kurir stiže za 2–4 dana — platiš njemu {total} KM
+                        2️⃣ Kurir stiže za 2–4 dana — platiš njemu {total} KM
                       </li>
                     </ul>
                   </div>
@@ -429,7 +426,7 @@ export default function Checkout() {
                     >
                       <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
                     </svg>
-                    Bez plaćanja unaprijed · Zovemo te da potvrdimo · 14
+                    Bez plaćanja unaprijed · Javljamo se na Viber · 14
                     dana garancija povrata
                   </p>
                   <p className="co-commit">
