@@ -45,6 +45,10 @@ const defaultFaqs: FaqItem[] = [
     q: "Treba li baterije ili aplikacija?",
     a: "Ne – set je 100% bez ekrana, aplikacije i baterija. Samo igra rukama.",
   },
+  {
+    q: "Je li set samo na bosanskom?",
+    a: "Knjiga koristi latinicu i sva slova koja postoje u bosanskom, hrvatskom i srpskom jeziku, uključujući Č, Ć, Dž, Đ, Š i Ž. Nazivi su svakodnevne riječi koje su iste u sva tri jezika, pa set jednako odgovara svakoj porodici u BiH i regiji.",
+  },
 ];
 
 export default function Faq({ items = defaultFaqs }: { items?: FaqItem[] }) {

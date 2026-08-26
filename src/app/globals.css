@@ -99,7 +99,7 @@ ul{list-style:none}
 .hero-actions{grid-area:cta;display:flex;flex-wrap:wrap;gap:13px;margin-bottom:22px}
 .hero-trust{display:flex;flex-wrap:wrap;gap:16px;font-size:.84rem;font-weight:700;color:var(--ink2s)}
 .hero-trust-tags{grid-area:tags;margin-bottom:22px}
-.hero-trust-pay{grid-area:tru}
+.hero-trust-pay{grid-area:tru;font-size:.73rem;gap:11px;flex-wrap:nowrap}
 .hero-trust span{display:flex;align-items:center;gap:6px}
 .hero-trust svg{width:15px;height:15px;flex-shrink:0}
 .tg svg{color:var(--green)}.tb svg{color:var(--blue-l)}.to svg{color:var(--orange)}.ty svg{color:var(--yellow)}
@@ -443,6 +443,7 @@ footer{background:var(--navy);color:#8494A6;padding-top:48px}
   .hero-badge{top:auto;left:auto;bottom:-8px;right:-6px;width:58px;height:58px;
     border-width:3px}
   .hero-badge b{font-size:1rem}
+  .hero-trust-pay{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
 }
 @media(max-width:430px){
   .tstrip-in{grid-template-columns:1fr}

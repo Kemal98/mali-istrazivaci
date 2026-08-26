@@ -1,7 +1,7 @@
 export default function StickyBar({
   price = "29 KM",
   oldPrice = "58 KM",
-  rib = "3 igre · 60 minuta · 0 ekrana – akcija do isteka zalihe",
+  rib = "Plaćanje pouzećem · 14 dana garancija",
   ctaLabel = "Naruči set",
 }: {
   price?: string;

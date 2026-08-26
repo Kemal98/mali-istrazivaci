@@ -13,10 +13,10 @@ export default function Hero() {
 
         <div className="hero-tag">
           <span className="tag-full">
-            Jedini Montessori set na bosanskom · 3–6 godina
+            Novo u BiH · Montessori set na našem jeziku · 2–6 godina
           </span>
           <span className="tag-short">
-            Montessori set na bosanskom · 3–6 god.
+            Montessori set na našem jeziku · 2–6 god.
           </span>
         </div>
 
@@ -181,6 +181,18 @@ export default function Hero() {
             </svg>
             Plaćanje pouzećem
           </span>
+          <span className="ty">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
+              <polyline points="9 12 11 14 15 10" />
+            </svg>
+            14 dana garancija
+          </span>
           <span className="tb">
             <svg
               viewBox="0 0 24 24"
@@ -204,7 +216,7 @@ export default function Hero() {
             >
               <path d="M20 12v9H4v-9M2 7h20v5H2zM12 22V7" />
             </svg>
-            Stiže u poklon kutiji
+            Poklon kutija
           </span>
         </div>
       </div>

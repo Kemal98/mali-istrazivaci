@@ -60,7 +60,7 @@ export default function ProductSet() {
                   <small>drvo</small>
                 </div>
                 <div className="set-spec-item">
-                  <b>3–6</b>
+                  <b>2–6</b>
                   <small>godina</small>
                 </div>
                 <div className="set-spec-item">
