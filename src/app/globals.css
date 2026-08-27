@@ -361,8 +361,14 @@ section{padding:66px 0}
   padding-top:10px;border-top:1px solid rgba(255,255,255,.2);font-weight:800;
   color:rgba(255,255,255,.9);font-size:.92rem}
 .value-stack-total-price{font-family:'Bitter';font-size:1.2rem;color:#7BE86E}
+.value-stack-yours{display:flex;justify-content:space-between;align-items:baseline;
+  padding-top:12px;margin-top:6px;border-top:2px solid rgba(123,232,110,.35);
+  font-weight:800;color:#fff;font-size:1.02rem}
+.value-stack-yours-price{font-family:'Bitter';font-size:1.7rem;color:#7BE86E}
+.value-stack-yours-price small{font-family:'Karla';font-size:.85rem;font-weight:600;
+  color:rgba(255,255,255,.65);margin-left:4px}
 .offer-seasonal{font-size:.87rem;color:rgba(255,255,255,.7);font-weight:600;
-  font-style:italic;margin:-6px 0 18px}
+  font-style:italic;margin:18px 0 18px}
 .offer-bonus{background:rgba(242,121,30,.16);border:1px solid rgba(242,121,30,.4);
   border-radius:12px;padding:14px 16px;margin-bottom:20px}
 .offer-bonus-title{display:flex;align-items:flex-start;gap:8px;color:#FFB870;

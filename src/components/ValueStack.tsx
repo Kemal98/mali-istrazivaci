@@ -3,13 +3,19 @@ export type ValueStackItem = { label: string; price: string };
 export default function ValueStack({
   items,
   total,
+  yourPrice,
+  delivery,
   title = "Šta bi platio odvojeno:",
   totalLabel = "Ukupna vrijednost",
+  yourPriceLabel = "→ Tvoja cijena",
 }: {
   items: ValueStackItem[];
   total: string;
+  yourPrice?: string;
+  delivery?: string;
   title?: string;
   totalLabel?: string;
+  yourPriceLabel?: string;
 }) {
   return (
     <div className="value-stack">
@@ -27,6 +33,15 @@ export default function ValueStack({
         <span>{totalLabel}</span>
         <span className="value-stack-total-price">{total}</span>
       </div>
+      {yourPrice && (
+        <div className="value-stack-yours">
+          <span>{yourPriceLabel}</span>
+          <span className="value-stack-yours-price">
+            {yourPrice}
+            {delivery && <small> + {delivery} dostava</small>}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import PriceBlock from "./PriceBlock";
 import CtaButton from "./CtaButton";
 import ValueStack from "./ValueStack";
 import BonusDeadline from "./BonusDeadline";
@@ -40,9 +39,9 @@ export default function Offer() {
             <ValueStack
               items={valueStackItems}
               total={`${valueStackTotal} KM`}
+              yourPrice="29 KM"
+              delivery="10 KM"
             />
-
-            <PriceBlock dark />
             <p className="offer-seasonal">{SEASONAL_MESSAGE}</p>
 
             <ul className="offer-points">

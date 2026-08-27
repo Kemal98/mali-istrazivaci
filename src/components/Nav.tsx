@@ -50,7 +50,16 @@ export default function Nav({
 
       <header className={`nav${scrolled ? " scrolled" : ""}`} id="siteNav">
         <div className="nav-inner">
-          <a href={logoHref} className="logo">
+          <a
+            href={logoHref}
+            className="logo"
+            onClick={(e) => {
+              if (logoHref === "#") {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/img/logo.png" alt="Mali Istraživači" />
             Mali Istraživači
