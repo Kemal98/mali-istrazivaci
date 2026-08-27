@@ -44,7 +44,7 @@ const defaultFaqs: FaqItem[] = [
   },
   {
     q: "Mogu li naručiti dva ili više setova?",
-    a: "Da — dva seta su 49 KM umjesto 58 KM. Označi opciju u formi ili napiši u napomenu koliko setova i uzraste djece. Odličan je poklon za rođendane.",
+    a: "Da — dva seta su 49 KM, ušteda 9 KM u odnosu na dva pojedinačna seta. Označi opciju u formi ili napiši u napomenu koliko setova i uzraste djece. Odličan je poklon za rođendane.",
   },
   {
     q: "Koliko dugo traje čičak?",

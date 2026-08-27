@@ -56,7 +56,7 @@ export default function Hero() {
         </div>
 
         <div style={{ gridArea: "pri", marginBottom: "16px" }}>
-          <PriceBlock variant="full" />
+          <PriceBlock variant="full" oldPrice="" discount="" />
         </div>
 
         <div className="hero-cta-block">

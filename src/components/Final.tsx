@@ -7,8 +7,8 @@ export default function Final() {
       <div className="wrap">
         <h2>Pokloni djetetu sat mira – i sebi.</h2>
         <p>
-          29 KM + 10 KM dostava, umjesto 58 KM. Tri igre u poklon kutiji,
-          plaćanje pouzećem, dostava po cijeloj BiH.
+          29 KM + 10 KM dostava. Tri igre u poklon kutiji, plaćanje
+          pouzećem, dostava po cijeloj BiH.
         </p>
         <p className="final-bonus">
           🎁 PDF vodič &ldquo;30 igara sa setom&rdquo; uz narudžbe do

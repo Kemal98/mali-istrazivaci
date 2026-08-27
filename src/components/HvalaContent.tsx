@@ -1,31 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/constants";
-
-declare global {
-  interface Window {
-    fbq?: (...args: unknown[]) => void;
-  }
-}
 
 export default function HvalaContent() {
   const params = useSearchParams();
   const proizvod = params.get("proizvod") || "SAT MIRA set 3u1";
   const value = Number(params.get("value")) || 29;
-
-  useEffect(() => {
-    if (window.fbq) {
-      window.fbq("track", "Purchase", {
-        content_name: proizvod,
-        value,
-        currency: "BAM",
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <section className="co-bg" style={{ minHeight: "70vh" }}>

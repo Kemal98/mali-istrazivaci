@@ -90,6 +90,30 @@ export default function Checkout() {
           value: total,
           currency: "BAM",
         });
+
+        // value je samo cijena proizvoda (29/49 KM) — 10 KM dostave ide
+        // kuriru, nije naš prihod. Okida se samo ovdje, na uspješno slanje
+        // forme — ne na učitavanje /hvala stranice (refresh/bookmark tamo
+        // bi inače dupliciralo event).
+        const brojSetova = extraSet ? 2 : 1;
+        const eventId =
+          typeof crypto !== "undefined" && crypto.randomUUID
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random()}`;
+        window.fbq(
+          "track",
+          "Purchase",
+          {
+            value: productPrice,
+            currency: "BAM",
+            content_name: "SAT MIRA set 3u1",
+            content_ids: ["sat-mira-3u1"],
+            content_type: "product",
+            contents: [{ id: "sat-mira-3u1", quantity: brojSetova }],
+            num_items: brojSetova,
+          },
+          { eventID: eventId }
+        );
       }
       router.push(
         `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}`

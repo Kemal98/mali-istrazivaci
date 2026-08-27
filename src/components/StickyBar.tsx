@@ -3,7 +3,7 @@ import ShippingCutoff from "./ShippingCutoff";
 
 export default function StickyBar({
   price = "29 KM",
-  oldPrice = "58 KM",
+  oldPrice = "",
   delivery = "10 KM",
   rib = "Plaćanje pouzećem · 14 dana garancija",
   ctaLabel = "Naruči set",
