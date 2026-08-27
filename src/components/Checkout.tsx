@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GOOGLE_SCRIPT_URL, PHONE_TEL, PHONE_DISPLAY } from "@/lib/constants";
+import { GOOGLE_SCRIPT_URL, CONTACT_EMAIL } from "@/lib/constants";
 import GuaranteeBadge from "./GuaranteeBadge";
 import ShippingCutoff from "./ShippingCutoff";
 
@@ -24,10 +24,6 @@ function isValidBHPhone(raw: string) {
   const digits = raw.replace(/[\s-]/g, "");
   return /^06\d{7}$/.test(digits) || /^\+3876\d{7}$/.test(digits);
 }
-
-const viberHref = `viber://chat?number=${encodeURIComponent(
-  PHONE_TEL.replace(/[\s-]/g, "")
-)}`;
 
 export default function Checkout() {
   const router = useRouter();
@@ -425,8 +421,8 @@ export default function Checkout() {
                         textAlign: "center",
                       }}
                     >
-                      Greška – pokušaj ponovo ili nam piši na
-                      info@maliistrazivaci.ba.
+                      Greška – pokušaj ponovo ili nam piši na{" "}
+                      {CONTACT_EMAIL}.
                     </p>
                   )}
                   <p className="sub-note">
@@ -442,16 +438,17 @@ export default function Checkout() {
                     dana garancija povrata
                   </p>
                   <p className="co-commit">
-                    Slanjem ne preuzimaš obavezu — možeš odustati kad te
-                    nazovemo.
+                    Slanjem ne preuzimaš obavezu — možeš odustati kad ti se
+                    javimo.
                   </p>
                 </div>
               </div>
             </div>
           </form>
         <p className="co-viber">
-          Ne voliš forme? Piši nam na Viber:{" "}
-          <a href={viberHref}>{PHONE_DISPLAY}</a> — dogovorimo za minut.
+          Ne voliš forme? Piši nam na:{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> —
+          dogovorimo za minut.
         </p>
       </div>
     </section>

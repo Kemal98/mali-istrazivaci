@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CtaButton from "./CtaButton";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 export type FaqItem = { q: string; a: string };
 
@@ -24,7 +25,7 @@ const defaultFaqs: FaqItem[] = [
   },
   {
     q: "Kako znam da je ovo prava firma?",
-    a: "Mi smo [NAZIV FIRME] iz [GRAD]. Piši nam na Viber na [TELEFON] prije narudžbe ako želiš — odgovaramo 9–20h. I plaćaš tek kad kurir donese paket, tako da ne rizikuješ ništa.",
+    a: `Mi smo [NAZIV FIRME] iz [GRAD]. Piši nam na ${CONTACT_EMAIL} prije narudžbe ako želiš — odgovaramo isti dan. I plaćaš tek kad kurir donese paket, tako da ne rizikuješ ništa.`,
   },
   {
     q: "Je li sve sigurno za malu djecu?",

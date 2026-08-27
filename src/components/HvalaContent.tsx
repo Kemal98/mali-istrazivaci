@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/constants";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 declare global {
   interface Window {
@@ -102,8 +102,11 @@ export default function HvalaContent() {
             }}
           >
             Pitanja u međuvremenu?{" "}
-            <a href={`tel:${PHONE_TEL}`} style={{ color: "var(--blue)" }}>
-              {PHONE_DISPLAY}
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              style={{ color: "var(--blue)" }}
+            >
+              {CONTACT_EMAIL}
             </a>
           </p>
           <Link
