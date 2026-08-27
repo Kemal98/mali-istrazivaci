@@ -11,6 +11,10 @@ declare global {
   }
 }
 
+// Narudžbe knjige su privremeno isključene — vrati na true kad se
+// ponovo otvore (i po želji razdvoji thank-you stranicu, vidi razgovor).
+const BOOK_ORDERS_ENABLED = false;
+
 export default function BookCheckout() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
@@ -21,6 +25,7 @@ export default function BookCheckout() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!BOOK_ORDERS_ENABLED) return;
     setSubmitting(true);
     setError(false);
 
@@ -242,26 +247,32 @@ export default function BookCheckout() {
                     </div>
                   </div>
 
-                  <button
-                    type="submit"
-                    className="btn btn-green"
-                    disabled={submitting}
-                    style={{
-                      width: "100%",
-                      marginTop: "17px",
-                      borderRadius: "12px",
-                    }}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
+                  {BOOK_ORDERS_ENABLED ? (
+                    <button
+                      type="submit"
+                      className="btn btn-green"
+                      disabled={submitting}
+                      style={{
+                        width: "100%",
+                        marginTop: "17px",
+                        borderRadius: "12px",
+                      }}
                     >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    {submitting ? "Šaljem..." : "Potvrdi narudžbu"}
-                  </button>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      {submitting ? "Šaljem..." : "Potvrdi narudžbu"}
+                    </button>
+                  ) : (
+                    <div className="book-orders-paused">
+                      Narudžbe knjige trenutno nisu dostupne.
+                    </div>
+                  )}
                   {error && (
                     <p
                       style={{
