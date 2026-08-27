@@ -90,33 +90,21 @@ export default function Checkout() {
           value: total,
           currency: "BAM",
         });
-
-        // value je samo cijena proizvoda (29/49 KM) — 10 KM dostave ide
-        // kuriru, nije naš prihod. Okida se samo ovdje, na uspješno slanje
-        // forme — ne na učitavanje /hvala stranice (refresh/bookmark tamo
-        // bi inače dupliciralo event).
-        const brojSetova = extraSet ? 2 : 1;
-        const eventId =
-          typeof crypto !== "undefined" && crypto.randomUUID
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random()}`;
-        window.fbq(
-          "track",
-          "Purchase",
-          {
-            value: productPrice,
-            currency: "BAM",
-            content_name: "SAT MIRA set 3u1",
-            content_ids: ["sat-mira-3u1"],
-            content_type: "product",
-            contents: [{ id: "sat-mira-3u1", quantity: brojSetova }],
-            num_items: brojSetova,
-          },
-          { eventID: eventId }
-        );
       }
+
+      // Purchase se pali na /hvala (kad se stranica stvarno prebaci), ne
+      // ovdje — ali eventID se generiše ovdje, na uspješan submit, i nosi
+      // se kroz URL. Ako korisnik refresha /hvala, isti eventID stigne
+      // Meti dvaput i ona to sama deduplicira (ne broji dvaput), umjesto
+      // da svaki refresh broji kao nova kupovina.
+      const brojSetova = extraSet ? 2 : 1;
+      const eventId =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random()}`;
       router.push(
-        `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}`
+        `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}` +
+          `&pp=${productPrice}&qty=${brojSetova}&eid=${eventId}`
       );
     } catch {
       setError(true);

@@ -1,13 +1,58 @@
 "use client";
 
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { PHONE_DISPLAY, PHONE_TEL } from "@/lib/constants";
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
 
 export default function HvalaContent() {
   const params = useSearchParams();
   const proizvod = params.get("proizvod") || "SAT MIRA set 3u1";
   const value = Number(params.get("value")) || 29;
+  const productPrice = Number(params.get("pp"));
+  const qty = Number(params.get("qty"));
+  const eventId = params.get("eid");
+
+  useEffect(() => {
+    if (!window.fbq) return;
+
+    if (productPrice && qty && eventId) {
+      // Nova putanja (glavna SAT MIRA forma): value je samo cijena
+      // proizvoda (bez dostave), eventID nosi se iz forme pa Meta
+      // deduplicira ako se ova stranica refreshuje.
+      window.fbq(
+        "track",
+        "Purchase",
+        {
+          value: productPrice,
+          currency: "BAM",
+          content_name: "SAT MIRA set 3u1",
+          content_ids: ["sat-mira-3u1"],
+          content_type: "product",
+          contents: [{ id: "sat-mira-3u1", quantity: qty }],
+          num_items: qty,
+        },
+        { eventID: eventId }
+      );
+    } else if (params.get("proizvod")) {
+      // Stara putanja — npr. knjiga-checkout (BookCheckout.tsx) ne šalje
+      // pp/qty/eid. Zadržava dosadašnje ponašanje bez izmjena tamo.
+      window.fbq("track", "Purchase", {
+        content_name: proizvod,
+        value,
+        currency: "BAM",
+      });
+    }
+    // ako nema ni "proizvod" parametra, neko je samo otvorio /hvala
+    // direktno — ne pali se lažna kupovina.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="co-bg" style={{ minHeight: "70vh" }}>
