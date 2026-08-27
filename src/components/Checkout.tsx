@@ -60,6 +60,17 @@ export default function Checkout() {
 
     setSubmitting(true);
 
+    // eventID se generiše ovdje, na uspješan submit, i ide na TRI mjesta:
+    // 1) u Google Sheet POST (da Apps Script može poslati isti Purchase
+    //    server-side preko Conversions API), 2) kroz URL do /hvala (za
+    //    browser pixel), 3) implicitno preko toga Meta deduplicira ta
+    //    dva ako nose isti eventID — ne broji dvaput.
+    const brojSetova = extraSet ? 2 : 1;
+    const eventId =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random()}`;
+
     const data = {
       datum: new Date().toLocaleString("bs-BA"),
       ime: formData.get("ime"),
@@ -71,6 +82,9 @@ export default function Checkout() {
       proizvod: extraSet ? "SAT MIRA set 3u1 x2" : "SAT MIRA set 3u1",
       cijena: `${total} KM`,
       status: "Novo",
+      eventId,
+      purchaseValue: productPrice,
+      qty: brojSetova,
     };
 
     try {
@@ -89,15 +103,8 @@ export default function Checkout() {
       }
 
       // Purchase se pali na /hvala (kad se stranica stvarno prebaci), ne
-      // ovdje — ali eventID se generiše ovdje, na uspješan submit, i nosi
-      // se kroz URL. Ako korisnik refresha /hvala, isti eventID stigne
-      // Meti dvaput i ona to sama deduplicira (ne broji dvaput), umjesto
-      // da svaki refresh broji kao nova kupovina.
-      const brojSetova = extraSet ? 2 : 1;
-      const eventId =
-        typeof crypto !== "undefined" && crypto.randomUUID
-          ? crypto.randomUUID()
-          : `${Date.now()}-${Math.random()}`;
+      // ovdje — nosi isti eventId kroz URL. Ako korisnik refresha /hvala,
+      // isti eventID stigne Meti dvaput i ona to sama deduplicira.
       router.push(
         `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}` +
           `&pp=${productPrice}&qty=${brojSetova}&eid=${eventId}`
