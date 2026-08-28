@@ -1,7 +1,15 @@
 import { FAMILIES_COUNT } from "@/lib/socialProof";
 import CtaButton from "./CtaButton";
 
-const reviews = [
+export type Review = {
+  text: string;
+  initial: string;
+  name: string;
+  city: string;
+  av: string;
+};
+
+const defaultReviews: Review[] = [
   {
     text: "Kupila za rođendan. Kći (4 god.) je prvo sat vremena slagala mozgalicu, pa prešla na knjigu. Nije ni pitala za tablet cijelo popodne.",
     initial: "A",
@@ -25,12 +33,22 @@ const reviews = [
   },
 ];
 
-export default function Reviews() {
+export default function Reviews({
+  reviews = defaultReviews,
+  kicker = "Šta kažu roditelji",
+  title = "Porodice iz cijele BiH nam vjeruju",
+  ctaText = "Naruči – 14 dana povrat novca",
+}: {
+  reviews?: Review[];
+  kicker?: string;
+  title?: string;
+  ctaText?: string;
+}) {
   return (
     <section className="rev-bg" id="recenzije">
       <div className="wrap">
-        <span className="kicker k-orange">Šta kažu roditelji</span>
-        <h2 className="h-sec">Porodice iz cijele BiH nam vjeruju</h2>
+        <span className="kicker k-orange">{kicker}</span>
+        <h2 className="h-sec">{title}</h2>
         <div className="rev-score">
           <span className="num">4.9</span>
           <div className="rss">
@@ -58,7 +76,7 @@ export default function Reviews() {
             </div>
           ))}
         </div>
-        <CtaButton text="Naruči – 14 dana povrat novca" />
+        <CtaButton text={ctaText} />
       </div>
     </section>
   );

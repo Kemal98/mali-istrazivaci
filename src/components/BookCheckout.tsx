@@ -3,7 +3,6 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { GOOGLE_SCRIPT_URL } from "@/lib/constants";
-import GuaranteeBadge from "./GuaranteeBadge";
 
 declare global {
   interface Window {
@@ -88,8 +87,6 @@ export default function BookCheckout() {
           </svg>
           Dostava i plaćanje
         </p>
-
-        <GuaranteeBadge />
 
         <form onSubmit={handleSubmit}>
             <div className="co-grid">

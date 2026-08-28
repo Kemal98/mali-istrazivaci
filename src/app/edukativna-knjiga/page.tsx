@@ -6,6 +6,7 @@ import BookAbout from "@/components/BookAbout";
 import Gallery from "@/components/Gallery";
 import BookOffer from "@/components/BookOffer";
 import BookCheckout from "@/components/BookCheckout";
+import Reviews, { Review } from "@/components/Reviews";
 import Faq, { FaqItem } from "@/components/Faq";
 import BookFinal from "@/components/BookFinal";
 import Footer from "@/components/Footer";
@@ -17,6 +18,33 @@ export const metadata: Metadata = {
   description:
     "Interaktivna Montessori knjiga 'Svijet malih istraživača' – deset strana zadataka na čičak, na bosanskom jeziku. 15 KM, plaćanje pouzećem, dostava po BiH.",
 };
+
+// TODO: ovo su primjer-recenzije, ne stvarni citati kupaca knjige — zamijeni
+// stvarnim kad ih budeš imao (isto upozorenje kao za citat u "A šta ako se
+// zaigra" sekciji na glavnoj stranici; nemam pristup stvarnim recenzijama).
+const bookReviews: Review[] = [
+  {
+    text: "Uzela sam za kćerku (3 god.) da ima nešto bez ekrana za duže vožnje. Sad je to njena omiljena igračka u autu.",
+    initial: "L",
+    name: "Lejla M.",
+    city: "Sarajevo",
+    av: "av1",
+  },
+  {
+    text: "Sin (5 god.) je za sedmicu naučio nova slova kroz igru sa čičkom. Knjiga je čvrsta, izdržala je i pad sa stola.",
+    initial: "A",
+    name: "Amar S.",
+    city: "Banja Luka",
+    av: "av2",
+  },
+  {
+    text: "Jednostavno, na bosanskom, dijete odmah razumije zadatke. Preporučujem svima koji traže nešto edukativno bez tableta.",
+    initial: "N",
+    name: "Nadja K.",
+    city: "Mostar",
+    av: "av3",
+  },
+];
 
 const bookFaqs: FaqItem[] = [
   {
@@ -61,6 +89,12 @@ export default function EdukativnaKnjigaPage() {
       <TrustStrip />
       <BookAbout />
       <Gallery subtitle="Prave fotografije iz knjige. Sve na bosanskom – i dijete i roditelj razumiju svaki zadatak." />
+      <Reviews
+        reviews={bookReviews}
+        kicker="Šta kažu roditelji"
+        title="Porodice iz cijele BiH nam vjeruju"
+        ctaText="Naruči knjigu – 15 KM"
+      />
       <BookOffer />
       <BookCheckout />
       <Faq items={bookFaqs} />
