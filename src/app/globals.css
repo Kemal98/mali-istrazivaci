@@ -146,7 +146,8 @@ ul{list-style:none}
 .tg svg{color:var(--green)}.tb svg{color:var(--blue-l)}.to svg{color:var(--orange)}.ty svg{color:var(--yellow)}
 .hero-media{grid-area:med;position:relative}
 .hero-media-img{position:relative}
-.hero-media img{width:100%;border-radius:20px;box-shadow:var(--sh2)}
+.hero-media img,.hero-media video{width:100%;border-radius:20px;box-shadow:var(--sh2)}
+.hero-media video{display:block;aspect-ratio:1/1;object-fit:cover}
 .hero-badge{position:absolute;top:-14px;left:-14px;background:var(--green);color:#fff;
   font-family:'Bitter';font-weight:800;font-size:.82rem;line-height:1.15;
   padding:14px 18px;border-radius:50%;width:88px;height:88px;
