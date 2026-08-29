@@ -35,7 +35,7 @@ export default function Hero() {
             <div className="hero-badge">
               <b>29</b>KM
             </div>
-            <HeroMedia videoSrc="/video/hero.mp4" />
+            <HeroMedia videoSrc="/video/hero-v2.mp4" />
           </div>
         </div>
 
