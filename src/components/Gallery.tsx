@@ -50,7 +50,7 @@ const items = [
 ];
 
 export default function Gallery({
-  subtitle = "Prave fotografije knjige iz seta. Sve na bosanskom – i dijete i roditelj razumiju svaki zadatak.",
+  subtitle = "Prave fotografije knjige iz seta. Sve na našem jeziku – i dijete i roditelj razumiju svaki zadatak.",
 }: {
   subtitle?: string;
 }) {

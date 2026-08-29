@@ -34,7 +34,7 @@ export default function BookAbout() {
 
           <div className="set-card">
             <div className="set-body">
-              <h3>Sve na bosanskom jeziku</h3>
+              <h3>Sve na našem jeziku</h3>
               <p>
                 Svaki zadatak je jasan i djetetu i roditelju – nema
                 prevođenja ni nagađanja.

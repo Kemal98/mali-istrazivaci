@@ -11,7 +11,7 @@ type HeroMediaProps = {
 export default function HeroMedia({
   videoSrc,
   poster = "/img/set_hero2.png",
-  alt = "Montessori set 3u1 na bosanskom – knjiga na čičak, drveni sat i magnetni tangram u poklon kutiji",
+  alt = "Montessori set 3u1 na našem jeziku – knjiga na čičak, drveni sat i magnetni tangram u poklon kutiji",
 }: HeroMediaProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 

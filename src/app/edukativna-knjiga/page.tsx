@@ -38,7 +38,7 @@ const bookReviews: Review[] = [
     av: "av2",
   },
   {
-    text: "Jednostavno, na bosanskom, dijete odmah razumije zadatke. Preporučujem svima koji traže nešto edukativno bez tableta.",
+    text: "Jednostavno, na našem jeziku, dijete odmah razumije zadatke. Preporučujem svima koji traže nešto edukativno bez tableta.",
     initial: "N",
     name: "Nadja K.",
     city: "Mostar",
@@ -88,7 +88,7 @@ export default function EdukativnaKnjigaPage() {
       <BookHero />
       <TrustStrip />
       <BookAbout />
-      <Gallery subtitle="Prave fotografije iz knjige. Sve na bosanskom – i dijete i roditelj razumiju svaki zadatak." />
+      <Gallery subtitle="Prave fotografije iz knjige. Sve na našem jeziku – i dijete i roditelj razumiju svaki zadatak." />
       <Reviews
         reviews={bookReviews}
         kicker="Šta kažu roditelji"

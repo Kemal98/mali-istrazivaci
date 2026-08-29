@@ -212,7 +212,7 @@ export default function BookCheckout() {
                       >
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
-                      Sve na bosanskom jeziku
+                      Sve na našem jeziku
                     </li>
                   </ul>
                   <div className="sum-row">

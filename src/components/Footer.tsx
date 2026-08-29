@@ -24,7 +24,7 @@ export default function Footer({
               Mali Istraživači
             </div>
             <p>
-              Montessori setovi i edukativne igračke za djecu na bosanskom
+              Montessori setovi i edukativne igračke za djecu na našem
               jeziku. Svaki paket ručno pakujemo u BiH.
             </p>
           </div>

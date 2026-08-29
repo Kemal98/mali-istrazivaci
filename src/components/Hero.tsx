@@ -10,7 +10,7 @@ export default function Hero() {
             <path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 7.1-1.01L12 2z" />
           </svg>
           <span className="badge-full">
-            4.9 · 500+ porodica u BiH · Jedini Montessori set na bosanskom
+            4.9 · 500+ porodica u BiH · Jedini Montessori set na našem jeziku
           </span>
           <span className="badge-short">4.9 · 500+ porodica u BiH</span>
         </div>
@@ -18,17 +18,16 @@ export default function Hero() {
         <h1>
           Sat mira za tebe.
           <br />
-          Sat učenja za dijete.
+          Sat igre za dijete.
         </h1>
 
         <p className="hero-sub sub-full">
-          Tri Montessori igre u jednoj kutiji — knjiga na čičak, drvena
-          igračka i mozgalica. Za uzrast 2–6 godina. Bez ekrana. Bez
-          baterija. Sve na bosanskom.
+          Tri igre u jednoj kutiji, a dijete usput nauči slova, boje i
+          prve riječi. Bez ekrana, bez baterija, sve na našem jeziku.
         </p>
         <p className="hero-sub sub-short">
-          Tri Montessori igre u jednoj kutiji. 2–6 godina, bez ekrana, sve
-          na bosanskom.
+          Tri igre u jednoj kutiji. Dijete se igra, a usput uči. Sve na
+          našem jeziku.
         </p>
 
         <div className="hero-media">
