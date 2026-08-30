@@ -18,7 +18,7 @@ export default function Final() {
         <div className="final-strip">
           <div className="stitch">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/knjiga_proizvod.png" alt="Knjiga" />
+            <img src="/img/knjiga_proizvod2.png" alt="Knjiga" />
           </div>
           <div className="stitch">
             {/* eslint-disable-next-line @next/next/no-img-element */}
