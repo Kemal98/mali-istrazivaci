@@ -1,4 +1,8 @@
-export default function HowItWorks() {
+export default function HowItWorks({
+  ctaText = "Naruči set – 29 KM + dostava",
+}: {
+  ctaText?: string;
+}) {
   return (
     <section className="how-bg" id="kako-radi">
       <div className="wrap">
@@ -53,7 +57,7 @@ export default function HowItWorks() {
         </div>
         <div className="how-cta">
           <a href="#naruci" className="btn btn-ghost">
-            Naruči set – 29 KM + dostava
+            {ctaText}
           </a>
         </div>
       </div>

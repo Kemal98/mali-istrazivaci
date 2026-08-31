@@ -4,6 +4,8 @@ import BookHero from "@/components/BookHero";
 import TrustStrip from "@/components/TrustStrip";
 import BookAbout from "@/components/BookAbout";
 import Gallery from "@/components/Gallery";
+import AgeStages, { Stage } from "@/components/AgeStages";
+import HowItWorks from "@/components/HowItWorks";
 import BookOffer from "@/components/BookOffer";
 import BookCheckout from "@/components/BookCheckout";
 import Reviews, { Review } from "@/components/Reviews";
@@ -18,6 +20,21 @@ export const metadata: Metadata = {
   description:
     "Interaktivna Montessori knjiga 'Svijet malih istraživača' – deset strana zadataka na čičak, na bosanskom jeziku. 15 KM, plaćanje pouzećem, dostava po BiH.",
 };
+
+const bookStages: Stage[] = [
+  {
+    age: "2–3 godine",
+    text: "Prepoznaje životinje, lijepi čičak, uči boje",
+  },
+  {
+    age: "4–5 godina",
+    text: "Uči slova i brojeve, prepoznaje emocije",
+  },
+  {
+    age: "6 godina",
+    text: "Spelovanje riječi, rješava zadatke samostalno",
+  },
+];
 
 // TODO: ovo su primjer-recenzije, ne stvarni citati kupaca knjige — zamijeni
 // stvarnim kad ih budeš imao (isto upozorenje kao za citat u "A šta ako se
@@ -89,12 +106,19 @@ export default function EdukativnaKnjigaPage() {
       <TrustStrip />
       <BookAbout />
       <Gallery subtitle="Prave fotografije iz knjige. Sve na našem jeziku – i dijete i roditelj razumiju svaki zadatak." />
+      <AgeStages
+        stages={bookStages}
+        title="Ista knjiga zabavlja dvogodišnjaka i uči šestogodišnjaka"
+        note="Ista knjiga koju dvogodišnjak koristi za životinje, šestogodišnjak koristi za prve riječi. Zato je ne prerastaju za tri mjeseca."
+        punch="Jedna knjiga. Četiri godine korištenja."
+      />
       <Reviews
         reviews={bookReviews}
         kicker="Šta kažu roditelji"
         title="Porodice iz cijele BiH nam vjeruju"
         ctaText="Naruči knjigu – 15 KM"
       />
+      <HowItWorks ctaText="Naruči knjigu – 15 KM" />
       <BookOffer />
       <BookCheckout />
       <Faq items={bookFaqs} />
