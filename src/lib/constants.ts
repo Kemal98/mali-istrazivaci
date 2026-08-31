@@ -5,6 +5,11 @@ export const GOOGLE_SCRIPT_URL =
 
 export const CONTACT_EMAIL = "svijetistrazivaca@gmail.com";
 
+export const SOCIAL_INSTAGRAM =
+  "https://www.instagram.com/svijetmalihistrazivaca/";
+export const SOCIAL_FACEBOOK =
+  "https://www.facebook.com/profile.php?id=61573686568473";
+
 // Sezonska poruka u sekciji ponude, ispod cijene — mijenjaj kroz godinu.
 // PAZI: ne stavljaj ovdje svoj rok naručivanja (npr. "naruči do petka") —
 // to se kosi sa BONUS_DEADLINE rokom prikazanim drugdje na stranici (top
