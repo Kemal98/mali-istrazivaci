@@ -88,8 +88,8 @@ export default function EdukativnaKnjigaPage() {
         ]}
       />
       <BookHero />
-      <HowItWorks ctaText="Naruči knjigu – 15 KM" />
       <TrustStrip />
+      <HowItWorks ctaText="Naruči knjigu – 15 KM" />
       <BookAbout />
       <Gallery subtitle="Prave fotografije iz knjige. Sve na našem jeziku – i dijete i roditelj razumiju svaki zadatak." />
       <AgeStages />
