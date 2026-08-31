@@ -17,7 +17,7 @@ export default function BookHero() {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/img/knjiga.jpg"
+            src="/img/knjiga_proizvod2.png"
             alt="Interaktivna Montessori knjiga – Svijet malih istraživača"
           />
         </div>
