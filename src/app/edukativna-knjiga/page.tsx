@@ -88,6 +88,7 @@ export default function EdukativnaKnjigaPage() {
         ]}
       />
       <BookHero />
+      <HowItWorks ctaText="Naruči knjigu – 15 KM" />
       <TrustStrip />
       <BookAbout />
       <Gallery subtitle="Prave fotografije iz knjige. Sve na našem jeziku – i dijete i roditelj razumiju svaki zadatak." />
@@ -98,7 +99,6 @@ export default function EdukativnaKnjigaPage() {
         title="Porodice iz cijele BiH nam vjeruju"
         ctaText="Naruči knjigu – 15 KM"
       />
-      <HowItWorks ctaText="Naruči knjigu – 15 KM" />
       <BookOffer />
       <BookCheckout />
       <Faq items={bookFaqs} />
