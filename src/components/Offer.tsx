@@ -1,6 +1,5 @@
 import CtaButton from "./CtaButton";
 import ValueStack from "./ValueStack";
-import BonusDeadline from "./BonusDeadline";
 import { SEASONAL_MESSAGE } from "@/lib/constants";
 
 const valueStackItems = [
@@ -101,21 +100,6 @@ export default function Offer() {
                 14 dana garancija povrata novca
               </li>
             </ul>
-
-            <div className="offer-bonus">
-              <div className="offer-bonus-title">
-                <span aria-hidden="true">🎁</span>
-                <span>
-                  PDF vodič &ldquo;30 igara sa setom&rdquo; uz narudžbe do
-                  nedjelje, <BonusDeadline />
-                </span>
-              </div>
-              <p>
-                Šta raditi sa setom svaki dan mjesec dana, po uzrastu
-                djeteta. Šaljemo na Viber odmah nakon potvrde narudžbe,
-                prije nego što paket i stigne.
-              </p>
-            </div>
 
             <CtaButton
               text="Naruči – 29 KM + dostava"

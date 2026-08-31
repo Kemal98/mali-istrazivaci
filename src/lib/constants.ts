@@ -12,8 +12,7 @@ export const SOCIAL_FACEBOOK =
 
 // Sezonska poruka u sekciji ponude, ispod cijene — mijenjaj kroz godinu.
 // PAZI: ne stavljaj ovdje svoj rok naručivanja (npr. "naruči do petka") —
-// to se kosi sa BONUS_DEADLINE rokom prikazanim drugdje na stranici (top
-// traka, bonus blok, završni CTA) i kupac ne zna koji rok vrijedi. Ova
+// ako ga kupac ne ispoštuje na vrijeme, poruka djeluje neistinito. Ova
 // poruka je samo sezonski kontekst, bez vlastitog datuma/roka.
 // Primjeri za rotaciju:
 //   Kolovoz/septembar: "Naruči ovih dana i stiže prije prve sedmice vrtića."

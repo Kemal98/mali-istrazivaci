@@ -1,5 +1,4 @@
 import Nav from "@/components/Nav";
-import BonusDeadline from "@/components/BonusDeadline";
 import Hero from "@/components/Hero";
 import TrustStrip from "@/components/TrustStrip";
 import Pain from "@/components/Pain";
@@ -26,17 +25,8 @@ export default function Home() {
     <>
       <Nav
         simplified
-        topbarFull={
-          <>
-            🎁 PDF vodič &ldquo;30 igara sa setom&rdquo; uz narudžbe do
-            nedjelje, <BonusDeadline />
-          </>
-        }
-        topbarShort={
-          <>
-            🎁 Bonus vodič uz narudžbe do nedjelje, <BonusDeadline />
-          </>
-        }
+        topbarFull="🚚 Dostava po BiH · 💵 Plaćanje pouzećem · ↩️ 14 dana povrat novca"
+        topbarShort="Pouzeće · Dostava po BiH · 14 dana povrat"
       />
       <Hero />
       <TrustStrip variant="stats" />
