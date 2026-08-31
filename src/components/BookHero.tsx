@@ -3,13 +3,8 @@ export default function BookHero() {
     <header className="hero" id="top">
       <div className="wrap book-hero-grid">
         <div className="hero-head">
-          <div className="hero-tag">Montessori knjiga · Uzrast 2–6 godina</div>
-          <h1>
-            Interaktivna Montessori knjiga
-            <span className="sub">
-              Deset strana zadataka na čičak – uči kroz igru, bez ekrana.
-            </span>
-          </h1>
+          <div className="hero-tag">65 kartica · 8 tema · Uzrast 2–6</div>
+          <h1>Sjedne sam na pola sata — i usput nauči nove riječi.</h1>
         </div>
         <div className="hero-media">
           <div className="hero-badge">
@@ -24,12 +19,12 @@ export default function BookHero() {
         <div className="hero-body">
           <div className="hero-stats">
             <div className="hstat">
-              <b>10</b>
-              <small>strana</small>
+              <b>65</b>
+              <small>kartica</small>
             </div>
             <div className="hstat">
-              <b>BiH</b>
-              <small>jezik</small>
+              <b>8</b>
+              <small>tema</small>
             </div>
             <div className="hstat">
               <b>0</b>
@@ -37,24 +32,62 @@ export default function BookHero() {
             </div>
           </div>
           <p className="hero-sub">
-            Knjiga &ldquo;Svijet malih istraživača&rdquo; sa dijelovima na
-            čičak – dijete uči <strong>samostalno</strong>, kroz dodir i
-            igru.
+            Zadaci su takvi da mu ne moraš objašnjavati. Vidi sam kad je
+            tačno — pa ne zove tebe.
           </p>
           <div className="hero-price">
             <span className="price-main">15 KM</span>
           </div>
-          <p
-            style={{
-              fontSize: ".8rem",
-              fontWeight: 600,
-              color: "var(--ink3)",
-              marginTop: "-14px",
-              marginBottom: "18px",
-            }}
-          >
+          <p className="hero-delivery-note">
             + 10 KM dostava, plaća se kuriru
           </p>
+          <ul className="hero-checklist">
+            <li>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Kartice se skidaju i lijepe stotinama puta
+            </li>
+            <li>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Sva naša slova — Č, Ć, Dž, Đ, Š, Ž
+            </li>
+            <li>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Uz knjigu dobijaš PDF vodič &bdquo;30 igara&rdquo; — šaljemo
+              na Viber odmah
+            </li>
+            <li>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Bez ekrana i baterija — stane u torbu
+            </li>
+          </ul>
           <div className="hero-actions">
             <a href="#naruci" className="btn btn-primary">
               <svg
@@ -63,35 +96,16 @@ export default function BookHero() {
                 stroke="currentColor"
                 strokeWidth="2.5"
               >
-                <polyline points="20 6 9 17 4 12" />
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
               </svg>
-              Naruči – 15 KM
+              NARUČI — PLATIŠ KURIRU
             </a>
           </div>
-          <div className="hero-trust">
-            <span className="tg">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Plaćanje pouzećem
-            </span>
-            <span className="tb">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Dostava po BiH
-            </span>
-          </div>
+          <p className="hero-note">
+            Ne plaćaš ništa unaprijed · Dostava po cijeloj BiH
+          </p>
         </div>
       </div>
     </header>

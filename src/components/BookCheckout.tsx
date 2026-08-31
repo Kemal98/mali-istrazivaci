@@ -292,8 +292,7 @@ export default function BookCheckout() {
                     >
                       <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
                     </svg>
-                    Bez plaćanja unaprijed · Zovemo te da potvrdimo · 14
-                    dana garancija povrata
+                    Bez plaćanja unaprijed · Zovemo te da potvrdimo
                   </p>
                 </div>
               </div>
