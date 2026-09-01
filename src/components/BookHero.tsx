@@ -4,7 +4,7 @@ export default function BookHero() {
       <div className="wrap book-hero-grid">
         <div className="hero-head">
           <div className="hero-tag">65 kartica · 8 tema · Uzrast 2–6</div>
-          <h1>Sjedne sam na pola sata — i usput nauči nove riječi.</h1>
+          <h1>Odmor za tebe. Igra za njega.</h1>
         </div>
         <div className="hero-media">
           <div className="hero-badge">
