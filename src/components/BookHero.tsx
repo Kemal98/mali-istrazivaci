@@ -1,113 +1,63 @@
+"use client";
+
+import { RATING, REVIEWS_COUNT } from "@/lib/socialProof";
+import { useDawnQty } from "./DawnQtyContext";
+
 export default function BookHero() {
+  const { qty, setQty } = useDawnQty();
+
   return (
-    <header className="hero" id="top">
-      <div className="wrap book-hero-grid">
-        <div className="hero-head">
-          <div className="hero-tag">65 kartica · 8 tema · Uzrast 2–6</div>
-          <h1>Odmor za tebe. Igra za njega.</h1>
-        </div>
-        <div className="hero-media">
-          <div className="hero-badge">
-            <b>15</b>KM
-          </div>
+    <section className="dawn-product" id="top">
+      <div className="dawn-col">
+        <div className="dawn-product-img">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/img/knjiga_proizvod2.png"
             alt="Interaktivna Montessori knjiga – Svijet malih istraživača"
           />
         </div>
-        <div className="hero-body">
-          <div className="hero-stats">
-            <div className="hstat">
-              <b>65</b>
-              <small>kartica</small>
-            </div>
-            <div className="hstat">
-              <b>8</b>
-              <small>tema</small>
-            </div>
-            <div className="hstat">
-              <b>0</b>
-              <small>ekrana</small>
-            </div>
-          </div>
-          <p className="hero-sub">
-            Zadaci su takvi da mu ne moraš objašnjavati. Vidi sam kad je
-            tačno — pa ne zove tebe.
-          </p>
-          <div className="hero-price">
-            <span className="price-main">15 KM</span>
-          </div>
-          <p className="hero-delivery-note">
-            + 10 KM dostava, plaća se kuriru
-          </p>
-          <ul className="hero-checklist">
-            <li>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Kartice se skidaju i lijepe stotinama puta
-            </li>
-            <li>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Sva naša slova — Č, Ć, Dž, Đ, Š, Ž
-            </li>
-            <li>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Uz knjigu dobijaš PDF vodič &bdquo;30 igara&rdquo; — šaljemo
-              na Viber odmah
-            </li>
-            <li>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Bez ekrana i baterija — stane u torbu
-            </li>
-          </ul>
-          <div className="hero-actions">
-            <a href="#naruci" className="btn btn-primary">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-              >
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
-              </svg>
-              NARUČI — PLATIŠ KURIRU
-            </a>
-          </div>
-          <p className="hero-note">
-            Ne plaćaš ništa unaprijed · Dostava po cijeloj BiH
-          </p>
+
+        <h1 className="dawn-h1">
+          Interaktivna Montessori knjiga
+          <span>Svijet malih istraživača</span>
+        </h1>
+
+        <p className="dawn-rating">
+          <span className="dawn-stars">★★★★★</span>
+          {RATING}/5 · {REVIEWS_COUNT} ocjena
+        </p>
+
+        <div className="dawn-price-row">
+          <span className="dawn-price-old">29 KM</span>
+          <span className="dawn-price-new">15 KM</span>
+          <span className="dawn-badge-sale">SNIŽENO</span>
         </div>
+
+        <div className="dawn-qty" role="group" aria-label="Količina">
+          <button
+            type="button"
+            onClick={() => setQty(qty - 1)}
+            aria-label="Smanji količinu"
+          >
+            −
+          </button>
+          <span className="dawn-qty-val">{qty}</span>
+          <button
+            type="button"
+            onClick={() => setQty(qty + 1)}
+            aria-label="Povećaj količinu"
+          >
+            +
+          </button>
+        </div>
+
+        <a href="#naruci" className="dawn-btn-black">
+          NARUČI — PLATIŠ KURIRU
+        </a>
+        <p className="dawn-cta-note">
+          Ne plaćaš ništa unaprijed · Dostava po cijeloj BiH
+        </p>
       </div>
-    </header>
+    </section>
   );
 }

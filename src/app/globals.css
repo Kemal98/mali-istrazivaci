@@ -667,3 +667,138 @@ footer{background:var(--navy);color:#8494A6;padding-top:48px}
   .logo img{width:32px;height:32px}
   .nav .btn-primary{padding:9px 13px;font-size:.76rem}
 }
+
+/* ============================================================
+   DAWN — /edukativna-knjiga redesign (Shopify Dawn product template)
+   Fully scoped under .dawn-page so it can never bleed into the
+   SAT MIRA main page. Own font stack, own spacing, own components —
+   nothing above this block is reused here on purpose.
+   ============================================================ */
+body:has(.dawn-page){padding-bottom:0}
+.dawn-page{
+  --dawn-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:#fff;color:#111;font-family:var(--dawn-sans)
+}
+.dawn-page h1,.dawn-page h2,.dawn-page h3{
+  font-family:var(--dawn-sans);font-weight:800;letter-spacing:-.01em;line-height:1.2
+}
+.dawn-page section{padding:44px 0}
+.dawn-col{max-width:600px;margin:0 auto;padding:0 20px;text-align:center}
+
+/* announcement + header */
+.dawn-announce{background:#111;color:#fff;text-align:center;font-weight:700;
+  font-size:.78rem;padding:8px 16px;letter-spacing:.01em}
+.dawn-header{position:sticky;top:0;z-index:200;background:#fff;
+  border-bottom:1px solid #EAEAEA}
+.dawn-header-inner{max-width:1120px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px}
+.dawn-logo{display:flex;align-items:center;gap:9px;font-weight:800;
+  font-size:1rem;color:#111;flex-shrink:0}
+.dawn-logo img{width:34px;height:34px;object-fit:contain}
+.dawn-nav-links{display:flex;gap:22px;font-weight:600;font-size:.9rem}
+.dawn-nav-links a:hover{text-decoration:underline}
+.dawn-cart-btn{display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;flex-shrink:0;color:#111}
+.dawn-cart-btn svg{width:22px;height:22px}
+@media(max-width:640px){.dawn-nav-links{display:none}}
+
+/* product block */
+.dawn-product-img{aspect-ratio:1/1;overflow:hidden;margin-bottom:24px;
+  background:#F5F5F5;border-radius:4px}
+.dawn-product-img img{width:100%;height:100%;object-fit:cover}
+.dawn-h1{font-size:1.7rem;margin-bottom:10px}
+.dawn-h1 span{display:block;font-size:.55em;font-weight:600;color:#555;margin-top:4px}
+.dawn-rating{display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:.85rem;font-weight:600;color:#555;margin-bottom:16px}
+.dawn-stars{color:#111;letter-spacing:1px}
+.dawn-price-row{display:flex;align-items:baseline;justify-content:center;
+  gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.dawn-price-old{font-size:1.05rem;color:#999;text-decoration:line-through;font-weight:600}
+.dawn-price-new{font-size:1.9rem;font-weight:800;color:var(--red)}
+.dawn-badge-sale{background:var(--red);color:#fff;font-weight:800;font-size:.68rem;
+  padding:4px 9px;border-radius:3px;letter-spacing:.03em}
+.dawn-qty{display:inline-flex;align-items:center;border:1.5px solid #111;
+  border-radius:4px;margin-bottom:18px}
+.dawn-qty button{width:42px;height:42px;background:none;border:none;
+  font-size:1.2rem;font-weight:700;cursor:pointer;color:#111}
+.dawn-qty-val{min-width:34px;text-align:center;font-weight:700;font-size:1rem}
+.dawn-btn-black{display:block;width:100%;background:#111;color:#fff;
+  font-weight:800;font-size:1rem;letter-spacing:.02em;padding:17px 20px;
+  border:none;border-radius:4px;cursor:pointer;text-align:center}
+.dawn-btn-black:hover{background:#333}
+.dawn-cta-note{font-size:.78rem;color:#777;font-weight:600;margin-top:10px}
+
+/* long description */
+.dawn-story-block{margin-bottom:52px}
+.dawn-story-block:last-child{margin-bottom:0}
+.dawn-story-stmt{font-weight:800;font-size:1.2rem;line-height:1.35;margin-bottom:18px}
+.dawn-story-stmt span{display:block}
+.dawn-story-block img{width:100%;border-radius:4px;margin-bottom:18px}
+.dawn-story-text{font-size:.98rem;color:#333;line-height:1.7}
+.dawn-story-text span{display:block}
+
+/* includes / trust — shared list look */
+.dawn-h2{font-size:1.4rem;margin-bottom:18px}
+.dawn-includes ul,.dawn-trust ul{list-style:none;display:inline-flex;
+  flex-direction:column;gap:11px;text-align:left}
+.dawn-includes li{font-size:.98rem;font-weight:600;display:flex;
+  justify-content:space-between;gap:14px;min-width:260px}
+.dawn-check{color:var(--red);font-weight:800}
+.dawn-trust{background:#FAFAFA}
+.dawn-trust li{font-size:.96rem;font-weight:600;color:#333}
+
+/* repeated cta */
+.dawn-repeat-cta{background:#111;color:#fff}
+.dawn-repeat-cta .dawn-h2{color:#fff}
+.dawn-repeat-sub{font-size:.95rem;color:#ccc;font-weight:600;margin-bottom:20px}
+.dawn-repeat-cta .dawn-btn-black{background:#fff;color:#111}
+.dawn-repeat-cta .dawn-btn-black:hover{background:#eee}
+
+/* contact */
+.dawn-contact-q{font-weight:700;font-size:1.05rem;margin-bottom:12px}
+.dawn-contact-link{display:inline-block;font-weight:800;font-size:1rem;
+  color:#111;text-decoration:underline;text-underline-offset:3px}
+
+/* reviews */
+.dawn-rev-score{display:flex;align-items:center;justify-content:center;
+  gap:14px;margin-bottom:30px}
+.dawn-rev-num{font-size:2.6rem;font-weight:800;line-height:1}
+.dawn-rev-score small{display:block;color:#777;font-weight:600;font-size:.8rem;margin-top:2px}
+.dawn-rev-list{display:flex;flex-direction:column;gap:22px;text-align:left}
+.dawn-rev-card{border-top:1px solid #EAEAEA;padding-top:20px}
+.dawn-rev-who{display:flex;align-items:center;gap:11px;margin-bottom:10px}
+.dawn-rev-av{width:36px;height:36px;border-radius:50%;background:#111;color:#fff;
+  font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dawn-rev-who b{display:block;font-size:.92rem}
+.dawn-rev-verified{font-size:.72rem;font-weight:700;color:var(--green-d)}
+.dawn-rev-card p{font-size:.94rem;color:#333;line-height:1.65}
+
+/* checkout */
+.dawn-checkout{background:#FAFAFA}
+.dawn-checkout-line{display:flex;justify-content:space-between;font-weight:700;
+  font-size:.98rem;margin-bottom:8px}
+.dawn-checkout-note{font-size:.8rem;color:#777;font-weight:600;margin-bottom:18px}
+.dawn-checkout-fields{text-align:left}
+.dawn-field{margin-bottom:14px}
+.dawn-field label{display:block;font-weight:700;font-size:.85rem;margin-bottom:6px}
+.dawn-field input,.dawn-field textarea{width:100%;padding:13px 14px;
+  border:1.5px solid #DDD;border-radius:4px;font-family:var(--dawn-sans);
+  font-size:.95rem;background:#fff;color:#111}
+.dawn-field input:focus,.dawn-field textarea:focus{outline:none;border-color:#111}
+.dawn-checkout-paused{background:#fff;border:1.5px dashed #999;border-radius:4px;
+  padding:15px;text-align:center;font-weight:700;color:#555}
+.dawn-checkout-error{color:var(--red);font-weight:700;font-size:.85rem;
+  text-align:center;margin-top:10px}
+
+/* footer */
+.dawn-footer{background:#111;color:#ccc;padding:36px 0}
+.dawn-footer p{margin-bottom:8px;font-size:.9rem}
+.dawn-footer a{color:#fff;font-weight:700}
+.dawn-footer-copy{color:#777;font-size:.8rem;margin-top:14px}
+
+@media(max-width:640px){
+  .dawn-page section{padding:34px 0}
+  .dawn-h1{font-size:1.4rem}
+  .dawn-price-new{font-size:1.6rem}
+  .dawn-story-stmt{font-size:1.05rem}
+}
