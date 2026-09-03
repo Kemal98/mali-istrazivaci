@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { DawnQtyProvider } from "@/components/DawnQtyContext";
 import DawnHeader from "@/components/DawnHeader";
 import BookHero from "@/components/BookHero";
+import BookHeart from "@/components/BookHeart";
 import BookStory from "@/components/BookStory";
+import BookSocialProof from "@/components/BookSocialProof";
 import BookIncludes from "@/components/BookIncludes";
 import BookTrust from "@/components/BookTrust";
 import BookCtaRepeat from "@/components/BookCtaRepeat";
@@ -24,7 +26,9 @@ export default function EdukativnaKnjigaPage() {
       <DawnQtyProvider>
         <DawnHeader />
         <BookHero />
+        <BookHeart />
         <BookStory />
+        <BookSocialProof />
         <BookIncludes />
         <BookTrust />
         <BookCtaRepeat />

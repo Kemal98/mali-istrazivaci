@@ -27,6 +27,10 @@ export default function BookReviewsDawn() {
   return (
     <section className="dawn-reviews" id="recenzije">
       <div className="dawn-col">
+        <h2 className="dawn-h2">Roditelji koji su već kupili kod nas ♥️</h2>
+        <p className="dawn-rev-intro">
+          Kratko i iskreno — brza dostava, čvrsta knjiga, djeca zauzeta.
+        </p>
         <div className="dawn-rev-score">
           <span className="dawn-rev-num">{RATING}</span>
           <div>

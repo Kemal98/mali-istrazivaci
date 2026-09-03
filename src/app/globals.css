@@ -728,6 +728,21 @@ body:has(.dawn-page){padding-bottom:0}
 .dawn-btn-black:hover{background:#333}
 .dawn-cta-note{font-size:.78rem;color:#777;font-weight:600;margin-top:10px}
 
+/* heart tagline block */
+.dawn-heart-tag{font-weight:800;font-size:1.05rem;margin-bottom:14px}
+.dawn-heart-lead{font-weight:700;font-size:1.15rem;margin-bottom:18px;line-height:1.4}
+.dawn-heart-list{list-style:none;display:inline-flex;flex-direction:column;
+  gap:9px;text-align:left;margin-bottom:18px}
+.dawn-heart-list li{font-size:.95rem;font-weight:500;color:#333;padding-left:20px;position:relative}
+.dawn-heart-list li::before{content:"•";position:absolute;left:2px;color:var(--red);font-weight:800}
+.dawn-heart-usecase{font-size:.95rem;color:#555;font-weight:600}
+
+/* mid-page social proof */
+.dawn-social{background:#FAFAFA}
+.dawn-social-headline{font-weight:800;font-size:1.25rem;margin-bottom:10px}
+.dawn-social .dawn-stars{font-size:1.2rem;margin-bottom:4px}
+.dawn-social-sub{font-size:.85rem;color:#777;font-weight:600}
+
 /* long description */
 .dawn-story-block{margin-bottom:52px}
 .dawn-story-block:last-child{margin-bottom:0}
@@ -750,6 +765,7 @@ body:has(.dawn-page){padding-bottom:0}
 /* repeated cta */
 .dawn-repeat-cta{background:#111;color:#fff}
 .dawn-repeat-cta .dawn-h2{color:#fff}
+.dawn-repeat-promo{font-weight:700;font-size:.9rem;color:#aaa;margin-bottom:8px}
 .dawn-repeat-sub{font-size:.95rem;color:#ccc;font-weight:600;margin-bottom:20px}
 .dawn-repeat-cta .dawn-btn-black{background:#fff;color:#111}
 .dawn-repeat-cta .dawn-btn-black:hover{background:#eee}
@@ -760,6 +776,7 @@ body:has(.dawn-page){padding-bottom:0}
   color:#111;text-decoration:underline;text-underline-offset:3px}
 
 /* reviews */
+.dawn-rev-intro{font-size:.92rem;color:#555;font-weight:600;margin-bottom:20px}
 .dawn-rev-score{display:flex;align-items:center;justify-content:center;
   gap:14px;margin-bottom:30px}
 .dawn-rev-num{font-size:2.6rem;font-weight:800;line-height:1}
@@ -790,10 +807,14 @@ body:has(.dawn-page){padding-bottom:0}
 .dawn-checkout-error{color:var(--red);font-weight:700;font-size:.85rem;
   text-align:center;margin-top:10px}
 
-/* footer */
+/* back to top + footer */
+.dawn-back-top{text-align:center;padding:22px 0 0}
+.dawn-back-top a{font-size:.85rem;font-weight:700;color:#777}
+.dawn-back-top a:hover{color:#111}
 .dawn-footer{background:#111;color:#ccc;padding:36px 0}
 .dawn-footer p{margin-bottom:8px;font-size:.9rem}
 .dawn-footer a{color:#fff;font-weight:700}
+.dawn-footer-disclaimer{color:#777;font-size:.78rem;margin-top:10px}
 .dawn-footer-copy{color:#777;font-size:.8rem;margin-top:14px}
 
 @media(max-width:640px){

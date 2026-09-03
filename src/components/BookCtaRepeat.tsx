@@ -10,6 +10,9 @@ export default function BookCtaRepeat() {
   return (
     <section className="dawn-repeat-cta">
       <div className="dawn-col">
+        <p className="dawn-repeat-promo">
+          Roditelji je stalno preporučuju drugima.
+        </p>
         <h2 className="dawn-h2">Poruči ODMAH</h2>
         <p className="dawn-repeat-sub">
           <ShippingCutoff />
