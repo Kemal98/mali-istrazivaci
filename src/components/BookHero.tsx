@@ -51,7 +51,7 @@ export default function BookHero() {
           </button>
         </div>
 
-        <a href="#naruci" className="dawn-btn-black">
+        <a href="#naruci" className="dawn-btn-black dawn-btn-pulse">
           NARUČI — PLATIŠ KURIRU
         </a>
         <p className="dawn-cta-note">

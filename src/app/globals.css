@@ -706,15 +706,15 @@ body:has(.dawn-page){padding-bottom:0}
 .dawn-product-img{aspect-ratio:1/1;overflow:hidden;margin-bottom:24px;
   background:#F5F5F5;border-radius:4px}
 .dawn-product-img img{width:100%;height:100%;object-fit:cover}
-.dawn-h1{font-size:1.7rem;margin-bottom:10px}
-.dawn-h1 span{display:block;font-size:.55em;font-weight:600;color:#555;margin-top:4px}
+.dawn-h1{font-size:2.3rem;margin-bottom:10px}
+.dawn-h1 span{display:block;font-size:.5em;font-weight:600;color:#555;margin-top:6px}
 .dawn-rating{display:flex;align-items:center;justify-content:center;gap:8px;
   font-size:.85rem;font-weight:600;color:#555;margin-bottom:16px}
 .dawn-stars{color:#111;letter-spacing:1px}
 .dawn-price-row{display:flex;align-items:baseline;justify-content:center;
-  gap:10px;margin-bottom:20px;flex-wrap:wrap}
-.dawn-price-old{font-size:1.05rem;color:#999;text-decoration:line-through;font-weight:600}
-.dawn-price-new{font-size:1.9rem;font-weight:800;color:var(--red)}
+  gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.dawn-price-old{font-size:1.2rem;color:#999;text-decoration:line-through;font-weight:600}
+.dawn-price-new{font-size:2.6rem;font-weight:800;color:var(--red)}
 .dawn-badge-sale{background:var(--red);color:#fff;font-weight:800;font-size:.68rem;
   padding:4px 9px;border-radius:3px;letter-spacing:.03em}
 .dawn-qty{display:inline-flex;align-items:center;border:1.5px solid #111;
@@ -727,6 +727,13 @@ body:has(.dawn-page){padding-bottom:0}
   border:none;border-radius:4px;cursor:pointer;text-align:center}
 .dawn-btn-black:hover{background:#333}
 .dawn-cta-note{font-size:.78rem;color:#777;font-weight:600;margin-top:10px}
+.dawn-btn-pulse{animation:dawnPulse 1.8s ease-in-out infinite}
+.dawn-btn-pulse:hover{animation:none}
+@keyframes dawnPulse{
+  0%{box-shadow:0 0 0 0 rgba(17,17,17,.45)}
+  70%{box-shadow:0 0 0 14px rgba(17,17,17,0)}
+  100%{box-shadow:0 0 0 0 rgba(17,17,17,0)}
+}
 
 /* heart tagline block */
 .dawn-heart-tag{font-weight:800;font-size:1.05rem;margin-bottom:14px}
@@ -819,7 +826,8 @@ body:has(.dawn-page){padding-bottom:0}
 
 @media(max-width:640px){
   .dawn-page section{padding:34px 0}
-  .dawn-h1{font-size:1.4rem}
-  .dawn-price-new{font-size:1.6rem}
+  .dawn-h1{font-size:1.75rem}
+  .dawn-price-new{font-size:2.1rem}
+  .dawn-price-old{font-size:1.05rem}
   .dawn-story-stmt{font-size:1.05rem}
 }
