@@ -1,4 +1,5 @@
 :root{
+  --red:#DC2626;--red-d:#B91C1C;
   --orange:#F2791E;--orange-d:#C9600A;--orange-bg:#FEF0E1;
   --green:#3D9B2F;--green-d:#2E7523;--green-bg:#EDF7E6;
   --blue:#1B4C8C;--blue-l:#2E7CD6;--blue-bg:#E9F2FC;
@@ -117,9 +118,11 @@ ul{list-style:none}
   box-shadow:var(--sh);margin-bottom:18px;border:1px solid var(--blue-bg)}
 .hero-price{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
 .price-main{font-family:'Bitter';font-weight:800;font-size:2.5rem;color:var(--green-d);line-height:1}
-.price-old{font-size:1.15rem;color:var(--ink3);text-decoration:line-through;font-weight:600}
-.price-save{background:var(--orange);color:#fff;font-weight:800;font-size:.74rem;
+.price-old{font-size:1.15rem;color:var(--red);text-decoration:line-through;font-weight:600;opacity:.75}
+.price-save{background:var(--red);color:#fff;font-weight:800;font-size:.74rem;
   padding:5px 11px;border-radius:6px}
+.book-hero-grid .price-main{color:var(--red-d)}
+.book-hero-grid .hstat b{color:var(--red)}
 .hero-actions{display:flex;flex-wrap:wrap;gap:13px;margin-bottom:22px}
 .hero-delivery-note{font-size:.8rem;font-weight:600;color:var(--ink3);
   margin-top:-14px;margin-bottom:18px}
