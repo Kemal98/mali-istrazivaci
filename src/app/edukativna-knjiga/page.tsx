@@ -2,15 +2,10 @@ import type { Metadata } from "next";
 import Nav from "@/components/Nav";
 import BookHero from "@/components/BookHero";
 import TrustStrip from "@/components/TrustStrip";
-import BookAbout from "@/components/BookAbout";
 import Gallery from "@/components/Gallery";
-import AgeStages from "@/components/AgeStages";
 import HowItWorks from "@/components/HowItWorks";
-import BookOffer from "@/components/BookOffer";
 import BookCheckout from "@/components/BookCheckout";
 import Reviews, { Review } from "@/components/Reviews";
-import Faq, { FaqItem } from "@/components/Faq";
-import BookFinal from "@/components/BookFinal";
 import Footer from "@/components/Footer";
 import StickyBar from "@/components/StickyBar";
 
@@ -48,33 +43,6 @@ const bookReviews: Review[] = [
   },
 ];
 
-const bookFaqs: FaqItem[] = [
-  {
-    q: "Je li ovo ista knjiga koja dolazi u SAT MIRA setu?",
-    a: "Da, potpuno ista interaktivna knjiga – ovdje je nudimo i zasebno, bez drvene igračke i mozgalice.",
-  },
-  {
-    q: "Za koji uzrast je knjiga?",
-    a: "Za djecu od 2 do 6 godina. Mlađa djeca uživaju u slikama, čičku i bojama, a starija rješavaju zadatke sa slovima i brojevima.",
-  },
-  {
-    q: "Kako funkcioniše plaćanje pouzećem?",
-    a: "Ne plaćaš ništa unaprijed. Kada kurir donese paket, platiš gotovinom na kućnom pragu – i to je sve.",
-  },
-  {
-    q: "Koliko traje dostava?",
-    a: "Dostava po cijeloj BiH traje 2 do 4 radna dana. Zovemo te isti ili sljedeći dan da potvrdimo narudžbu.",
-  },
-  {
-    q: "Je li sve sigurno za malu djecu?",
-    a: "Da. Knjiga je od čvrstog materijala otpornog na kidanje, boje su netoksične, a dizajnirana je upravo za male ruke.",
-  },
-  {
-    q: "Mogu li naručiti više knjiga?",
-    a: "Naravno – napiši u polje Napomena koliko komada želiš. Javimo se telefonom i dogovorimo detalje.",
-  },
-];
-
 export default function EdukativnaKnjigaPage() {
   return (
     <>
@@ -82,7 +50,7 @@ export default function EdukativnaKnjigaPage() {
         price="15 KM"
         logoHref="/"
         links={[
-          { href: "#set", label: "Šta dobijaš" },
+          { href: "#kako-radi", label: "Kako radi" },
           { href: "#knjiga", label: "Iz knjige" },
           { href: "#kontakt", label: "Kontakt" },
         ]}
@@ -90,22 +58,17 @@ export default function EdukativnaKnjigaPage() {
       <BookHero />
       <TrustStrip />
       <HowItWorks ctaText="Naruči knjigu – 15 KM" />
-      <BookAbout />
       <Gallery subtitle="Prave fotografije iz knjige. Sve na našem jeziku – i dijete i roditelj razumiju svaki zadatak." />
-      <AgeStages />
       <Reviews
         reviews={bookReviews}
         kicker="Šta kažu roditelji"
         title="Porodice iz cijele BiH nam vjeruju"
         ctaText="Naruči knjigu – 15 KM"
       />
-      <BookOffer />
       <BookCheckout />
-      <Faq items={bookFaqs} />
-      <BookFinal />
       <Footer
         pageLinks={[
-          { href: "#set", label: "Šta dobijaš" },
+          { href: "#kako-radi", label: "Kako radi" },
           { href: "#knjiga", label: "Iz knjige" },
           { href: "#naruci", label: "Naruči" },
         ]}
@@ -113,7 +76,7 @@ export default function EdukativnaKnjigaPage() {
       <StickyBar
         price="15 KM"
         oldPrice=""
-        rib="Interaktivna Montessori knjiga – akcija do isteka zalihe"
+        rib="Plaćanje pouzećem · Dostava po cijeloj BiH"
         ctaLabel="Naruči knjigu"
       />
     </>
