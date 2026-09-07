@@ -1,58 +1,45 @@
-import Nav from "@/components/Nav";
-import Hero from "@/components/Hero";
-import TrustStrip from "@/components/TrustStrip";
-import Pain from "@/components/Pain";
-import ProductSet from "@/components/ProductSet";
-import Infographic from "@/components/Infographic";
-import Gallery from "@/components/Gallery";
-import AgeStages from "@/components/AgeStages";
-import Reviews from "@/components/Reviews";
-import WhatIfBored from "@/components/WhatIfBored";
-import WhereToUse from "@/components/WhereToUse";
-import AboutUs from "@/components/AboutUs";
-import HowItWorks from "@/components/HowItWorks";
-import Offer from "@/components/Offer";
-import Guarantee from "@/components/Guarantee";
-import Faq from "@/components/Faq";
-import Checkout from "@/components/Checkout";
-import PreOrderNotice from "@/components/PreOrderNotice";
-import Final from "@/components/Final";
-import Footer from "@/components/Footer";
-import StickyBar from "@/components/StickyBar";
+import type { Metadata } from "next";
+import HomeHeader from "@/components/HomeHeader";
+import HomeHero from "@/components/HomeHero";
+import HomeMarquee from "@/components/HomeMarquee";
+import HomeProductGrid from "@/components/HomeProductGrid";
+import HomeShopByAge from "@/components/HomeShopByAge";
+import HomeWhyUs from "@/components/HomeWhyUs";
+import HomeOurStory from "@/components/HomeOurStory";
+import HomeUgcStrip from "@/components/HomeUgcStrip";
+import HomeReviews from "@/components/HomeReviews";
+import HomeNewsletter from "@/components/HomeNewsletter";
+import HomeFooter from "@/components/HomeFooter";
+import HomeStickyBar from "@/components/HomeStickyBar";
+import styles from "@/components/Home.module.css";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Mali Istraživači – Montessori igračke i knjige na bosanskom jeziku",
+  description:
+    "Montessori igračke, knjige i setovi za djecu 2–6 godina, na bosanskom jeziku. Bez ekrana, plaćanje pouzećem, dostava po cijeloj BiH.",
+};
+
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ uzrast?: string }>;
+}) {
+  const { uzrast } = await searchParams;
+
   return (
-    <>
-      <Nav
-        simplified
-        topbarFull="🚚 Dostava po BiH · 💵 Plaćanje pouzećem · ↩️ 14 dana povrat novca"
-        topbarShort="Pouzeće · Dostava po BiH · 14 dana povrat"
-      />
-      <Hero />
-      <TrustStrip variant="stats" />
-      <Pain />
-      <ProductSet />
-      <Infographic />
-      <Gallery />
-      <AgeStages />
-      <Reviews />
-      <WhatIfBored />
-      {/* <WhereToUse /> — vrati kad slike (gdje-kuca/auto/kafic/baka) budu spremne */}
-      <AboutUs />
-      <HowItWorks />
-      <Offer />
-      <Guarantee />
-      <Faq
-        title="Sve što roditelji pitaju prije narudžbe"
-        ctaText="Sve jasno? Naruči – 29 KM + dostava"
-        defaultOpenIndex={0}
-        schemaMarkup
-      />
-      <Checkout />
-      <PreOrderNotice />
-      <Final />
-      <Footer />
-      <StickyBar simplified />
-    </>
+    <div className={`${styles.root} home-page-root`}>
+      <HomeHeader />
+      <HomeHero />
+      <HomeMarquee />
+      <HomeProductGrid uzrast={uzrast} />
+      <HomeShopByAge />
+      <HomeWhyUs />
+      <HomeOurStory />
+      <HomeUgcStrip />
+      <HomeReviews />
+      <HomeNewsletter />
+      <HomeFooter />
+      <HomeStickyBar />
+    </div>
   );
 }

@@ -675,6 +675,7 @@ footer{background:var(--navy);color:#8494A6;padding-top:48px}
    nothing above this block is reused here on purpose.
    ============================================================ */
 body:has(.dawn-page){padding-bottom:0}
+body:has(.home-page-root){padding-bottom:0}
 .dawn-page{
   --dawn-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   background:#fff;color:#111;font-family:var(--dawn-sans)

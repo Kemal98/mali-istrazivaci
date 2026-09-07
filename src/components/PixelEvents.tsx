@@ -14,12 +14,18 @@ export default function PixelEvents() {
   const pathname = usePathname();
 
   useEffect(() => {
+    // "/" je od sada nova početna (mreža proizvoda), ne SAT MIRA stranica
+    // — SAT MIRA se preselio na /sat-mira. Grid nije "pregled proizvoda"
+    // u smislu piksela (nijedan konkretan proizvod se ne gleda), pa tamo
+    // namjerno ne pali lažan ViewContent za SAT MIRA. Sve ostalo (uklj.
+    // /hvala) zadržava tačno isto ponašanje kao prije ove izmjene.
     const isBook = pathname?.startsWith("/edukativna-knjiga");
+    const isHomeGrid = pathname === "/";
     const content = isBook
       ? { content_name: "Interaktivna Montessori knjiga", value: 15 }
       : { content_name: "SAT MIRA set 3u1", value: 29 };
 
-    if (window.fbq) {
+    if (window.fbq && !isHomeGrid) {
       window.fbq("track", "ViewContent", { ...content, currency: "BAM" });
     }
 
