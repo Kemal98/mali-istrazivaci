@@ -15,18 +15,13 @@ export default function HomeProductGrid({ uzrast }: { uzrast?: string }) {
   return (
     <section id="proizvodi">
       <div className={styles.wrap}>
-        <span className={styles.kicker}>Najprodavanije</span>
-        <h2 className={styles.sectionTitle}>Igračke koje djeca stvarno igraju</h2>
-        {uzrast ? (
+        <h2 className={styles.sectionTitle}>Najprodavanije igračke</h2>
+        {uzrast && (
           <p className={styles.sectionSub}>
             Prikazano za uzrast {uzrast} godine ·{" "}
             <Link href="/#proizvodi" style={{ textDecoration: "underline" }}>
               Prikaži sve
             </Link>
-          </p>
-        ) : (
-          <p className={styles.sectionSub}>
-            Svaki proizvod biramo i testiramo prije nego uđe u ponudu.
           </p>
         )}
         {items.length > 0 ? (

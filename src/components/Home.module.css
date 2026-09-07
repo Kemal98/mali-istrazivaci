@@ -59,7 +59,7 @@
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--h-orange-d);
+  color: var(--h-blue);
   margin-bottom: 10px;
 }
 .sectionTitle {
@@ -91,24 +91,32 @@
 .btnPrimary {
   background: var(--h-orange);
   color: #fff;
-  box-shadow: 0 6px 0 var(--h-orange-d);
+  box-shadow: 0 5px 0 var(--h-orange-d), 0 12px 26px rgba(242, 121, 30, 0.32);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 .btnPrimary:hover {
   background: var(--h-orange-d);
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 #a04c07, 0 16px 30px rgba(242, 121, 30, 0.38);
+}
+.btnPrimary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--h-orange-d);
 }
 .btnSecondary {
   background: transparent;
-  color: var(--h-ink);
-  border: 2px solid var(--h-ink);
+  color: var(--h-blue);
+  border: 2px solid var(--h-blue);
+  transition: background 0.15s ease, color 0.15s ease;
 }
 .btnSecondary:hover {
-  background: var(--h-ink);
-  color: var(--h-cream);
+  background: var(--h-blue);
+  color: #fff;
 }
 
 /* 1 — announcement */
 .announce {
-  background: var(--h-orange);
+  background: var(--h-blue);
   color: #fff;
   text-align: center;
   font-weight: 700;
@@ -155,7 +163,7 @@
   font-size: 0.94rem;
 }
 .navLinks a:hover {
-  color: var(--h-orange-d);
+  color: var(--h-blue);
 }
 .headerRight {
   display: flex;
@@ -487,7 +495,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--h-orange);
+  background: var(--h-blue);
   color: #fff;
   font-family: var(--h-font-head);
   font-weight: 600;
@@ -683,7 +691,7 @@
   font-size: 0.9rem;
 }
 .footCol a:hover {
-  color: var(--h-orange-d);
+  color: var(--h-blue);
 }
 .footBottom {
   text-align: center;
