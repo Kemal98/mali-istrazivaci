@@ -770,6 +770,25 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-trust{background:#FAFAFA}
 .dawn-trust li{font-size:.96rem;font-weight:600;color:#333}
 
+/* why-love-it */
+.dawn-why ul{list-style:none;display:flex;flex-direction:column;gap:12px;
+  text-align:left}
+.dawn-why li{font-size:.98rem;font-weight:500;color:#333;display:flex;
+  align-items:flex-start;gap:10px;line-height:1.5}
+.dawn-why .dawn-check{flex-shrink:0;margin-top:1px}
+
+/* occasions */
+.dawn-occasions{background:#FAFAFA}
+.dawn-occasions-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;
+  text-align:left}
+.dawn-occasion{background:#fff;border:1px solid #EAEAEA;border-radius:8px;
+  padding:16px;font-size:.92rem;font-weight:600;display:flex;
+  flex-direction:column;gap:8px}
+.dawn-occasion span{font-size:1.5rem}
+@media(max-width:480px){
+  .dawn-occasions-grid{grid-template-columns:1fr}
+}
+
 /* repeated cta */
 .dawn-repeat-cta{background:#111;color:#fff}
 .dawn-repeat-cta .dawn-h2{color:#fff}

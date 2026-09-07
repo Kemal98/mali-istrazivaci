@@ -3,8 +3,10 @@ import { DawnQtyProvider } from "@/components/DawnQtyContext";
 import DawnHeader from "@/components/DawnHeader";
 import BookHero from "@/components/BookHero";
 import BookHeart from "@/components/BookHeart";
+import BookWhyLoveIt from "@/components/BookWhyLoveIt";
 import BookStory from "@/components/BookStory";
 import BookSocialProof from "@/components/BookSocialProof";
+import BookOccasions from "@/components/BookOccasions";
 import BookIncludes from "@/components/BookIncludes";
 import BookTrust from "@/components/BookTrust";
 import BookCtaRepeat from "@/components/BookCtaRepeat";
@@ -27,8 +29,10 @@ export default function EdukativnaKnjigaPage() {
         <DawnHeader />
         <BookHero />
         <BookHeart />
+        <BookWhyLoveIt />
         <BookStory />
         <BookSocialProof />
+        <BookOccasions />
         <BookIncludes />
         <BookTrust />
         <BookCtaRepeat />
