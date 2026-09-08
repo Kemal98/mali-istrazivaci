@@ -59,7 +59,8 @@ export default function BookCheckout() {
       adresa: formData.get("adresa"),
       grad: formData.get("grad"),
       uzrast: "",
-      napomena: formData.get("napomena"),
+      napomena: "", // polje uklonjeno iz forme na zahtjev; ostaje u payloadu
+                    // praznо da se ne mijenja oblik podataka koji ide u Sheet
       proizvod: "Interaktivna Montessori knjiga",
       kolicina: qty,
       cijena: `${total} KM`,
@@ -159,11 +160,6 @@ export default function BookCheckout() {
                 <label htmlFor="grad">Mjesto *</label>
                 <input type="text" id="grad" name="grad" required placeholder="Sarajevo" />
               </div>
-              <div className="dawn-field">
-                <label htmlFor="napomena">Napomena (opcionalno)</label>
-                <textarea id="napomena" name="napomena" rows={2} />
-              </div>
-
               <div className="dawn-modal-delivery">
                 <span className="dawn-modal-delivery-dot" aria-hidden="true" />
                 Kurirska dostava — plaćanje pouzećem
@@ -172,7 +168,7 @@ export default function BookCheckout() {
 
               {BOOK_ORDERS_ENABLED ? (
                 <button type="submit" className="dawn-btn-black" disabled={submitting}>
-                  {submitting ? "Šaljem…" : `KUPOVINA — ${total} KM →`}
+                  {submitting ? "Šaljem…" : `PORUČI SADA — ${total} KM →`}
                 </button>
               ) : (
                 <div className="dawn-checkout-paused">

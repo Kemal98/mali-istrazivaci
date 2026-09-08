@@ -5,8 +5,8 @@ import BookOrderTrigger from "./BookOrderTrigger";
 // screenshotu, crna traka koja ostaje na dnu dok se skrola kroz stranicu.
 export default function BookStickyBar() {
   return (
-    <BookOrderTrigger className="dawn-sticky-bar" aria-label="Poruči ovdje">
-      Poruči ovdje
+    <BookOrderTrigger className="dawn-sticky-bar" aria-label="Poruči sada">
+      Poruči sada
     </BookOrderTrigger>
   );
 }

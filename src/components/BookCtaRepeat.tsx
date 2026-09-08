@@ -19,7 +19,7 @@ export default function BookCtaRepeat() {
           <ShippingCutoff />
         </p>
         <BookOrderTrigger className="dawn-btn-black">
-          KUPOVINA
+          PORUČI SADA
         </BookOrderTrigger>
       </div>
     </section>

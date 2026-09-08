@@ -696,6 +696,7 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-announce-track{display:flex;width:max-content;gap:40px;
   animation:dawnMarquee 22s linear infinite;padding-left:40px}
 .dawn-announce-track span{white-space:nowrap}
+.dawn-announce-cta{font-size:1.05em;font-weight:900;letter-spacing:.02em}
 @keyframes dawnMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){
   .dawn-announce-track{animation:none;flex-wrap:wrap;width:auto;
@@ -741,10 +742,10 @@ body:has(.home-page-root){padding-bottom:0}
 /* i dalje se zove "black" u kodu (istorijski naziv od originalnog Dawn
    brifa), ali sad renderuje plavu — mijenjano ovdje umjesto preimenovanja
    klase kroz sve komponente koje je koriste */
-.dawn-btn-black{display:block;width:100%;background:var(--blue);color:#fff;
+.dawn-btn-black{display:block;width:100%;background:var(--orange);color:#fff;
   font-weight:800;font-size:1rem;letter-spacing:.02em;padding:17px 20px;
   border:none;border-radius:4px;cursor:pointer;text-align:center}
-.dawn-btn-black:hover{background:#123a6b}
+.dawn-btn-black:hover{background:var(--orange-d)}
 .dawn-cta-note{font-size:.78rem;color:#777;font-weight:600;margin-top:10px}
 .dawn-btn-pulse{animation:dawnPulse 1.8s ease-in-out infinite}
 .dawn-btn-pulse:hover{animation:none}
@@ -812,8 +813,8 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-repeat-cta .dawn-h2{color:#fff}
 .dawn-repeat-promo{font-weight:700;font-size:.9rem;color:#cfe0f5;margin-bottom:8px}
 .dawn-repeat-sub{font-size:.95rem;color:#e3edf9;font-weight:600;margin-bottom:20px}
-.dawn-repeat-cta .dawn-btn-black{background:#fff;color:var(--blue)}
-.dawn-repeat-cta .dawn-btn-black:hover{background:#eee}
+/* .dawn-btn-black je već narandžasta (v. gore) — dovoljan kontrast na
+   plavoj pozadini ove sekcije, nije trebao poseban override */
 
 /* contact */
 .dawn-contact-q{font-weight:700;font-size:1.05rem;margin-bottom:12px}
@@ -888,12 +889,13 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-footer-disclaimer{color:#777;font-size:.78rem;margin-top:10px}
 .dawn-footer-copy{color:#777;font-size:.8rem;margin-top:14px}
 
-/* sticky bar na dnu — samo mobitel, po referentnom screenshotu */
+/* sticky bar na dnu — samo mobitel, narandžasta/"PORUČI SADA" po zahtjevu */
 .dawn-sticky-bar{display:none}
 @media(max-width:900px){
   .dawn-sticky-bar{display:flex;align-items:center;justify-content:center;
     position:fixed;bottom:0;left:0;right:0;z-index:300;
-    background:#111;color:#fff;font-weight:800;font-size:1rem;
+    background:var(--orange);color:#fff;font-weight:800;font-size:1.15rem;
+    text-transform:uppercase;letter-spacing:.03em;
     padding:16px;text-align:center;box-shadow:0 -6px 18px rgba(0,0,0,.15)}
   .dawn-page{padding-bottom:58px}
 }

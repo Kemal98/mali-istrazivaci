@@ -6,7 +6,7 @@ import BookOrderTrigger from "./BookOrderTrigger";
 import { FAMILIES_COUNT } from "@/lib/socialProof";
 
 const ITEMS = [
-  "👉 Poruči ovdje",
+  "👉 PORUČI SADA",
   "✓ Pouzdano mjesto za kupovinu",
   "💵 Plaćanje pouzećem",
   "🚚 Dostava po cijeloj BiH",
@@ -34,7 +34,12 @@ export default function DawnHeader() {
                 ⏰ <ShippingCutoff />
               </span>
             ) : (
-              <span key={i}>{t}</span>
+              <span
+                key={i}
+                className={t.includes("PORUČI SADA") ? "dawn-announce-cta" : undefined}
+              >
+                {t}
+              </span>
             )
           )}
         </div>
