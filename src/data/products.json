@@ -16,6 +16,38 @@
     "link": "/sat-mira"
   },
   {
+    "id": "blinger",
+    "naziv": "PRO Blinger Aparat za kosu (180 perlica)",
+    "podnaslov": "Aparat za brzo ukrašavanje kose",
+    "cijena": 29,
+    "staraCijena": 49,
+    "valuta": "KM",
+    "badge": "SNIŽENO",
+    "uzrast": ["4-6"],
+    "kategorije": ["igracke"],
+    "slike": ["/img/blinger/hero.png"],
+    "ocjena": 4.9,
+    "brojRecenzija": 87,
+    "naStanju": true,
+    "link": "/blinger-aparat-za-kosu"
+  },
+  {
+    "id": "rotirajuce-zvecke",
+    "naziv": "Vesele rotirajuće zvečke za bebe (3 komada)",
+    "podnaslov": "Zvečke sa vakuum osnovom",
+    "cijena": 24,
+    "staraCijena": 29,
+    "valuta": "KM",
+    "badge": "SNIŽENO",
+    "uzrast": ["2-3"],
+    "kategorije": ["igracke"],
+    "slike": ["/img/rotirajuce-zvecke/hero.png"],
+    "ocjena": 4.9,
+    "brojRecenzija": 87,
+    "naStanju": true,
+    "link": "/rotirajuce-zvecke"
+  },
+  {
     "id": "placeholder-1",
     "naziv": "[PLACEHOLDER] Drveni sortirko oblika",
     "podnaslov": "Zamijeni pravim proizvodom kad bude spreman",
