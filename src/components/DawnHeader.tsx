@@ -5,6 +5,7 @@ import ShippingCutoff from "./ShippingCutoff";
 import { FAMILIES_COUNT } from "@/lib/socialProof";
 
 const ITEMS = [
+  "👉 Poruči ovdje",
   "✓ Pouzdano mjesto za kupovinu",
   "💵 Plaćanje pouzećem",
   "🚚 Dostava po cijeloj BiH",
