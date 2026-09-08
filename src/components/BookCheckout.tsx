@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { GOOGLE_SCRIPT_URL, BOOK_ORDERS_ENABLED } from "@/lib/constants";
 import { useDawnQty } from "./DawnQtyContext";
 
+// Napomena: birač količine je ranije bio u BookHero (na vrhu) — na
+// zahtjev je maknut odatle i sad postoji samo ovdje, u formi.
+
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
@@ -13,7 +16,7 @@ declare global {
 
 export default function BookCheckout() {
   const router = useRouter();
-  const { qty } = useDawnQty();
+  const { qty, setQty } = useDawnQty();
   const [revealed, setRevealed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
@@ -86,8 +89,25 @@ export default function BookCheckout() {
         {!revealed ? (
           <div className="dawn-checkout-summary">
             <div className="dawn-checkout-line">
-              <span>Interaktivna Montessori knjiga × {qty}</span>
+              <span>Interaktivna Montessori knjiga</span>
               <span>{total} KM</span>
+            </div>
+            <div className="dawn-qty" role="group" aria-label="Količina">
+              <button
+                type="button"
+                onClick={() => setQty(qty - 1)}
+                aria-label="Smanji količinu"
+              >
+                −
+              </button>
+              <span className="dawn-qty-val">{qty}</span>
+              <button
+                type="button"
+                onClick={() => setQty(qty + 1)}
+                aria-label="Povećaj količinu"
+              >
+                +
+              </button>
             </div>
             <p className="dawn-checkout-note">
               Uključena dostava od {DELIVERY} KM · Plaćanje pouzećem

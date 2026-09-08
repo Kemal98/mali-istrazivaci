@@ -1,15 +1,14 @@
 "use client";
 
 import { RATING, REVIEWS_COUNT } from "@/lib/socialProof";
-import { useDawnQty } from "./DawnQtyContext";
 
 // Napomena: dugme ovdje uvijek izgleda aktivno/dostupno (na zahtjev) —
 // stvarno stanje narudžbi (BOOK_ORDERS_ENABLED u constants.ts) i dalje
 // odlučuje da li forma na dnu stranice zaista šalje narudžbu. Ako se
 // narudžbe zaista ponovo otvore, prebaci tu zastavicu na true.
+// Birač količine je maknut odavde na zahtjev — sad postoji samo u
+// BookCheckout.tsx (forma dole).
 export default function BookHero() {
-  const { qty, setQty } = useDawnQty();
-
   return (
     <section className="dawn-product" id="top">
       <div className="dawn-col">
@@ -26,10 +25,12 @@ export default function BookHero() {
           <span>Svijet malih istraživača</span>
         </h1>
 
-        <p className="dawn-rating">
-          <span className="dawn-stars">★★★★★</span>
-          {RATING}/5 · {REVIEWS_COUNT} ocjena
-        </p>
+        <a href="#recenzije" className="dawn-rating">
+          <span className="dawn-stars" aria-hidden="true">
+            ♥♥♥♥♥
+          </span>
+          {RATING} ({REVIEWS_COUNT} ocjena)
+        </a>
 
         <div className="dawn-price-row">
           <span className="dawn-price-old">29 KM</span>
@@ -37,30 +38,14 @@ export default function BookHero() {
           <span className="dawn-badge-sale">SNIŽENO</span>
         </div>
 
-        <div className="dawn-qty" role="group" aria-label="Količina">
-          <button
-            type="button"
-            onClick={() => setQty(qty - 1)}
-            aria-label="Smanji količinu"
-          >
-            −
-          </button>
-          <span className="dawn-qty-val">{qty}</span>
-          <button
-            type="button"
-            onClick={() => setQty(qty + 1)}
-            aria-label="Povećaj količinu"
-          >
-            +
-          </button>
-        </div>
+        <p className="dawn-pay-line">
+          Plaćanje pouzećem — pouzdana kupovina
+        </p>
 
         <a href="#naruci" className="dawn-btn-black dawn-btn-pulse">
-          NARUČI — PLATIŠ KURIRU
+          KUPOVINA
         </a>
-        <p className="dawn-cta-note">
-          Ne plaćaš ništa unaprijed · Dostava po cijeloj BiH
-        </p>
+        <p className="dawn-cta-note">Dostava po cijeloj BiH · 2–4 dana</p>
       </div>
     </section>
   );

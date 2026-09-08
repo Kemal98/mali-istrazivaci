@@ -2,13 +2,42 @@
 
 import Link from "next/link";
 import ShippingCutoff from "./ShippingCutoff";
+import { FAMILIES_COUNT } from "@/lib/socialProof";
+
+const ITEMS = [
+  "✓ Pouzdano mjesto za kupovinu",
+  "💵 Plaćanje pouzećem",
+  "🚚 Dostava po cijeloj BiH",
+  `❤️ ${FAMILIES_COUNT}+ zadovoljnih porodica`,
+  "cutoff", // zamjenjeno stvarnom <ShippingCutoff/> komponentom ispod
+];
 
 export default function DawnHeader() {
+  // Traka se duplira jednom da animacija (translateX -50%) izgleda kao
+  // beskonačna petlja bez vidljivog "skoka" na kraju.
+  const loop = [...ITEMS, ...ITEMS];
+
   return (
-    <>
-      <div className="dawn-announce">
-        <ShippingCutoff />
-      </div>
+    // Traka + header fiksirani zajedno (jedan sticky omotač) — traka
+    // ostaje vidljiva i klikabilna dok se skrola, ne samo header.
+    <div className="dawn-topbar-wrap">
+      <a
+        href="#naruci"
+        className="dawn-announce"
+        aria-label="Naruči odmah — kliknite za narudžbu"
+      >
+        <div className="dawn-announce-track">
+          {loop.map((t, i) =>
+            t === "cutoff" ? (
+              <span key={i}>
+                ⏰ <ShippingCutoff />
+              </span>
+            ) : (
+              <span key={i}>{t}</span>
+            )
+          )}
+        </div>
+      </a>
       <header className="dawn-header">
         <div className="dawn-header-inner">
           <Link href="/" className="dawn-logo">
@@ -35,6 +64,6 @@ export default function DawnHeader() {
           </a>
         </div>
       </header>
-    </>
+    </div>
   );
 }

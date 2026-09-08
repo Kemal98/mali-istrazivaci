@@ -686,11 +686,22 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-page section{padding:44px 0}
 .dawn-col{max-width:600px;margin:0 auto;padding:0 20px;text-align:center}
 
-/* announcement + header */
-.dawn-announce{background:var(--blue);color:#fff;text-align:center;font-weight:700;
-  font-size:.78rem;padding:8px 16px;letter-spacing:.01em}
-.dawn-header{position:sticky;top:0;z-index:200;background:#fff;
-  border-bottom:1px solid #EAEAEA}
+/* announcement + header — obavijena u jedan sticky omotač, vidi
+   .dawn-topbar-wrap, umjesto da svaki dio bude sam za sebe fiksiran */
+.dawn-topbar-wrap{position:sticky;top:0;z-index:250}
+.dawn-announce{display:block;background:var(--blue);color:#fff;font-weight:700;
+  font-size:.78rem;padding:8px 0;letter-spacing:.01em;overflow:hidden;
+  text-decoration:none;cursor:pointer}
+.dawn-announce:hover{background:#163f70}
+.dawn-announce-track{display:flex;width:max-content;gap:40px;
+  animation:dawnMarquee 22s linear infinite;padding-left:40px}
+.dawn-announce-track span{white-space:nowrap}
+@keyframes dawnMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){
+  .dawn-announce-track{animation:none;flex-wrap:wrap;width:auto;
+    justify-content:center;padding-left:0}
+}
+.dawn-header{background:#fff;border-bottom:1px solid #EAEAEA}
 .dawn-header-inner{max-width:1120px;margin:0 auto;padding:14px 20px;
   display:flex;align-items:center;justify-content:space-between;gap:16px}
 .dawn-logo{display:flex;align-items:center;gap:9px;font-weight:800;
@@ -707,15 +718,19 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-product-img{aspect-ratio:1/1;overflow:hidden;margin-bottom:24px;
   background:#F5F5F5;border-radius:4px}
 .dawn-product-img img{width:100%;height:100%;object-fit:cover}
-.dawn-h1{font-size:2.3rem;margin-bottom:10px}
+.dawn-h1{font-size:2.7rem;margin-bottom:12px}
 .dawn-h1 span{display:block;font-size:.5em;font-weight:600;color:#555;margin-top:6px}
 .dawn-rating{display:flex;align-items:center;justify-content:center;gap:8px;
-  font-size:.85rem;font-weight:600;color:#555;margin-bottom:16px}
-.dawn-stars{color:#111;letter-spacing:1px}
+  font-size:1rem;font-weight:700;color:#555;margin-bottom:18px;
+  text-decoration:none;width:fit-content;margin-left:auto;margin-right:auto}
+.dawn-rating:hover{text-decoration:underline}
+.dawn-stars{color:var(--blue);letter-spacing:1px;font-size:1.1rem}
 .dawn-price-row{display:flex;align-items:baseline;justify-content:center;
-  gap:12px;margin-bottom:20px;flex-wrap:wrap}
-.dawn-price-old{font-size:1.2rem;color:#999;text-decoration:line-through;font-weight:600}
-.dawn-price-new{font-size:2.6rem;font-weight:800;color:var(--blue)}
+  gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.dawn-price-old{font-size:1.35rem;color:#999;text-decoration:line-through;font-weight:600}
+.dawn-pay-line{font-size:.9rem;font-weight:700;color:#555;text-transform:uppercase;
+  letter-spacing:.03em;margin-bottom:18px}
+.dawn-price-new{font-size:3rem;font-weight:800;color:var(--red)}
 .dawn-badge-sale{background:var(--blue);color:#fff;font-weight:800;font-size:.68rem;
   padding:4px 9px;border-radius:3px;letter-spacing:.03em}
 .dawn-qty{display:inline-flex;align-items:center;border:1.5px solid #111;
@@ -849,8 +864,9 @@ body:has(.home-page-root){padding-bottom:0}
 
 @media(max-width:640px){
   .dawn-page section{padding:34px 0}
-  .dawn-h1{font-size:1.75rem}
-  .dawn-price-new{font-size:2.1rem}
-  .dawn-price-old{font-size:1.05rem}
+  .dawn-h1{font-size:2rem}
+  .dawn-price-new{font-size:2.5rem}
+  .dawn-price-old{font-size:1.2rem}
   .dawn-story-stmt{font-size:1.05rem}
+  .dawn-rating{font-size:.92rem}
 }
