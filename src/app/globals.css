@@ -862,6 +862,16 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-footer-disclaimer{color:#777;font-size:.78rem;margin-top:10px}
 .dawn-footer-copy{color:#777;font-size:.8rem;margin-top:14px}
 
+/* sticky bar na dnu — samo mobitel, po referentnom screenshotu */
+.dawn-sticky-bar{display:none}
+@media(max-width:900px){
+  .dawn-sticky-bar{display:flex;align-items:center;justify-content:center;
+    position:fixed;bottom:0;left:0;right:0;z-index:300;
+    background:#111;color:#fff;font-weight:800;font-size:1rem;
+    padding:16px;text-align:center;box-shadow:0 -6px 18px rgba(0,0,0,.15)}
+  .dawn-page{padding-bottom:58px}
+}
+
 @media(max-width:640px){
   .dawn-page section{padding:34px 0}
   .dawn-h1{font-size:2rem}

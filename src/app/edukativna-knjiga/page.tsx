@@ -14,6 +14,7 @@ import BookContact from "@/components/BookContact";
 import BookReviewsDawn from "@/components/BookReviewsDawn";
 import BookCheckout from "@/components/BookCheckout";
 import DawnFooter from "@/components/DawnFooter";
+import BookStickyBar from "@/components/BookStickyBar";
 
 export const metadata: Metadata = {
   title:
@@ -41,6 +42,7 @@ export default function EdukativnaKnjigaPage() {
         <BookCheckout />
         <DawnFooter />
       </DawnQtyProvider>
+      <BookStickyBar />
     </div>
   );
 }
