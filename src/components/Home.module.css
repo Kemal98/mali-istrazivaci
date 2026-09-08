@@ -59,7 +59,7 @@
   font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--h-blue);
+  color: var(--h-orange);
   margin-bottom: 10px;
 }
 .sectionTitle {
@@ -105,18 +105,18 @@
 }
 .btnSecondary {
   background: transparent;
-  color: var(--h-blue);
-  border: 2px solid var(--h-blue);
+  color: var(--h-orange);
+  border: 2px solid var(--h-orange);
   transition: background 0.15s ease, color 0.15s ease;
 }
 .btnSecondary:hover {
-  background: var(--h-blue);
+  background: var(--h-orange);
   color: #fff;
 }
 
 /* 1 — announcement */
 .announce {
-  background: var(--h-blue);
+  background: var(--h-orange);
   color: #fff;
   text-align: center;
   font-weight: 700;
@@ -163,7 +163,7 @@
   font-size: 0.94rem;
 }
 .navLinks a:hover {
-  color: var(--h-blue);
+  color: var(--h-orange);
 }
 .headerRight {
   display: flex;
@@ -398,11 +398,11 @@
 .cardPrice {
   font-family: var(--h-font-head);
   font-weight: 600;
-  font-size: 1.55rem;
+  font-size: 1.95rem;
   color: var(--h-red);
 }
 .cardPriceOld {
-  font-size: 0.92rem;
+  font-size: 1.05rem;
   color: #a89a86;
   text-decoration: line-through;
   font-weight: 600;
@@ -495,7 +495,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--h-blue);
+  background: var(--h-orange);
   color: #fff;
   font-family: var(--h-font-head);
   font-weight: 600;
@@ -617,7 +617,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--h-blue);
+  background: var(--h-orange);
   color: #fff;
   font-family: var(--h-font-head);
   font-weight: 600;
@@ -691,7 +691,7 @@
   font-size: 0.9rem;
 }
 .footCol a:hover {
-  color: var(--h-blue);
+  color: var(--h-orange);
 }
 .footBottom {
   text-align: center;
