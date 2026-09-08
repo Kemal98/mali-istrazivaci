@@ -3,20 +3,16 @@
 import { RATING, REVIEWS_COUNT } from "@/lib/socialProof";
 import BookOrderTrigger from "./BookOrderTrigger";
 
-// NAPOMENA: nema stvarne fotografije ovog proizvoda u /img — placeholder
-// okvir ispod umjesto tuđe slike (vidi napomenu uz commit). Zamijeni
-// pravom fotografijom čim je imaš.
 export default function BlingerHero() {
   return (
     <section className="dawn-product" id="top">
       <div className="dawn-col">
-        <div className="dawn-product-img dawn-img-placeholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <path d="M21 15l-5-5L5 21" />
-          </svg>
-          <span>Slika proizvoda dolazi uskoro</span>
+        <div className="dawn-product-img">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/img/blinger/hero.png"
+            alt="Blinger aparat za kosu s perlicama — djeca se igraju i ukrašavaju kosu"
+          />
         </div>
 
         <h1 className="dawn-h1 dawn-h1-lg">PRO Blinger Aparat za kosu (180 perlica)</h1>
