@@ -5,6 +5,11 @@ export const GOOGLE_SCRIPT_URL =
 
 export const CONTACT_EMAIL = "svijetistrazivaca@gmail.com";
 
+// Narudžbe knjige su privremeno isključene — vrati na true kad se ponovo
+// otvore. Dijeljeno između BookHero.tsx (dugme na vrhu) i BookCheckout.tsx
+// (forma na dnu) da oba mjesta uvijek pokazuju isto stanje.
+export const BOOK_ORDERS_ENABLED = false;
+
 export const SOCIAL_INSTAGRAM =
   "https://www.instagram.com/svijetmalihistrazivaca/";
 export const SOCIAL_FACEBOOK =

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GOOGLE_SCRIPT_URL } from "@/lib/constants";
+import { GOOGLE_SCRIPT_URL, BOOK_ORDERS_ENABLED } from "@/lib/constants";
 import { useDawnQty } from "./DawnQtyContext";
 
 declare global {
@@ -10,10 +10,6 @@ declare global {
     fbq?: (...args: unknown[]) => void;
   }
 }
-
-// Narudžbe knjige su privremeno isključene — vrati na true kad se
-// ponovo otvore (i po želji razdvoji thank-you stranicu, vidi razgovor).
-const BOOK_ORDERS_ENABLED = false;
 
 export default function BookCheckout() {
   const router = useRouter();

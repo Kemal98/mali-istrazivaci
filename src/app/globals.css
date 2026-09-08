@@ -735,6 +735,11 @@ body:has(.home-page-root){padding-bottom:0}
   70%{box-shadow:0 0 0 14px rgba(17,17,17,0)}
   100%{box-shadow:0 0 0 0 rgba(17,17,17,0)}
 }
+.dawn-badge-paused{background:#EEE;color:#666;font-weight:800;font-size:.68rem;
+  padding:4px 9px;border-radius:3px;letter-spacing:.03em}
+.dawn-btn-black-disabled{display:block;width:100%;background:#EEE;color:#888;
+  font-weight:800;font-size:1rem;letter-spacing:.02em;padding:17px 20px;
+  border-radius:4px;text-align:center;cursor:default}
 
 /* heart tagline block */
 .dawn-heart-tag{font-weight:800;font-size:1.05rem;margin-bottom:14px}

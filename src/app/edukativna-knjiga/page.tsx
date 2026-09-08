@@ -28,10 +28,10 @@ export default function EdukativnaKnjigaPage() {
       <DawnQtyProvider>
         <DawnHeader />
         <BookHero />
+        <BookSocialProof />
         <BookHeart />
         <BookWhyLoveIt />
         <BookStory />
-        <BookSocialProof />
         <BookOccasions />
         <BookIncludes />
         <BookTrust />
