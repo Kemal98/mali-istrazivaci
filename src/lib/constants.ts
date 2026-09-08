@@ -17,6 +17,10 @@ export const BOOK_ORDERS_ENABLED = false;
 // sliku i da imaš zalihe.
 export const BLINGER_ORDERS_ENABLED = false;
 
+// Isto kao BLINGER_ORDERS_ENABLED — cijena i slike su sad stvarne, ali
+// zalihe nisu potvrđene. Prebaci na true kad potvrdiš da imaš zalihe.
+export const RATTLE_ORDERS_ENABLED = false;
+
 export const SOCIAL_INSTAGRAM =
   "https://www.instagram.com/svijetmalihistrazivaca/";
 export const SOCIAL_FACEBOOK =

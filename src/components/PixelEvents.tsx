@@ -9,24 +9,27 @@ declare global {
   }
 }
 
+// Jedan red po proizvod-stranici — dodavanje nove stranice znači dodati
+// jedan red ovdje, ne još jednu ternary granu. "/" namjerno nije ovdje
+// (nova početna, mreža proizvoda — nijedan konkretan proizvod se ne
+// gleda, pa se ViewContent tamo namjerno ne pali, vidi ispod).
+const PRODUCT_PIXEL: { path: string; content_name: string; value: number }[] = [
+  { path: "/edukativna-knjiga", content_name: "Interaktivna Montessori knjiga", value: 15 },
+  { path: "/blinger-aparat-za-kosu", content_name: "Blinger aparat za kosu", value: 29 },
+  { path: "/rotirajuce-zvecke", content_name: "Vesele rotirajuće zvečke", value: 24 },
+];
+const DEFAULT_CONTENT = { content_name: "SAT MIRA set 3u1", value: 29 };
+
 export default function PixelEvents() {
   const fired = useRef(false);
   const pathname = usePathname();
 
   useEffect(() => {
-    // "/" je od sada nova početna (mreža proizvoda), ne SAT MIRA stranica
-    // — SAT MIRA se preselio na /sat-mira. Grid nije "pregled proizvoda"
-    // u smislu piksela (nijedan konkretan proizvod se ne gleda), pa tamo
-    // namjerno ne pali lažan ViewContent za SAT MIRA. Sve ostalo (uklj.
-    // /hvala) zadržava tačno isto ponašanje kao prije ove izmjene.
-    const isBook = pathname?.startsWith("/edukativna-knjiga");
-    const isBlinger = pathname?.startsWith("/blinger-aparat-za-kosu");
     const isHomeGrid = pathname === "/";
-    const content = isBook
-      ? { content_name: "Interaktivna Montessori knjiga", value: 15 }
-      : isBlinger
-      ? { content_name: "Blinger aparat za kosu", value: 29 }
-      : { content_name: "SAT MIRA set 3u1", value: 29 };
+    const match = PRODUCT_PIXEL.find((p) => pathname?.startsWith(p.path));
+    const content = match
+      ? { content_name: match.content_name, value: match.value }
+      : DEFAULT_CONTENT;
 
     if (window.fbq && !isHomeGrid) {
       window.fbq("track", "ViewContent", { ...content, currency: "BAM" });
