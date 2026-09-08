@@ -20,9 +20,12 @@ export default function PixelEvents() {
     // namjerno ne pali lažan ViewContent za SAT MIRA. Sve ostalo (uklj.
     // /hvala) zadržava tačno isto ponašanje kao prije ove izmjene.
     const isBook = pathname?.startsWith("/edukativna-knjiga");
+    const isBlinger = pathname?.startsWith("/blinger-aparat-za-kosu");
     const isHomeGrid = pathname === "/";
     const content = isBook
       ? { content_name: "Interaktivna Montessori knjiga", value: 15 }
+      : isBlinger
+      ? { content_name: "Blinger aparat za kosu", value: 19 }
       : { content_name: "SAT MIRA set 3u1", value: 29 };
 
     if (window.fbq && !isHomeGrid) {

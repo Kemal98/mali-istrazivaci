@@ -10,6 +10,13 @@ export const CONTACT_EMAIL = "svijetistrazivaca@gmail.com";
 // (forma na dnu) da oba mjesta uvijek pokazuju isto stanje.
 export const BOOK_ORDERS_ENABLED = false;
 
+// Blinger je nov proizvod, tek se gradi stranica — cijena je privremena
+// (nema stvarnog broja), nema prave fotografije. Namjerno isključeno dok
+// se to ne potvrdi, da se ne prime prave narudžbe za nešto što možda još
+// nije stvarno spremno za prodaju. Prebaci na true kad potvrdiš cijenu,
+// sliku i da imaš zalihe.
+export const BLINGER_ORDERS_ENABLED = false;
+
 export const SOCIAL_INSTAGRAM =
   "https://www.instagram.com/svijetmalihistrazivaca/";
 export const SOCIAL_FACEBOOK =
