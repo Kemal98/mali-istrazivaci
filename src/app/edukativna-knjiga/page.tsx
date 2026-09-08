@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DawnQtyProvider } from "@/components/DawnQtyContext";
+import { BookCheckoutModalProvider } from "@/components/BookCheckoutModalContext";
 import DawnHeader from "@/components/DawnHeader";
 import BookHero from "@/components/BookHero";
 import BookHeart from "@/components/BookHeart";
@@ -27,22 +28,24 @@ export default function EdukativnaKnjigaPage() {
   return (
     <div className="dawn-page">
       <DawnQtyProvider>
-        <DawnHeader />
-        <BookHero />
-        <BookSocialProof />
-        <BookHeart />
-        <BookWhyLoveIt />
-        <BookStory />
-        <BookOccasions />
-        <BookIncludes />
-        <BookTrust />
-        <BookCtaRepeat />
-        <BookContact />
-        <BookReviewsDawn />
-        <BookCheckout />
-        <DawnFooter />
+        <BookCheckoutModalProvider>
+          <DawnHeader />
+          <BookHero />
+          <BookSocialProof />
+          <BookHeart />
+          <BookWhyLoveIt />
+          <BookStory />
+          <BookOccasions />
+          <BookIncludes />
+          <BookTrust />
+          <BookCtaRepeat />
+          <BookContact />
+          <BookReviewsDawn />
+          <BookCheckout />
+          <DawnFooter />
+          <BookStickyBar />
+        </BookCheckoutModalProvider>
       </DawnQtyProvider>
-      <BookStickyBar />
     </div>
   );
 }

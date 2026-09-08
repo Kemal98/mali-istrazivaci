@@ -1,6 +1,7 @@
 "use client";
 
 import ShippingCutoff from "./ShippingCutoff";
+import BookOrderTrigger from "./BookOrderTrigger";
 
 // Napomena: brief je tražio "akcija do kraja dana!" — ista kategorija lažne
 // hitnosti kao "akcija do isteka zalihe", ranije zabranjeno u ovoj sesiji jer
@@ -17,9 +18,9 @@ export default function BookCtaRepeat() {
         <p className="dawn-repeat-sub">
           <ShippingCutoff />
         </p>
-        <a href="#naruci" className="dawn-btn-black">
-          NARUČI — PLATIŠ KURIRU
-        </a>
+        <BookOrderTrigger className="dawn-btn-black">
+          KUPOVINA
+        </BookOrderTrigger>
       </div>
     </section>
   );

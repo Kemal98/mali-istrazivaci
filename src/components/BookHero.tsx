@@ -1,6 +1,7 @@
 "use client";
 
 import { RATING, REVIEWS_COUNT } from "@/lib/socialProof";
+import BookOrderTrigger from "./BookOrderTrigger";
 
 // Napomena: dugme ovdje uvijek izgleda aktivno/dostupno (na zahtjev) —
 // stvarno stanje narudžbi (BOOK_ORDERS_ENABLED u constants.ts) i dalje
@@ -42,9 +43,9 @@ export default function BookHero() {
           Plaćanje pouzećem — pouzdana kupovina
         </p>
 
-        <a href="#naruci" className="dawn-btn-black dawn-btn-pulse">
+        <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           KUPOVINA
-        </a>
+        </BookOrderTrigger>
         <p className="dawn-cta-note">Dostava po cijeloj BiH · 2–4 dana</p>
       </div>
     </section>

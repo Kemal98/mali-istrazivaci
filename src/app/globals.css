@@ -835,11 +835,7 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-rev-verified{font-size:.72rem;font-weight:700;color:var(--green-d)}
 .dawn-rev-card p{font-size:.94rem;color:#333;line-height:1.65}
 
-/* checkout */
-.dawn-checkout{background:#FAFAFA}
-.dawn-checkout-line{display:flex;justify-content:space-between;font-weight:700;
-  font-size:.98rem;margin-bottom:8px}
-.dawn-checkout-note{font-size:.8rem;color:#777;font-weight:600;margin-bottom:18px}
+/* checkout — sad popup, vidi .dawn-modal-* niže */
 .dawn-checkout-fields{text-align:left}
 .dawn-field{margin-bottom:14px}
 .dawn-field label{display:block;font-weight:700;font-size:.85rem;margin-bottom:6px}
@@ -847,10 +843,40 @@ body:has(.home-page-root){padding-bottom:0}
   border:1.5px solid #DDD;border-radius:4px;font-family:var(--dawn-sans);
   font-size:.95rem;background:#fff;color:#111}
 .dawn-field input:focus,.dawn-field textarea:focus{outline:none;border-color:#111}
+.dawn-field-row{display:flex;gap:12px}
+.dawn-field-row .dawn-field{flex:1}
 .dawn-checkout-paused{background:#fff;border:1.5px dashed #999;border-radius:4px;
   padding:15px;text-align:center;font-weight:700;color:#555}
 .dawn-checkout-error{color:var(--red);font-weight:700;font-size:.85rem;
   text-align:center;margin-top:10px}
+
+/* order modal */
+.dawn-modal-backdrop{position:fixed;inset:0;z-index:500;background:rgba(17,17,17,.55);
+  display:flex;align-items:flex-end;justify-content:center;padding:0}
+.dawn-modal{background:#fff;width:100%;max-width:480px;max-height:92vh;
+  overflow-y:auto;border-radius:16px 16px 0 0;padding:24px 20px 28px;position:relative}
+.dawn-modal-close{position:absolute;top:14px;right:14px;width:36px;height:36px;
+  border:none;background:#F5F5F5;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;color:#111;cursor:pointer}
+.dawn-modal-close svg{width:18px;height:18px}
+.dawn-modal-product{display:flex;align-items:center;gap:12px;padding-bottom:16px;
+  margin-bottom:18px;border-bottom:1px solid #EAEAEA}
+.dawn-modal-product img{width:52px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0}
+.dawn-modal-product div{display:flex;flex-direction:column;flex:1;min-width:0}
+.dawn-modal-product b{font-size:.92rem}
+.dawn-modal-product span{font-size:.78rem;color:#777}
+.dawn-modal-price{font-weight:800;font-size:1.1rem;flex-shrink:0}
+.dawn-modal-qty{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;font-weight:700;font-size:.92rem}
+.dawn-modal-delivery{display:flex;align-items:center;gap:10px;background:#FAFAFA;
+  border-radius:6px;padding:12px 14px;font-size:.85rem;font-weight:600;color:#333;
+  margin-bottom:16px}
+.dawn-modal-delivery b{margin-left:auto}
+.dawn-modal-delivery-dot{width:9px;height:9px;border-radius:50%;background:var(--blue);flex-shrink:0}
+@media(min-width:600px){
+  .dawn-modal-backdrop{align-items:center;padding:24px}
+  .dawn-modal{border-radius:16px}
+}
 
 /* back to top + footer */
 .dawn-back-top{text-align:center;padding:22px 0 0}

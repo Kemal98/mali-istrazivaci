@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import ShippingCutoff from "./ShippingCutoff";
+import BookOrderTrigger from "./BookOrderTrigger";
 import { FAMILIES_COUNT } from "@/lib/socialProof";
 
 const ITEMS = [
@@ -22,8 +23,7 @@ export default function DawnHeader() {
     // Traka + header fiksirani zajedno (jedan sticky omotač) — traka
     // ostaje vidljiva i klikabilna dok se skrola, ne samo header.
     <div className="dawn-topbar-wrap">
-      <a
-        href="#naruci"
+      <BookOrderTrigger
         className="dawn-announce"
         aria-label="Naruči odmah — kliknite za narudžbu"
       >
@@ -38,7 +38,7 @@ export default function DawnHeader() {
             )
           )}
         </div>
-      </a>
+      </BookOrderTrigger>
       <header className="dawn-header">
         <div className="dawn-header-inner">
           <Link href="/" className="dawn-logo">
@@ -51,7 +51,7 @@ export default function DawnHeader() {
             <Link href="/">Svi proizvodi</Link>
             <a href="#kontakt">Kontakt</a>
           </nav>
-          <a href="#naruci" className="dawn-cart-btn" aria-label="Naruči">
+          <BookOrderTrigger className="dawn-cart-btn" aria-label="Naruči">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -62,7 +62,7 @@ export default function DawnHeader() {
               <circle cx="20" cy="21" r="1" />
               <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
             </svg>
-          </a>
+          </BookOrderTrigger>
         </div>
       </header>
     </div>

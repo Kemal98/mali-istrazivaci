@@ -1,12 +1,10 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { GOOGLE_SCRIPT_URL, BOOK_ORDERS_ENABLED } from "@/lib/constants";
 import { useDawnQty } from "./DawnQtyContext";
-
-// Napomena: birač količine je ranije bio u BookHero (na vrhu) — na
-// zahtjev je maknut odatle i sad postoji samo ovdje, u formi.
+import { useBookCheckoutModal } from "./BookCheckoutModalContext";
 
 declare global {
   interface Window {
@@ -14,26 +12,33 @@ declare global {
   }
 }
 
+// Forma je sad popup (na zahtjev) umjesto sekcije na stranici — otvara se
+// klikom na bilo koje "Naruči"/"Kupovina" dugme (vidi BookOrderTrigger).
+// #naruci ostaje kao prazan marker niže na stranici, samo za slučaj da JS
+// nije stigao da se učita kad se klikne (degradira na obično skrolanje).
 export default function BookCheckout() {
   const router = useRouter();
   const { qty, setQty } = useDawnQty();
-  const [revealed, setRevealed] = useState(false);
+  const { open, setOpen } = useBookCheckoutModal();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
   const DELIVERY = 10;
   const productPrice = 15;
   const total = productPrice * qty + DELIVERY;
 
-  // Bilo koji "NARUČI" link na stranici vodi na href="#naruci" (tako ostaje
-  // netaknuto praćenje InitiateCheckout u PixelEvents.tsx). Kad se hash
-  // promijeni na #naruci, otvaramo formu — nije dovoljan samo scroll.
   useEffect(() => {
-    const onHash = () => {
-      if (window.location.hash === "#naruci") setRevealed(true);
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    closeBtnRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
     };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -43,10 +48,13 @@ export default function BookCheckout() {
 
     const form = e.currentTarget;
     const formData = new FormData(form);
+    const ime = `${formData.get("ime") || ""} ${
+      formData.get("prezime") || ""
+    }`.trim();
 
     const data = {
       datum: new Date().toLocaleString("bs-BA"),
-      ime: formData.get("ime"),
+      ime,
       telefon: formData.get("tel"),
       adresa: formData.get("adresa"),
       grad: formData.get("grad"),
@@ -84,118 +92,102 @@ export default function BookCheckout() {
   }
 
   return (
-    <section className="dawn-checkout" id="naruci">
-      <div className="dawn-col">
-        {!revealed ? (
-          <div className="dawn-checkout-summary">
-            <div className="dawn-checkout-line">
-              <span>Interaktivna Montessori knjiga</span>
-              <span>{total} KM</span>
-            </div>
-            <div className="dawn-qty" role="group" aria-label="Količina">
-              <button
-                type="button"
-                onClick={() => setQty(qty - 1)}
-                aria-label="Smanji količinu"
-              >
-                −
-              </button>
-              <span className="dawn-qty-val">{qty}</span>
-              <button
-                type="button"
-                onClick={() => setQty(qty + 1)}
-                aria-label="Povećaj količinu"
-              >
-                +
-              </button>
-            </div>
-            <p className="dawn-checkout-note">
-              Uključena dostava od {DELIVERY} KM · Plaćanje pouzećem
-            </p>
+    <>
+      <span id="naruci" aria-hidden="true" />
+      {open && (
+        <div
+          className="dawn-modal-backdrop"
+          onClick={(e) => e.target === e.currentTarget && setOpen(false)}
+        >
+          <div
+            className="dawn-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Naruči — Interaktivna Montessori knjiga"
+          >
             <button
+              ref={closeBtnRef}
               type="button"
-              className="dawn-btn-black"
-              onClick={() => setRevealed(true)}
+              className="dawn-modal-close"
+              aria-label="Zatvori"
+              onClick={() => setOpen(false)}
             >
-              NARUČI — PLATIŠ KURIRU
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
             </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="dawn-checkout-fields">
-            <div className="dawn-field">
-              <label htmlFor="ime">Ime i prezime *</label>
-              <input
-                type="text"
-                id="ime"
-                name="ime"
-                required
-                placeholder="npr. Amina Hodžić"
-              />
-            </div>
-            <div className="dawn-field">
-              <label htmlFor="tel">Telefon *</label>
-              <input
-                type="tel"
-                id="tel"
-                name="tel"
-                required
-                placeholder="npr. 061 123 456"
-              />
-            </div>
-            <div className="dawn-field">
-              <label htmlFor="adresa">Adresa *</label>
-              <input
-                type="text"
-                id="adresa"
-                name="adresa"
-                required
-                placeholder="npr. Titova 15"
-              />
-            </div>
-            <div className="dawn-field">
-              <label htmlFor="grad">Grad *</label>
-              <input
-                type="text"
-                id="grad"
-                name="grad"
-                required
-                placeholder="npr. Sarajevo"
-              />
-            </div>
-            <div className="dawn-field">
-              <label htmlFor="napomena">Napomena (opcionalno)</label>
-              <textarea id="napomena" name="napomena" rows={2} />
-            </div>
 
-            <div className="dawn-checkout-line">
-              <span>Ukupno ({qty} kom + dostava)</span>
-              <span>{total} KM</span>
-            </div>
-
-            {BOOK_ORDERS_ENABLED ? (
-              <button
-                type="submit"
-                className="dawn-btn-black"
-                disabled={submitting}
-              >
-                {submitting ? "Šaljem…" : "POTVRDI NARUDŽBU"}
-              </button>
-            ) : (
-              <div className="dawn-checkout-paused">
-                Narudžbe knjige trenutno nisu dostupne.
+            <div className="dawn-modal-product">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/img/knjiga_proizvod2.png" alt="Interaktivna Montessori knjiga" />
+              <div>
+                <b>Interaktivna Montessori knjiga</b>
+                <span>Svijet malih istraživača</span>
               </div>
-            )}
-            {error && (
-              <p className="dawn-checkout-error">
-                Greška — pokušaj ponovo ili nam piši na mail.
-              </p>
-            )}
-            <p className="dawn-cta-note">
-              Ne plaćaš ništa unaprijed · Dostava po cijeloj BiH
-            </p>
-          </form>
-        )}
-      </div>
-    </section>
+              <div className="dawn-modal-price">15 KM</div>
+            </div>
+
+            <div className="dawn-modal-qty">
+              <span>Količina</span>
+              <div className="dawn-qty" role="group" aria-label="Količina">
+                <button type="button" onClick={() => setQty(qty - 1)} aria-label="Smanji količinu">−</button>
+                <span className="dawn-qty-val">{qty}</span>
+                <button type="button" onClick={() => setQty(qty + 1)} aria-label="Povećaj količinu">+</button>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="dawn-checkout-fields">
+              <div className="dawn-field-row">
+                <div className="dawn-field">
+                  <label htmlFor="ime">Ime *</label>
+                  <input type="text" id="ime" name="ime" required placeholder="Amina" />
+                </div>
+                <div className="dawn-field">
+                  <label htmlFor="prezime">Prezime *</label>
+                  <input type="text" id="prezime" name="prezime" required placeholder="Hodžić" />
+                </div>
+              </div>
+              <div className="dawn-field">
+                <label htmlFor="tel">Broj telefona *</label>
+                <input type="tel" id="tel" name="tel" required placeholder="npr. 061 123 456" />
+              </div>
+              <div className="dawn-field">
+                <label htmlFor="adresa">Ulica i broj *</label>
+                <input type="text" id="adresa" name="adresa" required placeholder="Titova 15" />
+              </div>
+              <div className="dawn-field">
+                <label htmlFor="grad">Mjesto *</label>
+                <input type="text" id="grad" name="grad" required placeholder="Sarajevo" />
+              </div>
+              <div className="dawn-field">
+                <label htmlFor="napomena">Napomena (opcionalno)</label>
+                <textarea id="napomena" name="napomena" rows={2} />
+              </div>
+
+              <div className="dawn-modal-delivery">
+                <span className="dawn-modal-delivery-dot" aria-hidden="true" />
+                Kurirska dostava — plaćanje pouzećem
+                <b>{DELIVERY} KM</b>
+              </div>
+
+              {BOOK_ORDERS_ENABLED ? (
+                <button type="submit" className="dawn-btn-black" disabled={submitting}>
+                  {submitting ? "Šaljem…" : `KUPOVINA — ${total} KM →`}
+                </button>
+              ) : (
+                <div className="dawn-checkout-paused">
+                  Narudžbe knjige trenutno nisu dostupne.
+                </div>
+              )}
+              {error && (
+                <p className="dawn-checkout-error">
+                  Greška — pokušaj ponovo ili nam piši na mail.
+                </p>
+              )}
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
