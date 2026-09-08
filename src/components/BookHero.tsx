@@ -1,9 +1,12 @@
 "use client";
 
 import { RATING, REVIEWS_COUNT } from "@/lib/socialProof";
-import { BOOK_ORDERS_ENABLED, CONTACT_EMAIL } from "@/lib/constants";
 import { useDawnQty } from "./DawnQtyContext";
 
+// Napomena: dugme ovdje uvijek izgleda aktivno/dostupno (na zahtjev) —
+// stvarno stanje narudžbi (BOOK_ORDERS_ENABLED u constants.ts) i dalje
+// odlučuje da li forma na dnu stranice zaista šalje narudžbu. Ako se
+// narudžbe zaista ponovo otvore, prebaci tu zastavicu na true.
 export default function BookHero() {
   const { qty, setQty } = useDawnQty();
 
@@ -31,53 +34,33 @@ export default function BookHero() {
         <div className="dawn-price-row">
           <span className="dawn-price-old">29 KM</span>
           <span className="dawn-price-new">15 KM</span>
-          {BOOK_ORDERS_ENABLED ? (
-            <span className="dawn-badge-sale">SNIŽENO</span>
-          ) : (
-            <span className="dawn-badge-paused">TRENUTNO NEDOSTUPNO</span>
-          )}
+          <span className="dawn-badge-sale">SNIŽENO</span>
         </div>
 
-        {BOOK_ORDERS_ENABLED && (
-          <div className="dawn-qty" role="group" aria-label="Količina">
-            <button
-              type="button"
-              onClick={() => setQty(qty - 1)}
-              aria-label="Smanji količinu"
-            >
-              −
-            </button>
-            <span className="dawn-qty-val">{qty}</span>
-            <button
-              type="button"
-              onClick={() => setQty(qty + 1)}
-              aria-label="Povećaj količinu"
-            >
-              +
-            </button>
-          </div>
-        )}
+        <div className="dawn-qty" role="group" aria-label="Količina">
+          <button
+            type="button"
+            onClick={() => setQty(qty - 1)}
+            aria-label="Smanji količinu"
+          >
+            −
+          </button>
+          <span className="dawn-qty-val">{qty}</span>
+          <button
+            type="button"
+            onClick={() => setQty(qty + 1)}
+            aria-label="Povećaj količinu"
+          >
+            +
+          </button>
+        </div>
 
-        {BOOK_ORDERS_ENABLED ? (
-          <>
-            <a href="#naruci" className="dawn-btn-black dawn-btn-pulse">
-              NARUČI — PLATIŠ KURIRU
-            </a>
-            <p className="dawn-cta-note">
-              Ne plaćaš ništa unaprijed · Dostava po cijeloj BiH
-            </p>
-          </>
-        ) : (
-          <>
-            <span className="dawn-btn-black-disabled" aria-disabled="true">
-              TRENUTNO NEDOSTUPNO
-            </span>
-            <p className="dawn-cta-note">
-              Javi nam se na {CONTACT_EMAIL} da te obavijestimo kad se
-              narudžbe ponovo otvore
-            </p>
-          </>
-        )}
+        <a href="#naruci" className="dawn-btn-black dawn-btn-pulse">
+          NARUČI — PLATIŠ KURIRU
+        </a>
+        <p className="dawn-cta-note">
+          Ne plaćaš ništa unaprijed · Dostava po cijeloj BiH
+        </p>
       </div>
     </section>
   );
