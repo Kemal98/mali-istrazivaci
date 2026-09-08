@@ -23,7 +23,7 @@ export default function BlingerCheckout() {
   const [error, setError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const DELIVERY = 10;
-  const productPrice = 19;
+  const productPrice = 29;
   const total = productPrice * qty + DELIVERY;
 
   useEffect(() => {
@@ -128,7 +128,7 @@ export default function BlingerCheckout() {
                 <b>Blinger aparat za kosu</b>
                 <span>180 perlica</span>
               </div>
-              <div className="dawn-modal-price">19 KM</div>
+              <div className="dawn-modal-price">29 KM</div>
             </div>
 
             <div className="dawn-modal-qty">

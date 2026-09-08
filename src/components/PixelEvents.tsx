@@ -25,7 +25,7 @@ export default function PixelEvents() {
     const content = isBook
       ? { content_name: "Interaktivna Montessori knjiga", value: 15 }
       : isBlinger
-      ? { content_name: "Blinger aparat za kosu", value: 19 }
+      ? { content_name: "Blinger aparat za kosu", value: 29 }
       : { content_name: "SAT MIRA set 3u1", value: 29 };
 
     if (window.fbq && !isHomeGrid) {

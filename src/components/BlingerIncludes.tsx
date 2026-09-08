@@ -1,8 +1,4 @@
-const items = [
-  "Blinger aparat za perlice",
-  "180 perlica u različitim bojama",
-  "Kutija za odlaganje i poklon",
-];
+const items = ["PRO Blinger aparat", "180 perlica za kosu", "Kutija za poklon i odlaganje"];
 
 export default function BlingerIncludes() {
   return (

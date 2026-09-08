@@ -19,10 +19,7 @@ export default function BlingerHero() {
           <span>Slika proizvoda dolazi uskoro</span>
         </div>
 
-        <h1 className="dawn-h1">
-          Blinger aparat za kosu
-          <span>180 perlica za ukrašavanje kose</span>
-        </h1>
+        <h1 className="dawn-h1 dawn-h1-lg">PRO Blinger Aparat za kosu (180 perlica)</h1>
 
         <a href="#recenzije" className="dawn-rating">
           <span className="dawn-stars" aria-hidden="true">
@@ -32,8 +29,9 @@ export default function BlingerHero() {
         </a>
 
         <div className="dawn-price-row">
-          <span className="dawn-price-new">19 KM</span>
-          <span className="dawn-badge-sale">NOVO</span>
+          <span className="dawn-price-old">49 KM</span>
+          <span className="dawn-price-new">29 KM</span>
+          <span className="dawn-badge-sale">SNIŽENO</span>
         </div>
 
         <p className="dawn-pay-line">

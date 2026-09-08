@@ -724,6 +724,7 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-img-placeholder svg{width:48px;height:48px}
 .dawn-img-placeholder span{font-size:.85rem;font-weight:600}
 .dawn-h1{font-size:2.7rem;margin-bottom:12px}
+.dawn-h1-lg{font-size:3.15rem}
 .dawn-h1 span{display:block;font-size:.5em;font-weight:600;color:#555;margin-top:6px}
 .dawn-rating{display:flex;align-items:center;justify-content:center;gap:8px;
   font-size:1rem;font-weight:700;color:#555;margin-bottom:18px;
@@ -913,6 +914,7 @@ body:has(.home-page-root){padding-bottom:0}
 @media(max-width:640px){
   .dawn-page section{padding:34px 0}
   .dawn-h1{font-size:2rem}
+  .dawn-h1-lg{font-size:2.3rem}
   .dawn-price-new{font-size:2.5rem}
   .dawn-price-old{font-size:1.2rem}
   .dawn-story-stmt{font-size:1.05rem}

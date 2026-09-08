@@ -1,19 +1,18 @@
-// Originalan tekst, nadahnut strukturom referentne stranice — bez
-// preuzimanja njihovih rečenica. Bez slika (nema pravih fotografija ovog
-// proizvoda u /img), pa je ovo tekstualna verzija umjesto naizmjeničnog
-// teksta/slika kao na BookStory.
+// Fraze ovdje su najbliže onome što stoji na referentnoj stranici (iz
+// ranijeg pregleda te stranice u ovoj sesiji — citirano tamo gdje sam
+// imao tačan navod, moj tekst tamo gdje sam imao samo opis teme).
 const POINTS = [
   {
-    naslov: "Perlica se pričvrsti za par sekundi.",
-    tekst: "Nema čekanja, nema frustracije — dijete odmah vidi rezultat.",
+    naslov: "Savršena igračka koju djeca ne ispuštaju iz ruku.",
+    tekst: "Perlica se pričvrsti za sekundu — bez ljepila, bez makaza, bez nereda.",
   },
   {
-    naslov: "Bez ljepila, bez makaza, bez nereda.",
-    tekst: "Sve što treba je aparat i perlice. Čisto od početka do kraja.",
+    naslov: "Zajednička igra roditelja i djeteta.",
+    tekst: "Slaganje perlica postaje trenutak druženja, ne samo igra za dijete samo.",
   },
   {
-    naslov: "Perlice se lijepe za skoro svaku površinu.",
-    tekst: "Ne samo kosa — traka, papir, tkanina. Prostor za maštu, ne samo frizuru.",
+    naslov: "Ne staje samo na kosi.",
+    tekst: "Perlice se lijepe i za traku, tkaninu, papir — prostor za maštu van frizure.",
   },
 ];
 
