@@ -1,12 +1,14 @@
 // Fraze najbliže onome što stoji na referentnoj stranici (iz ranijeg
 // pregleda te iste stranice u ovoj sesiji). Dimenzije (10.5 × 4.2 cm) su
-// stvarno pročitane sa slike dimenzije.webp, ne izmišljene.
+// stvarno pročitane sa slike dimenzije.webp, ne izmišljene. Redoslijed
+// medija je po tačnom zahtjevu: giphy-4, kupanje/putovanje/kuhinja,
+// icon-motorika, u-paketu, dimenzije, giphy-5.
 const POINTS = [
   {
-    naslov: "Umirujuća igra koja drži pažnju.",
-    tekst: "Vakuum se zalijepi za svaku površinu — ne padaju i ne klize tokom igre.",
-    src: "/img/rotirajuce-zvecke/icon-motorika.webp",
-    alt: "Beba se igra rotirajućom zvečkom na frižideru",
+    naslov: "Vidi u pokretu.",
+    tekst: "Beba je okreće iznova i iznova — jednostavan pokret, dug interes.",
+    src: "/img/rotirajuce-zvecke/giphy-4.gif",
+    alt: "Rotirajuća zvečka u pokretu",
   },
   {
     naslov: "Odlične za kupanje, putovanje i kuhinju.",
@@ -15,22 +17,28 @@ const POINTS = [
     alt: "Rotirajuće zvečke zalijepljene u kadi, na prozoru aviona i na frižideru",
   },
   {
-    naslov: "Vidi u pokretu.",
-    tekst: "Beba je okreće iznova i iznova — jednostavan pokret, dug interes.",
-    src: "/img/rotirajuce-zvecke/giphy-4.gif",
-    alt: "Rotirajuća zvečka u pokretu",
+    naslov: "Umirujuća igra koja drži pažnju.",
+    tekst: "Vakuum se zalijepi za svaku površinu — ne padaju i ne klize tokom igre.",
+    src: "/img/rotirajuce-zvecke/icon-motorika.webp",
+    alt: "Beba se igra rotirajućom zvečkom na frižideru",
   },
   {
-    naslov: "Bez sitnih dijelova — bezbjedno za male ruke.",
-    tekst: "Lako se peru i ponovo koriste.",
-    src: "/img/rotirajuce-zvecke/giphy-5.gif",
-    alt: "Rotirajuća zvečka u pokretu",
+    naslov: "Ide s tobom, gdje god pošla.",
+    tekst: "Torbica za nošenje — spremna za auto, šetnju, posjetu.",
+    src: "/img/rotirajuce-zvecke/u-paketu.webp",
+    alt: "Zvečke u torbici za nošenje i pričvršćene na auto-sjedalicu",
   },
   {
     naslov: "Prava veličina za male ruke — 10,5 × 4,2 cm.",
     tekst: "Igračka kojoj se bebe stalno vraćaju.",
     src: "/img/rotirajuce-zvecke/dimenzije.webp",
     alt: "Dimenzije rotirajuće zvečke — 10,5 x 4,2 cm",
+  },
+  {
+    naslov: "Bez sitnih dijelova — bezbjedno za male ruke.",
+    tekst: "Lako se peru i ponovo koriste.",
+    src: "/img/rotirajuce-zvecke/giphy-5.gif",
+    alt: "Rotirajuća zvečka u pokretu",
   },
 ];
 
