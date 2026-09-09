@@ -5,21 +5,17 @@ export const GOOGLE_SCRIPT_URL =
 
 export const CONTACT_EMAIL = "svijetistrazivaca@gmail.com";
 
-// Narudžbe knjige su privremeno isključene — vrati na true kad se ponovo
-// otvore. Dijeljeno između BookHero.tsx (dugme na vrhu) i BookCheckout.tsx
-// (forma na dnu) da oba mjesta uvijek pokazuju isto stanje.
-export const BOOK_ORDERS_ENABLED = false;
+// Narudžbe knjige — ponovo uključeno na izričit zahtjev (bilo isključeno
+// od ranije u sesiji; ne znam tačan izvorni razlog pauze, samo da je
+// eksplicitno zatraženo da forma opet radi).
+export const BOOK_ORDERS_ENABLED = true;
 
-// Blinger je nov proizvod, tek se gradi stranica — cijena je privremena
-// (nema stvarnog broja), nema prave fotografije. Namjerno isključeno dok
-// se to ne potvrdi, da se ne prime prave narudžbe za nešto što možda još
-// nije stvarno spremno za prodaju. Prebaci na true kad potvrdiš cijenu,
-// sliku i da imaš zalihe.
-export const BLINGER_ORDERS_ENABLED = false;
+// Blinger — uključeno na izričit zahtjev. Cijena i slika su stvarne.
+export const BLINGER_ORDERS_ENABLED = true;
 
-// Isto kao BLINGER_ORDERS_ENABLED — cijena i slike su sad stvarne, ali
-// zalihe nisu potvrđene. Prebaci na true kad potvrdiš da imaš zalihe.
-export const RATTLE_ORDERS_ENABLED = false;
+// Rotirajuće zvečke — uključeno na izričit zahtjev. Cijena i slika su
+// stvarne.
+export const RATTLE_ORDERS_ENABLED = true;
 
 export const SOCIAL_INSTAGRAM =
   "https://www.instagram.com/svijetmalihistrazivaca/";
