@@ -7,13 +7,13 @@ export default function HomeHero() {
         <div className={styles.heroGrid}>
           <div>
             <h1 className={styles.heroTitle}>
-              Igra bez ekrana.
+              Igračke koje djeca
               <br />
-              Učenje na našem jeziku.
+              stvarno zavole.
             </h1>
             <p className={styles.heroSub}>
-              Montessori igračke i knjige za djecu 2–6 godina, osmišljene da
-              zaokupe pažnju i nauče nešto usput — bez tableta, bez baterija.
+              Pažljivo birane igračke za djecu svih uzrasta — plaćanje
+              pouzećem, dostava po cijeloj BiH.
             </p>
             <div className={styles.heroBtns}>
               <a href="#proizvodi" className={styles.btnPrimary}>

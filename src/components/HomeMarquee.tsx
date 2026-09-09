@@ -1,8 +1,7 @@
 import styles from "./Home.module.css";
 
 const ITEMS = [
-  "Bez ekrana",
-  "Sve na našem jeziku",
+  "Plaćanje pouzećem",
   "Netoksični materijali",
   "Ručno pakujemo u BiH",
   "Dostava 2–4 dana",

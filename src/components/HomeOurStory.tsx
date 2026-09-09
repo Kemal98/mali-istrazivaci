@@ -13,7 +13,7 @@ export default function HomeOurStory() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/img/knjiga_proizvod2.png"
-              alt="Montessori knjiga Mali Istraživači, izbliza"
+              alt="Igračka Mali Istraživači, izbliza"
               loading="lazy"
             />
           </div>
@@ -21,13 +21,12 @@ export default function HomeOurStory() {
             <span className={styles.kicker} style={{ textAlign: "left" }}>
               Naša priča
             </span>
-            <h2>Igračke koje govore naš jezik</h2>
+            <h2>Igračke koje biramo pažljivo</h2>
             <p>
-              [PLACEHOLDER TEKST] Mali Istraživači je nastao iz ideje da
-              Montessori materijali za djecu ne moraju biti prevedeni s
-              engleskog — mogu biti napisani i osmišljeni na bosanskom
-              jeziku, od početka. Svaki proizvod biramo i testiramo prije
-              nego što uđe u ponudu.
+              [PLACEHOLDER TEKST] Mali Istraživači je nastao iz želje da
+              roditeljima u BiH olakšamo izbor igračaka — bez pretraživanja
+              stranih sajtova i čekanja sedmicama na dostavu. Svaki proizvod
+              biramo i testiramo prije nego što uđe u ponudu.
             </p>
             <a href="#proizvodi" className={styles.btnSecondary}>
               Pogledaj proizvode

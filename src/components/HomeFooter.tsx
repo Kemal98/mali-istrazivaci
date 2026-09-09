@@ -18,8 +18,8 @@ export default function HomeFooter() {
               Mali Istraživači
             </div>
             <p style={{ color: "var(--h-ink2)", maxWidth: "34ch", fontSize: ".9rem" }}>
-              Montessori igračke i knjige za djecu na našem jeziku. Svaki
-              paket ručno pakujemo u BiH.
+              Pažljivo birane igračke za djecu svih uzrasta. Svaki paket
+              ručno pakujemo u BiH.
             </p>
           </div>
           <div className={styles.footCol}>

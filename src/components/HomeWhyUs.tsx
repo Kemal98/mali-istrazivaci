@@ -4,12 +4,12 @@ import styles from "./Home.module.css";
 // Guarantee) — isti razlozi, nova forma.
 const REASONS = [
   {
-    naslov: "Bez ekrana i baterija",
-    opis: "Igračke koje zaokupe pažnju bez tableta i telefona — stanu u torbu, rade svugdje.",
+    naslov: "Pažljivo biramo svaki proizvod",
+    opis: "Ne prodajemo sve što postoji — samo igračke za koje mislimo da vrijede.",
   },
   {
-    naslov: "Sve na našem jeziku",
-    opis: "Sadržaj uključuje sva naša slova — Č, Ć, Dž, Đ, Š, Ž — ne prevode se tuđi proizvodi.",
+    naslov: "Ručno pakujemo svaku narudžbu",
+    opis: "Svaki paket pripremamo lično, ne šalje se iz tuđeg magacina.",
   },
   {
     naslov: "Netoksični materijali",
@@ -36,7 +36,7 @@ export default function HomeWhyUs() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/img/set_hero.jpg"
-              alt="Dijete se igra Montessori igračkama Mali Istraživači"
+              alt="Dijete se igra igračkama Mali Istraživači"
               loading="lazy"
             />
           </div>

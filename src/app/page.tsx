@@ -14,9 +14,9 @@ import HomeStickyBar from "@/components/HomeStickyBar";
 import styles from "@/components/Home.module.css";
 
 export const metadata: Metadata = {
-  title: "Mali Istraživači – Montessori igračke i knjige na bosanskom jeziku",
+  title: "Mali Istraživači – Igračke za djecu, dostava po cijeloj BiH",
   description:
-    "Montessori igračke, knjige i setovi za djecu 2–6 godina, na bosanskom jeziku. Bez ekrana, plaćanje pouzećem, dostava po cijeloj BiH.",
+    "Pažljivo birane igračke za djecu svih uzrasta. Plaćanje pouzećem, dostava po cijeloj BiH.",
 };
 
 export default async function HomePage({
