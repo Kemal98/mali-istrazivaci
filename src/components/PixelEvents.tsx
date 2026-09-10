@@ -17,6 +17,7 @@ const PRODUCT_PIXEL: { path: string; content_name: string; value: number }[] = [
   { path: "/edukativna-knjiga", content_name: "Interaktivna Montessori knjiga", value: 15 },
   { path: "/blinger-aparat-za-kosu", content_name: "Blinger aparat za kosu", value: 29 },
   { path: "/rotirajuce-zvecke", content_name: "Vesele rotirajuće zvečke", value: 24 },
+  { path: "/projektor-za-crtanje", content_name: "Projektor za crtanje", value: 26 },
 ];
 const DEFAULT_CONTENT = { content_name: "SAT MIRA set 3u1", value: 29 };
 

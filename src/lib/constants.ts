@@ -17,6 +17,11 @@ export const BLINGER_ORDERS_ENABLED = true;
 // stvarne.
 export const RATTLE_ORDERS_ENABLED = true;
 
+// Projektor za crtanje — nova podstranica. Isključeno dok se ne potvrde
+// stvarne fotografije proizvoda, tvoja prodajna cijena (26/35 KM je uzeto
+// s referentne stranice, nije potvrđeno da je to tvoja cijena) i zalihe.
+export const PROJECTOR_ORDERS_ENABLED = false;
+
 export const SOCIAL_INSTAGRAM =
   "https://www.instagram.com/svijetmalihistrazivaca/";
 export const SOCIAL_FACEBOOK =
