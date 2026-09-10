@@ -3,8 +3,13 @@
  *
  * POSTAVKA:
  * 1. Napravi novi Google Sheet (sheets.new).
- * 2. U prvi red (A1:J1) upiši zaglavlja, ovim redoslijedom:
- *    Datum | Ime | Telefon | Adresa | Grad | Uzrast | Napomena | Proizvod | Cijena | Status
+ * 2. U prvi red (A1:K1) upiši zaglavlja, ovim redoslijedom:
+ *    Datum | Ime | Telefon | Adresa | Grad | Uzrast | Napomena | Proizvod | Cijena | Status | Količina
+ *    (Količina je NAMJERNO zadnja, kolona K, ne umetnuta između Proizvod i
+ *    Cijena — na POSTOJEĆEM sheetu sa starim narudžbama umetanje u sredinu
+ *    bi pomjerilo Cijenu/Status udesno i pokvarilo poravnanje sa starim
+ *    redovima. Ako već imaš sheet iz ranije: samo upiši "Količina" u K1
+ *    ručno, ništa drugo se ne pomjera.)
  * 3. Extensions -> Apps Script.
  * 4. Obriši sadržaj i zalijepi ovaj fajl.
  * 5. Deploy -> New deployment -> tip "Web app".
@@ -56,6 +61,12 @@ function doPost(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const data = JSON.parse(e.postData.contents);
 
+  // Različite forme šalju količinu pod različitim imenom: SAT MIRA
+  // (Checkout.tsx) šalje "qty" (1 ili 2, iz "dodaj još jedan set"
+  // checkboxa), knjiga/Blinger/zvečke (BookCheckout.tsx i kopije) šalju
+  // "kolicina" (iz +/- birača). Ovo hvata oboje, 1 ako ni jedno nije poslano.
+  const kolicina = data.kolicina || data.qty || 1;
+
   sheet.appendRow([
     data.datum,
     data.ime,
@@ -67,6 +78,7 @@ function doPost(e) {
     data.proizvod,
     data.cijena,
     data.status,
+    kolicina,
   ]);
 
   sendPurchaseToMeta_(data);
@@ -157,7 +169,7 @@ function sha256Hex_(str) {
 
 function setupSheet() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const lastCol = 10; // A..J
+  const lastCol = 11; // A..K (K = Količina, dodano nakon Status-a)
   const maxRows = Math.max(sheet.getMaxRows(), 500);
 
   // Zaglavlje: bold, boja, fiksiran red, širine kolona
@@ -168,7 +180,7 @@ function setupSheet() {
   header.setHorizontalAlignment("center");
   sheet.setFrozenRows(1);
 
-  const widths = [140, 160, 120, 200, 120, 140, 220, 180, 90, 120];
+  const widths = [140, 160, 120, 200, 120, 140, 220, 180, 90, 120, 90];
   widths.forEach((w, i) => sheet.setColumnWidth(i + 1, w));
 
   // Padajući meni za Status (kolona J)
