@@ -3,27 +3,36 @@
  *
  * POSTAVKA:
  * 1. Napravi novi Google Sheet (sheets.new).
- * 2. U prvi red (A1:K1) upiši zaglavlja, ovim redoslijedom:
- *    Datum | Ime | Telefon | Adresa | Grad | Uzrast | Napomena | Proizvod | Cijena | Status | Količina
- *    (Količina je NAMJERNO zadnja, kolona K, ne umetnuta između Proizvod i
- *    Cijena — na POSTOJEĆEM sheetu sa starim narudžbama umetanje u sredinu
- *    bi pomjerilo Cijenu/Status udesno i pokvarilo poravnanje sa starim
- *    redovima. Ako već imaš sheet iz ranije: samo upiši "Količina" u K1
- *    ručno, ništa drugo se ne pomjera.)
- * 3. Extensions -> Apps Script.
- * 4. Obriši sadržaj i zalijepi ovaj fajl.
- * 5. Deploy -> New deployment -> tip "Web app".
+ * 2. Extensions -> Apps Script.
+ * 3. Obriši sadržaj i zalijepi ovaj fajl.
+ * 4. Deploy -> New deployment -> tip "Web app".
  *    - Execute as: Me
  *    - Who has access: Anyone
- * 6. Deploy, autoriziraj pristup svom Google nalogu.
- * 7. Kopiraj "Web app URL" i zalijepi ga kao GOOGLE_SCRIPT_URL u
- *    src/components/Checkout.tsx.
+ * 5. Deploy, autoriziraj pristup svom Google nalogu.
+ * 6. Kopiraj "Web app URL" i zalijepi ga kao GOOGLE_SCRIPT_URL u
+ *    src/lib/constants.ts.
+ * 7. Pokreni "setupSheet" (vidi UREĐENJE TABELE ispod) — to će samo
+ *    upisati zaglavlja (Datum..Cijena (broj)) u prvi red ako su prazna
+ *    (ne dira ih ako već imaš svoj tekst), formatirati tabelu i napraviti
+ *    drugi tab "Analitika" sa zbrojevima.
  *
- * UREĐENJE TABELE (jednokratno):
+ * UREĐENJE TABELE (jednokratno, ali bezbjedno pokrenuti i ponovo kad
+ * god želiš da se Analitika osvježi):
  * U editoru, pored dugmeta "Run" izaberi funkciju "setupSheet" iz padajućeg
- * menija (umjesto doPost), pa klikni Run. Ovo formatira zaglavlje, fiksira
- * prvi red, dodaje padajući meni za Status i boji redove po statusu.
- * Bezbjedno je pokrenuti je više puta.
+ * menija (umjesto doPost), pa klikni Run. Ovo:
+ * - upiše nazive kolona u prvi red gdje su prazne (ne prepisuje već
+ *   postojeći tvoj tekst u zaglavlju),
+ * - formatira zaglavlje, fiksira prvi red, širine kolona,
+ * - dodaje padajući meni za Status i boji redove po statusu,
+ * - upiše formulu u kolonu L (Cijena (broj)) koja iz kolone Cijena
+ *   ("58 KM") izvuče čist broj (58) — to je ono što Analitika zbraja,
+ * - napravi/osvježi drugi tab zvan "Analitika" sa: ukupno narudžbi,
+ *   ukupno komada, ukupan prihod, prosječna vrijednost narudžbe i
+ *   raspored po statusu (Novo/Pozvano/.../Otkazano — broj i prihod za
+ *   svaki).
+ * Narudžbe (doPost) uvijek idu u PRVI (najlijeviji) tab, bez obzira koji
+ * je tab otvoren u browseru — bitno je da Analitika ostane desno od
+ * njega, ne lijevo.
  *
  * Napomena: ako kasnije mijenjaš kod skripte, moraš napraviti
  * "New deployment" ponovo (ili Manage deployments -> Edit -> New version)
@@ -57,8 +66,29 @@ const STATUS_OPTIONS = [
   "Otkazano",
 ];
 
+// A..L, ovim redoslijedom. "Cijena (broj)" je pomoćna kolona koju
+// setupSheet() sam popuni formulom — ne upisuje se iz forme.
+const HEADERS = [
+  "Datum",
+  "Ime",
+  "Telefon",
+  "Adresa",
+  "Grad",
+  "Uzrast",
+  "Napomena",
+  "Proizvod",
+  "Cijena",
+  "Status",
+  "Količina",
+  "Cijena (broj)",
+];
+
 function doPost(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  // Prvi (najlijeviji) tab, ne getActiveSheet() — getActiveSheet() bi
+  // pokupio koji je tab bio zadnji otvoren u browseru (npr. ako gledaš
+  // "Analitika" tab kad kupac pošalje narudžbu, ona bi otišla u pogrešan
+  // tab). Narudžbe uvijek idu u tab na poziciji 0.
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
   const data = JSON.parse(e.postData.contents);
 
   // Različite forme šalju količinu pod različitim imenom: SAT MIRA
@@ -80,6 +110,9 @@ function doPost(e) {
     data.status,
     kolicina,
   ]);
+  // Kolonu L (Cijena (broj)) ne upisujemo ovdje — jedna ARRAYFORMULA u
+  // L2 (postavljena od setupSheet()) sama izračuna vrijednost i za ovaj
+  // novi red, čim se tabela osvježi.
 
   sendPurchaseToMeta_(data);
 
@@ -168,20 +201,33 @@ function sha256Hex_(str) {
 }
 
 function setupSheet() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const lastCol = 11; // A..K (K = Količina, dodano nakon Status-a)
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheets()[0]; // isti tab kao doPost, ne getActiveSheet()
+  const lastCol = HEADERS.length; // A..L
   const maxRows = Math.max(sheet.getMaxRows(), 500);
 
-  // Zaglavlje: bold, boja, fiksiran red, širine kolona
-  const header = sheet.getRange(1, 1, 1, lastCol);
-  header.setFontWeight("bold");
-  header.setBackground("#2e7d32");
-  header.setFontColor("#ffffff");
-  header.setHorizontalAlignment("center");
+  // Zaglavlje: upiši naziv samo gdje je ćelija prazna (ne prepisuje tvoj
+  // već postojeći tekst), pa formatiraj cijeli red bold/zeleno.
+  const headerRange = sheet.getRange(1, 1, 1, lastCol);
+  const existing = headerRange.getValues()[0];
+  const merged = HEADERS.map((h, i) => (existing[i] ? existing[i] : h));
+  headerRange.setValues([merged]);
+  headerRange.setFontWeight("bold");
+  headerRange.setBackground("#2e7d32");
+  headerRange.setFontColor("#ffffff");
+  headerRange.setHorizontalAlignment("center");
   sheet.setFrozenRows(1);
 
-  const widths = [140, 160, 120, 200, 120, 140, 220, 180, 90, 120, 90];
+  const widths = [140, 160, 120, 200, 120, 140, 220, 180, 90, 120, 90, 110];
   widths.forEach((w, i) => sheet.setColumnWidth(i + 1, w));
+
+  // Kolona L: čist broj izvučen iz kolone I ("58 KM" -> 58), jedna
+  // ARRAYFORMULA koja sama pokrije sve postojeće i buduće redove.
+  sheet
+    .getRange(2, 12)
+    .setFormula(
+      '=ARRAYFORMULA(IF(I2:I="","",IFERROR(VALUE(SUBSTITUTE(I2:I," KM","")),"")))'
+    );
 
   // Padajući meni za Status (kolona J)
   const statusRange = sheet.getRange(2, 10, maxRows - 1, 1);
@@ -216,5 +262,60 @@ function setupSheet() {
   );
   sheet.setConditionalFormatRules(rules);
 
-  SpreadsheetApp.getUi().alert("Tabela je uređena!");
+  setupAnalytics_(ss, sheet);
+
+  SpreadsheetApp.getUi().alert("Tabela i Analitika su uređene!");
+}
+
+/**
+ * Napravi (ili osvježi) drugi tab "Analitika" sa zbirnim brojevima —
+ * sve su to formule koje čitaju iz sheet-a s narudžbama, tako da se
+ * same ažuriraju čim stigne nova narudžba ili promijeniš Status.
+ */
+function setupAnalytics_(ss, dataSheet) {
+  const name = dataSheet.getName();
+  let a = ss.getSheetByName("Analitika");
+  if (!a) a = ss.insertSheet("Analitika");
+  a.clear();
+  a.clearConditionalFormatRules();
+
+  const q = function (col) {
+    return "'" + name + "'!" + col + "2:" + col;
+  };
+
+  a.getRange("A1").setValue("Analitika narudžbi");
+  a.getRange("A1").setFontWeight("bold").setFontSize(14);
+
+  a.getRange("A3").setValue("Ukupno narudžbi");
+  a.getRange("B3").setFormula("=COUNTA(" + q("A") + ")");
+  a.getRange("A4").setValue("Ukupno komada (količina)");
+  a.getRange("B4").setFormula("=SUM(" + q("K") + ")");
+  a.getRange("A5").setValue("Ukupan prihod (KM)");
+  a.getRange("B5").setFormula("=SUM(" + q("L") + ")");
+  a.getRange("A6").setValue("Prosječna vrijednost narudžbe (KM)");
+  a.getRange("B6").setFormula("=IFERROR(ROUND(B5/B3,2),0)");
+
+  a.getRange("A3:A6").setFontWeight("bold");
+  a.getRange("B3:B6").setHorizontalAlignment("right");
+
+  a.getRange("A8").setValue("Po statusu");
+  a.getRange("A8").setFontWeight("bold").setFontSize(12);
+  a.getRange("A9:C9").setValues([["Status", "Broj narudžbi", "Prihod (KM)"]]);
+  a.getRange("A9:C9").setFontWeight("bold").setBackground("#2e7d32").setFontColor("#ffffff");
+
+  STATUS_OPTIONS.forEach((status, i) => {
+    const row = 10 + i;
+    a.getRange(row, 1).setValue(status);
+    a.getRange(row, 2).setFormula(
+      '=COUNTIF(' + q("J") + ',"' + status + '")'
+    );
+    a.getRange(row, 3).setFormula(
+      '=SUMIF(' + q("J") + ',"' + status + '",' + q("L") + ')'
+    );
+  });
+
+  a.setColumnWidth(1, 220);
+  a.setColumnWidth(2, 140);
+  a.setColumnWidth(3, 140);
+  a.setFrozenRows(1);
 }
