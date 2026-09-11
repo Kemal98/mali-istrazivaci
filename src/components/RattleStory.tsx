@@ -13,7 +13,7 @@ import { Fragment } from "react";
 const POINTS = [
   {
     naslov: "Odlične za kupanje, putovanje i kuhinju.",
-    tekst: "Idealno dok spremaš ručak, pereš sudove ili se tuširaš.",
+    tekst: "Idealno dok spremate ručak, perete sudove ili se tuširate.",
     src: "/img/rotirajuce-zvecke/kupanje,putovanje,kuhinja.png",
     alt: "Rotirajuće zvečke zalijepljene u kadi, na prozoru aviona i na frižideru",
     boldTekst: true,
