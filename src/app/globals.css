@@ -1001,6 +1001,10 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-story-block:has(img) .dawn-story-text{grid-column:2;grid-row:2}
   .dawn-story-block:nth-child(even) img{grid-column:2}
   .dawn-story-block:nth-child(even):has(img) .dawn-story-text{grid-column:1}
+  /* blok bez naslova (nema .dawn-story-stmt) — slika/tekst se penju na
+     red 1 umjesto da red 1 ostane prazan gore */
+  .dawn-story-block:has(img):not(:has(.dawn-story-stmt)) img,
+  .dawn-story-block:has(img):not(:has(.dawn-story-stmt)) .dawn-story-text{grid-row:1}
   /* dodatna djeca unutar .dawn-story-block (proof red) — eksplicitno
      preko cijele širine, ispod slike/teksta, da ne uđe u "sparse"
      auto-placement nagađanje kao ranije. */

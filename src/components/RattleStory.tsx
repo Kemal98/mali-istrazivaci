@@ -39,7 +39,8 @@ const POINTS = [
     includesInstead: true,
   },
   {
-    naslov: "Bez sitnih dijelova, bezbjedno za male ruke.",
+    id: "giphy-5",
+    naslov: null,
     tekst: "Lako se peru i ponovo koriste.",
     src: "/img/rotirajuce-zvecke/giphy-5.gif",
     alt: "Rotirajuća zvečka u pokretu",
@@ -52,10 +53,9 @@ export default function RattleStory() {
     <section className="dawn-story">
       <div className="dawn-col">
         {POINTS.map((p, i) => (
-          <Fragment key={p.naslov}>
+          <Fragment key={p.id || p.naslov}>
             {i === POINTS.length - 1 && (
               <div className="dawn-hit-block">
-                <span className="dawn-hit-badge">HIT</span>
                 <p className="dawn-hit-tagline">
                   Igračka koju roditelji
                   <br />
@@ -69,9 +69,11 @@ export default function RattleStory() {
               </div>
             )}
             <div className="dawn-story-block">
-              <p className="dawn-story-stmt">
-                <span>{p.naslov}</span>
-              </p>
+              {p.naslov && (
+                <p className="dawn-story-stmt">
+                  <span>{p.naslov}</span>
+                </p>
+              )}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={p.src} alt={p.alt} loading="lazy" />
               {p.includesInstead ? (

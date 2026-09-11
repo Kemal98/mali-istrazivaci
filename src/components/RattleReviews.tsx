@@ -31,16 +31,6 @@ const reviews = [
     },
   },
   {
-    text: "Naša beba od 10 sedmica baš voli gledati sve što se vrti, posebno ventilator na plafonu. Tokom kupanja nije imala ništa zanimljivo da gleda pa smo uzeli ove igračke. Vakuum se baš dobro zalijepi za kadu i beba se smije i gleda ih dok se vrte. Boje su baš jarke pa joj odmah privuku pažnju, a vrte se stvarno fino. Sad je čak počela i nožicama da ih udara da ih sama zavrti haha. Baš su nam uljepšale kupanje i stvarno ih preporučujem.",
-    initial: "J",
-    name: "Jovan M.",
-    media: {
-      type: "video" as const,
-      src: "/img/rotirajuce-zvecke/recenzije/video-kupanje.mp4",
-      poster: "/img/rotirajuce-zvecke/recenzije/poster-kupanje.png",
-    },
-  },
-  {
     text: "Prvi put ih je koristila na kupanju i odmah ih je zavoljela. Baš je dugo zabave i moja curica ih stvarno voli. Razmišljam da uzmem još jedne i za unuka. Jednostavne su za koristiti i za sad mi djeluju baš sigurno, čak i kad ih stavi u usta i gricka.",
     initial: "Z",
     name: "Zineta H.",
@@ -48,6 +38,16 @@ const reviews = [
       type: "video" as const,
       src: "/img/rotirajuce-zvecke/recenzije/video-pod.mp4",
       poster: "/img/rotirajuce-zvecke/recenzije/poster-pod.png",
+    },
+  },
+  {
+    text: "Naša beba od 10 sedmica baš voli gledati sve što se vrti, posebno ventilator na plafonu. Tokom kupanja nije imala ništa zanimljivo da gleda pa smo uzeli ove igračke. Vakuum se baš dobro zalijepi za kadu i beba se smije i gleda ih dok se vrte. Boje su baš jarke pa joj odmah privuku pažnju, a vrte se stvarno fino. Sad je čak počela i nožicama da ih udara da ih sama zavrti haha. Baš su nam uljepšale kupanje i stvarno ih preporučujem.",
+    initial: "J",
+    name: "Jovan M.",
+    media: {
+      type: "video" as const,
+      src: "/img/rotirajuce-zvecke/recenzije/video-kupanje.mp4",
+      poster: "/img/rotirajuce-zvecke/recenzije/poster-kupanje.png",
     },
   },
   {
@@ -129,7 +129,7 @@ export default function RattleReviews() {
               </svg>
             </button>
             {openMedia.type === "video" ? (
-              <video src={openMedia.src} controls autoPlay playsInline className="dawn-video-player" />
+              <video src={openMedia.src} controls autoPlay muted playsInline className="dawn-video-player" />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={openMedia.src} alt="" className="dawn-video-player" />
