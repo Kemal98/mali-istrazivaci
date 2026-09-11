@@ -11,7 +11,7 @@ import { RATING, REVIEWS_COUNT } from "@/lib/socialProof";
 // podloga) — klik otvara medij uvećan u popupu.
 const reviews = [
   {
-    text: "Ovo je nova omiljena igračka kod nas u kući. Znala sam da će moj sin od 8 mjeseci baš da se zalijepi za ovo, jer je opsjednut sa svim što se vrti 😄 Tek je počeo da puže i ove zvečkice ga baš fino zaokupe u kuhinji dok ja pravim doručak ili sebi naspem još jednu kafu. Mali savjet, predobre su i za restorane, samo ih zalijepiš gore na sto i beba se zanima dok ti konačno pojedeš hranu dok je još topla 😄. Baš su praktične, nosim ih svuda sa sobom jer ih moja kćerka baš voli. Imaju dolje vakuum pa se mogu zalijepiti bukvalno gdje god i baš se fino vrte. Veličina im je taman kako treba i nema bojazni da će se dijete povrijediti dok se igra.",
+    text: "Ovo je nova omiljena igračka kod nas u kući.Znala sam da će moj sin od 8 mjeseci baš da se zalijepi za ovo,jer je opsjednut sa svim što se vrti... Tek je počeo da puže i ove zvečkice ga baš fino zaokupe u kuhinji dok ja pravim doručak ili sebi naspem još jednu kafu... Mali savjet,predobre su i za restorane,samo ih zalijepiš gore na sto i beba se zanima dok ti konačno pojedeš hranu dok je još topla. ",
     initial: "A",
     name: "Amela K.",
     media: {
@@ -26,12 +26,12 @@ const reviews = [
     name: "Ilma S.",
     media: {
       type: "video" as const,
-      src: "/img/rotirajuce-zvecke/recenzije/video-prozor.mp4",
-      poster: "/img/rotirajuce-zvecke/recenzije/poster-prozor.png",
+      src: "/img/rotirajuce-zvecke/recenzije/video-kupanje.mp4",
+      poster: "/img/rotirajuce-zvecke/recenzije/poster-kupanje.png",
     },
   },
   {
-    text: "Prvi put ih je koristila na kupanju i odmah ih je zavoljela. Baš je dugo zabave i moja curica ih stvarno voli. Razmišljam da uzmem još jedne i za unuka. Jednostavne su za koristiti i za sad mi djeluju baš sigurno, čak i kad ih stavi u usta i gricka.",
+    text: "Baš je dugo zabave i moja curica ih stvarno voli.Razmišljam da uzmem još jedne.Jednostavne su za koristiti i za sad mi djeluju baš sigurno,čak i kad ih stavi u usta i gricka.",
     initial: "Z",
     name: "Zineta H.",
     media: {
@@ -46,8 +46,8 @@ const reviews = [
     name: "Jovan M.",
     media: {
       type: "video" as const,
-      src: "/img/rotirajuce-zvecke/recenzije/video-kupanje.mp4",
-      poster: "/img/rotirajuce-zvecke/recenzije/poster-kupanje.png",
+      src: "/img/rotirajuce-zvecke/recenzije/video-prozor.mp4",
+      poster: "/img/rotirajuce-zvecke/recenzije/poster-prozor.png",
     },
   },
   {
