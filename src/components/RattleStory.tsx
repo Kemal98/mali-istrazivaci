@@ -32,6 +32,7 @@ const POINTS = [
     tekst: "Lako se peru i ponovo koriste.",
     src: "/img/rotirajuce-zvecke/giphy-5.gif",
     alt: "Rotirajuća zvečka u pokretu",
+    boldTekst: true,
   },
 ];
 
@@ -47,10 +48,24 @@ export default function RattleStory() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={p.src} alt={p.alt} loading="lazy" />
             <p className="dawn-story-text">
-              <span>{p.tekst}</span>
+              <span>{p.boldTekst ? <strong>{p.tekst}</strong> : p.tekst}</span>
             </p>
           </div>
         ))}
+
+        <div className="dawn-hit-block">
+          <span className="dawn-hit-badge">HIT</span>
+          <p className="dawn-hit-tagline">
+            Igračka koju roditelji
+            <br />
+            non-stop hvale!
+          </p>
+          <p className="dawn-hit-sub">
+            Poklon koji roditeljima
+            <br />
+            olakšava svakodnevicu.
+          </p>
+        </div>
       </div>
     </section>
   );

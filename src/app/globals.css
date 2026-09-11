@@ -793,6 +793,12 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-story-text{font-size:.98rem;color:#333;line-height:1.7}
 .dawn-story-text span{display:block}
 
+.dawn-hit-block{margin-top:44px;text-align:center}
+.dawn-hit-badge{display:inline-block;background:var(--red);color:#fff;font-weight:800;
+  font-size:.8rem;letter-spacing:.04em;padding:5px 14px;border-radius:999px;margin-bottom:12px}
+.dawn-hit-tagline{font-weight:800;font-size:1.3rem;line-height:1.3;margin-bottom:8px}
+.dawn-hit-sub{font-size:.95rem;color:#555;font-weight:600;line-height:1.4}
+
 /* includes / trust — shared list look */
 .dawn-h2{font-size:1.4rem;margin-bottom:18px}
 .dawn-includes ul,.dawn-trust ul{list-style:none;display:inline-flex;
@@ -851,8 +857,17 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-rev-who b{display:block;font-size:.92rem}
 .dawn-rev-verified{font-size:.72rem;font-weight:700;color:var(--green-d)}
 .dawn-rev-card p{font-size:.94rem;color:#333;line-height:1.65}
-.dawn-rev-video{width:100%;border-radius:8px;margin-bottom:14px;background:#000}
-.dawn-rev-photo{width:100%;border-radius:8px;margin-top:26px}
+.dawn-h2-lg{font-size:1.7rem}
+/* mala klikabilna sličica (pravi kadar iz videa, ne crna podloga) — klik
+   otvara video uvećan u popupu (isti .dawn-modal-* kao checkout popup) */
+.dawn-rev-video-thumb{position:relative;display:block;width:140px;border:none;
+  padding:0;margin-bottom:14px;border-radius:8px;overflow:hidden;cursor:pointer;
+  background:#000}
+.dawn-rev-video-thumb img{width:100%;display:block;aspect-ratio:9/16;object-fit:cover}
+.dawn-rev-play{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;background:rgba(0,0,0,.25);color:#fff;font-size:1.4rem}
+.dawn-video-modal{padding:16px;max-width:420px}
+.dawn-video-player{width:100%;border-radius:8px;display:block;max-height:80vh}
 
 /* checkout — sad popup, vidi .dawn-modal-* niže */
 .dawn-checkout-fields{text-align:left}
