@@ -42,11 +42,6 @@ export default function ProjektorHero() {
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           PORUČI SADA
         </BookOrderTrigger>
-        <p className="dawn-cta-note">Dostava po cijeloj BiH · 2–4 dana</p>
-        <p className="dawn-safe-note">
-          Marker se pere s ruku i odjeće · tabla se briše i koristi ponovo
-        </p>
-
         <ul className="dawn-hero-usp">
           <li>Projektor vodi dijete kroz crtež</li>
           <li>12 perivih markera u boji</li>

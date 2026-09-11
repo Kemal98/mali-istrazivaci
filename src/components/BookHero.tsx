@@ -46,7 +46,6 @@ export default function BookHero() {
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           PORUČI SADA
         </BookOrderTrigger>
-        <p className="dawn-cta-note">Dostava po cijeloj BiH · 2–4 dana</p>
       </div>
     </section>
   );

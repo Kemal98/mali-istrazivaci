@@ -37,11 +37,6 @@ export default function RattleHero() {
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           PORUČI SADA
         </BookOrderTrigger>
-        <p className="dawn-cta-note">Dostava po cijeloj BiH · 2–4 dana</p>
-        <p className="dawn-safe-note">
-          Bez sitnih dijelova · netoksičan materijal · lako se pere
-        </p>
-
         <ul className="dawn-hero-usp">
           <li>Drži se za svaku glatku površinu</li>
           <li>Umiruje i drži pažnju bebe</li>
