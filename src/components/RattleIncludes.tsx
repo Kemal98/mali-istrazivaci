@@ -1,4 +1,4 @@
-const items = ["3 rotirajuća spinera (leptir, bubamara, pčela)", "Torbica za nošenje", "Spremno za igru"];
+const items = ["3 rotirajuća spinera (leptir, bubamara, pčela)", "Vakuum osnova za lijepljenje", "Spremno za igru"];
 
 export default function RattleIncludes() {
   return (
@@ -13,7 +13,7 @@ export default function RattleIncludes() {
           ))}
         </ul>
         <p className="dawn-includes-note">
-          Dolazi u urednoj torbici — lijep poklon za bebu i tek rođene.
+          Uredno pakovanje — lijep poklon za bebu i tek rođene.
         </p>
       </div>
     </section>

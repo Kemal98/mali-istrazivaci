@@ -45,7 +45,7 @@ export default function RattleHero() {
         <ul className="dawn-hero-usp">
           <li>Drži se za svaku glatku površinu</li>
           <li>Umiruje i drži pažnju bebe</li>
-          <li>Torbica za nošenje u paketu</li>
+          <li>Tri različita lika u setu</li>
         </ul>
       </div>
     </section>

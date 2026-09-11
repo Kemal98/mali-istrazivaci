@@ -2,7 +2,10 @@
 // pregleda te iste stranice u ovoj sesiji). Dimenzije (10.5 × 4.2 cm) su
 // stvarno pročitane sa slike dimenzije.webp, ne izmišljene. Redoslijed
 // medija je po tačnom zahtjevu: giphy-4, kupanje/putovanje/kuhinja,
-// icon-motorika, u-paketu, dimenzije, giphy-5.
+// icon-motorika, dimenzije, giphy-5.
+// u-paketu.webp namjerno uklonjena (bila je četvrta u nizu) — slika
+// prikazuje zvečke u torbici, a torbica se NE dobija uz proizvod, pa bi
+// zadržavanje te slike samo bez teksta i dalje vizuelno tvrdilo suprotno.
 const POINTS = [
   {
     naslov: "Vidi u pokretu.",
@@ -21,12 +24,6 @@ const POINTS = [
     tekst: "Vakuum se zalijepi za svaku površinu — ne padaju i ne klize tokom igre.",
     src: "/img/rotirajuce-zvecke/icon-motorika.webp",
     alt: "Beba se igra rotirajućom zvečkom na frižideru",
-  },
-  {
-    naslov: "Ide s tobom, gdje god pošla.",
-    tekst: "Torbica za nošenje — spremna za auto, šetnju, posjetu.",
-    src: "/img/rotirajuce-zvecke/u-paketu.webp",
-    alt: "Zvečke u torbici za nošenje i pričvršćene na auto-sjedalicu",
   },
   {
     naslov: "Prava veličina za male ruke — 10,5 × 4,2 cm.",
