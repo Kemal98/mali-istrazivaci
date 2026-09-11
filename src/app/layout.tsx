@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import PixelEvents from "@/components/PixelEvents";
-import { META_PIXEL_ID, CLARITY_PROJECT_ID } from "@/lib/constants";
+import { META_PIXEL_ID, CLARITY_PROJECT_ID, GA_MEASUREMENT_ID } from "@/lib/constants";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -55,6 +55,18 @@ export default function RootLayout({
             alt=""
           />
         </noscript>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
         <Script id="ms-clarity" strategy="afterInteractive">
           {`
             (function(c,l,a,r,i,t,y){
