@@ -795,8 +795,9 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-story-proof{margin-top:20px;text-align:center}
 .dawn-story-proof-count{font-weight:800;font-size:1.1rem;margin-bottom:6px}
 .dawn-story-proof-stars{font-size:1rem;color:#555;font-weight:600}
-.dawn-includes-inline{margin-top:36px}
-.dawn-includes-inline li{font-size:.88rem}
+.dawn-includes-inline{margin-top:0}
+.dawn-includes.dawn-includes-inline li{font-size:.8rem}
+.dawn-h2.dawn-h2-xs{font-size:.92rem;margin-bottom:10px}
 
 .dawn-hit-block{margin-top:44px;text-align:center}
 .dawn-hit-badge{display:inline-block;background:var(--red);color:#fff;font-weight:800;
@@ -806,7 +807,7 @@ body:has(.home-page-root){padding-bottom:0}
 
 /* includes / trust — shared list look */
 .dawn-h2{font-size:1.4rem;margin-bottom:18px}
-.dawn-h2-sm{font-size:1.05rem}
+.dawn-h2.dawn-h2-sm{font-size:1.05rem}
 .dawn-includes ul,.dawn-trust ul{list-style:none;display:inline-flex;
   flex-direction:column;gap:11px;text-align:left}
 .dawn-includes li{font-size:.98rem;font-weight:600;display:flex;
@@ -863,7 +864,7 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-rev-who b{display:block;font-size:.92rem}
 .dawn-rev-verified{font-size:.72rem;font-weight:700;color:var(--green-d)}
 .dawn-rev-card p{font-size:.94rem;color:#333;line-height:1.65}
-.dawn-h2-lg{font-size:1.7rem}
+.dawn-h2.dawn-h2-lg{font-size:1.7rem}
 /* mala klikabilna sličica (pravi kadar iz videa, ne crna podloga) — klik
    otvara video uvećan u popupu (isti .dawn-modal-* kao checkout popup) */
 .dawn-rev-video-thumb{position:relative;display:block;width:140px;border:none;

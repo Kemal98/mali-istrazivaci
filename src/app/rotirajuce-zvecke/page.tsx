@@ -32,8 +32,8 @@ export default function RotirajuceZveckePage() {
           <RattleStory />
           <RattleTrust />
           <RattleCtaRepeat />
-          <BookContact />
           <RattleReviews />
+          <BookContact />
           <RattleCheckout />
           <DawnFooter />
           <BookStickyBar />

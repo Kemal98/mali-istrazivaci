@@ -33,9 +33,10 @@ const POINTS = [
   },
   {
     naslov: "Prava veličina za male ruke: 10,5 × 4,2 cm.",
-    tekst: "Igračka kojoj se bebe stalno vraćaju.",
+    tekst: null,
     src: "/img/rotirajuce-zvecke/dimenzije.webp",
     alt: "Dimenzije rotirajuće zvečke: 10,5 x 4,2 cm",
+    includesInstead: true,
   },
   {
     naslov: "Bez sitnih dijelova, bezbjedno za male ruke.",
@@ -73,9 +74,22 @@ export default function RattleStory() {
               </p>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={p.src} alt={p.alt} loading="lazy" />
-              <p className="dawn-story-text">
-                <span>{p.boldTekst ? <strong>{p.tekst}</strong> : p.tekst}</span>
-              </p>
+              {p.includesInstead ? (
+                <div className="dawn-story-text dawn-includes dawn-includes-inline">
+                  <h2 className="dawn-h2 dawn-h2-xs">U paketu dobijaš:</h2>
+                  <ul>
+                    {INCLUDES_ITEMS.map((t) => (
+                      <li key={t}>
+                        {t} <span className="dawn-check" aria-hidden="true">✓</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p className="dawn-story-text">
+                  <span>{p.boldTekst ? <strong>{p.tekst}</strong> : p.tekst}</span>
+                </p>
+              )}
               {i === 0 && (
                 <div className="dawn-story-proof">
                   <p className="dawn-story-proof-count">
@@ -87,18 +101,6 @@ export default function RattleStory() {
                 </div>
               )}
             </div>
-            {i === 2 && (
-              <div className="dawn-includes dawn-includes-inline">
-                <h2 className="dawn-h2 dawn-h2-sm">U paketu dobijaš:</h2>
-                <ul>
-                  {INCLUDES_ITEMS.map((t) => (
-                    <li key={t}>
-                      {t} <span className="dawn-check" aria-hidden="true">✓</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </Fragment>
         ))}
       </div>

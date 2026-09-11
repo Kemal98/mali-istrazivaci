@@ -26,6 +26,16 @@ const reviews = [
     name: "Ilma S.",
     media: {
       type: "video" as const,
+      src: "/img/rotirajuce-zvecke/recenzije/video-prozor.mp4",
+      poster: "/img/rotirajuce-zvecke/recenzije/poster-prozor.png",
+    },
+  },
+  {
+    text: "Naša beba od 10 sedmica baš voli gledati sve što se vrti, posebno ventilator na plafonu. Tokom kupanja nije imala ništa zanimljivo da gleda pa smo uzeli ove igračke. Vakuum se baš dobro zalijepi za kadu i beba se smije i gleda ih dok se vrte. Boje su baš jarke pa joj odmah privuku pažnju, a vrte se stvarno fino. Sad je čak počela i nožicama da ih udara da ih sama zavrti haha. Baš su nam uljepšale kupanje i stvarno ih preporučujem.",
+    initial: "J",
+    name: "Jovan M.",
+    media: {
+      type: "video" as const,
       src: "/img/rotirajuce-zvecke/recenzije/video-kupanje.mp4",
       poster: "/img/rotirajuce-zvecke/recenzije/poster-kupanje.png",
     },
