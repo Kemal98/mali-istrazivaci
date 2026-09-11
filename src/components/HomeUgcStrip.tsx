@@ -23,7 +23,7 @@ export default function HomeUgcStrip() {
         {PLACEHOLDER_TILES.map((src, i) => (
           <div className={styles.ugcItem} key={src + i} style={{ position: "relative" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt="Primjer fotografije za UGC traku — zamijeni pravom fotografijom kupca" loading="lazy" />
+            <img src={src} alt="Primjer fotografije za UGC traku, zamijeni pravom fotografijom kupca" loading="lazy" />
             <span
               style={{
                 position: "absolute",

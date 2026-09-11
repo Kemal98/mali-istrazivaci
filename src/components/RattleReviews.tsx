@@ -9,7 +9,7 @@ const reviews = [
     name: "Lamija T.",
   },
   {
-    text: "Ponijeli smo ih na put — zalijepile su se za prozor aviona i mirno je sjedio pola leta.",
+    text: "Ponijeli smo ih na put, zalijepile su se za prozor aviona i mirno je sjedio pola leta.",
     initial: "N",
     name: "Nejra M.",
   },

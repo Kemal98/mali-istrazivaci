@@ -11,7 +11,7 @@ export default function RattleHero() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/img/rotirajuce-zvecke/hero.png"
-            alt="Vesele rotirajuće zvečke za bebe — tri zvečke sa vakuum osnovom"
+            alt="Vesele rotirajuće zvečke za bebe, tri zvečke sa vakuum osnovom"
           />
         </div>
 
@@ -31,7 +31,7 @@ export default function RattleHero() {
         </div>
 
         <p className="dawn-pay-line">
-          Plaćanje pouzećem — pouzdana kupovina
+          Plaćanje pouzećem, pouzdana kupovina
         </p>
 
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">

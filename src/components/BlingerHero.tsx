@@ -11,7 +11,7 @@ export default function BlingerHero() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/img/blinger/hero.png"
-            alt="Blinger aparat za kosu s perlicama — djeca se igraju i ukrašavaju kosu"
+            alt="Blinger aparat za kosu s perlicama, djeca se igraju i ukrašavaju kosu"
           />
         </div>
 
@@ -31,7 +31,7 @@ export default function BlingerHero() {
         </div>
 
         <p className="dawn-pay-line">
-          Plaćanje pouzećem — pouzdana kupovina
+          Plaćanje pouzećem, pouzdana kupovina
         </p>
 
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">

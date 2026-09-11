@@ -25,7 +25,7 @@ export default function DawnHeader() {
     <div className="dawn-topbar-wrap">
       <BookOrderTrigger
         className="dawn-announce"
-        aria-label="Naruči odmah — kliknite za narudžbu"
+        aria-label="Naruči odmah, kliknite za narudžbu"
       >
         <div className="dawn-announce-track">
           {loop.map((t, i) =>

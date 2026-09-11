@@ -7,7 +7,7 @@ const POINTS = [
   {
     naslov: "Projektor pokaže, dijete precrta.",
     tekst:
-      "Žirafa-projektor baca sličicu na tablu — dijete samo prati linije i crtež je gotov. Uspije iz prve, pa želi još jedan.",
+      "Žirafa-projektor baca sličicu na tablu, dijete samo prati linije i crtež je gotov. Uspije iz prve, pa želi još jedan.",
   },
   {
     naslov: "Crtanje koje ih ne umori.",
@@ -17,17 +17,17 @@ const POINTS = [
   {
     naslov: "Uči boje, oblike i obrasce kroz igru.",
     tekst:
-      "Bira marker, prepoznaje oblik, prati liniju — fina motorika i pažnja rastu bez da to i primijeti.",
+      "Bira marker, prepoznaje oblik, prati liniju. Fina motorika i pažnja rastu bez da to i primijeti.",
   },
   {
     naslov: "Bez nereda po zidovima.",
     tekst:
-      "Markeri su perivi — silaze s ruku i odjeće. Tabla se obriše i crta se iznova.",
+      "Markeri su perivi, silaze s ruku i odjeće. Tabla se obriše i crta se iznova.",
   },
   {
     naslov: "Sve u jednoj kutiji.",
     tekst:
-      "Projektor, tabla sa stalkom i 12 markera — spremno za igru čim otvoriš pakovanje. Za uzrast 3+.",
+      "Projektor, tabla sa stalkom i 12 markera: spremno za igru čim otvoriš pakovanje. Za uzrast 3+.",
   },
 ];
 

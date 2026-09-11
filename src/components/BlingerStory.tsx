@@ -7,7 +7,7 @@
 const POINTS = [
   {
     naslov: "Savršena igračka koju djeca ne ispuštaju iz ruku.",
-    tekst: "Perlica se pričvrsti za sekundu — bez ljepila, bez makaza, bez nereda.",
+    tekst: "Perlica se pričvrsti za sekundu, bez ljepila, bez makaza, bez nereda.",
     media: { tip: "gif" as const, src: "/img/blinger/giphy.gif" },
   },
   {
@@ -21,12 +21,12 @@ const POINTS = [
   },
   {
     naslov: "Vidi u pokretu.",
-    tekst: "Jedan pokret i perlica je na mjestu — brzo, bez muke.",
+    tekst: "Jedan pokret i perlica je na mjestu, brzo, bez muke.",
     media: { tip: "gif" as const, src: "/img/blinger/giphy-2.gif" },
   },
   {
     naslov: "Ne staje samo na kosi.",
-    tekst: "Perlice se lijepe i za traku, obuću, tkaninu — prostor za maštu van frizure.",
+    tekst: "Perlice se lijepe i za traku, obuću, tkaninu. Prostor za maštu van frizure.",
     media: {
       tip: "slika" as const,
       src: "/img/blinger/vise-nacina-koristenja.png",
@@ -35,7 +35,7 @@ const POINTS = [
   },
   {
     naslov: "Igra koja traje, ne dosadi za dan.",
-    tekst: "Svaki put nova kombinacija boja — ista igračka, drugačiji rezultat.",
+    tekst: "Svaki put nova kombinacija boja, ista igračka, drugačiji rezultat.",
     media: { tip: "gif" as const, src: "/img/blinger/giphy-3.gif" },
   },
 ];

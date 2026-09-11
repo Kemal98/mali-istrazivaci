@@ -32,12 +32,12 @@ export default function HomeProductGrid({ uzrast }: { uzrast?: string }) {
           </div>
         ) : (
           <p className={styles.sectionSub}>
-            Još nemamo proizvod za ovaj uzrast — javi nam se ako tražiš
+            Još nemamo proizvod za ovaj uzrast, javi nam se ako tražiš
             nešto konkretno.
           </p>
         )}
         <p className={styles.gridFootnote}>
-          [PLACEHOLDER] 5 od {PRODUCTS.length} proizvoda su primjeri —
+          [PLACEHOLDER] 5 od {PRODUCTS.length} proizvoda su primjeri,
           zamijeni ih pravim proizvodima u src/data/products.json.
         </p>
       </div>

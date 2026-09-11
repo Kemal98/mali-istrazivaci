@@ -5,7 +5,7 @@
 const bullets = [
   "Vakuum osnova se čvrsto lijepi za glatke površine.",
   "Ne padaju i ne klize dok se beba igra.",
-  "Beba ih okreće iznova — jednostavan pokret, dug interes.",
+  "Beba ih okreće iznova. Jednostavan pokret, dug interes.",
 ];
 
 export default function RattleHeart() {

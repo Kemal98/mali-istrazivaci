@@ -1,9 +1,9 @@
 const REASONS = [
-  "Sama otkriva gdje šta ide — bez da joj stalno objašnjavaš",
+  "Sama otkriva gdje šta ide, bez da joj stalno objašnjavaš",
   "Ista stranica se igra iznova, svaki put drugačije",
-  "Čičak je prijatan na dodir — ne oštre ivice papirnih naljepnica",
-  "Nosi se u torbi — radi bez interneta, bez baterija",
-  "Raste s djetetom — od životinja i boja do prvih riječi",
+  "Čičak je prijatan na dodir, ne oštre ivice papirnih naljepnica",
+  "Nosi se u torbi, radi bez interneta, bez baterija",
+  "Raste s djetetom, od životinja i boja do prvih riječi",
   "Osjećaj uspjeha na svakoj strani, kad se čičak zalijepi na pravo mjesto",
 ];
 

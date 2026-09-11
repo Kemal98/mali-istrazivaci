@@ -10,7 +10,7 @@ export default function HomeStickyBar() {
   return (
     <div className={styles.sticky}>
       <div className={styles.stickyText}>
-        SAT MIRA — 29 KM
+        SAT MIRA, 29 KM
         <small>Bestseller · Pouzeće</small>
       </div>
       <Link href="/sat-mira" className={styles.btnPrimary} style={{ padding: "12px 22px", fontSize: ".9rem" }}>

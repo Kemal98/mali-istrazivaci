@@ -1,7 +1,7 @@
 const bullets = [
   "Deset strana zadataka u jednoj knjizi.",
-  "Čičak drži čvrsto — ne otpada kao naljepnice.",
-  "Ne troši se — lijepi i skida stotine puta.",
+  "Čičak drži čvrsto, ne otpada kao naljepnice.",
+  "Ne troši se, lijepi i skida stotine puta.",
   "Dijete se vraća istim stranama iznova.",
 ];
 
@@ -19,7 +19,7 @@ export default function BookHeart() {
           ))}
         </ul>
         <p className="dawn-heart-usecase">
-          Idealno kad ti treba 20 minuta mira — kuhaš, radiš, piješ kafu.
+          Idealno kad ti treba 20 minuta mira dok kuhaš, radiš ili piješ kafu.
         </p>
       </div>
     </section>

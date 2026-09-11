@@ -4,14 +4,14 @@ const blocks = [
     alt: "Životinje sa farme u Montessori knjizi – magarac, ćurka, krava na čičak",
     statement: "Dijete uči imena i zvukove životinja.\nBez tableta, bez baterija.",
     text:
-      "Magarac, ćurka, krava — sve su tu.\nZalijepi životinju na pravo mjesto na farmi.\nKad pogriješi, skine i pokuša ponovo.\nUči kroz igru, ne kroz ispravljanje.",
+      "Magarac, ćurka, krava, sve su tu.\nZalijepi životinju na pravo mjesto na farmi.\nKad pogriješi, skine i pokuša ponovo.\nUči kroz igru, ne kroz ispravljanje.",
   },
   {
     src: "/img/alphabet.png",
     alt: "Bosanska abeceda u Montessori knjizi – slova DŽ, Ć, Đ na čičak",
     statement: "Sva slova našeg jezika.\nČak i Č, Ć, Dž, Đ, Š, Ž.",
     text:
-      "Slaže bosansku abecedu, slovo po slovo.\nIsta slova koja uči u vrtiću i školi.\nČičak drži čvrsto — ne otpada kao naljepnice.\nJedna knjiga prati ga od 2. do 6. godine.",
+      "Slaže bosansku abecedu, slovo po slovo.\nIsta slova koja uči u vrtiću i školi.\nČičak drži čvrsto, ne otpada kao naljepnice.\nJedna knjiga prati ga od 2. do 6. godine.",
   },
   {
     src: "/img/emocije.png",
@@ -23,7 +23,7 @@ const blocks = [
   {
     src: "/img/spelovanje.png",
     alt: "Dijete slaže prve riječi slova na čičak",
-    statement: "Za stariju djecu — prve riječi.\nSlovo po slovo, sam.",
+    statement: "Za stariju djecu, prve riječi.\nSlovo po slovo, sam.",
     text:
       "Isti set koji dvogodišnjak koristi za životinje,\nšestogodišnjak koristi za slaganje riječi.\nKnjiga raste s djetetom, ne baca se za godinu dana.",
   },

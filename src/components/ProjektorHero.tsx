@@ -21,7 +21,7 @@ export default function ProjektorHero() {
         </div>
 
         <h1 className="dawn-h1 dawn-h1-lg">
-          Projektor za crtanje — set sa tablom i markerima (12 boja)
+          Projektor za crtanje sa tablom i markerima (12 boja)
         </h1>
 
         <a href="#recenzije" className="dawn-rating">
@@ -37,7 +37,7 @@ export default function ProjektorHero() {
           <span className="dawn-badge-sale">SNIŽENO</span>
         </div>
 
-        <p className="dawn-pay-line">Plaćanje pouzećem — pouzdana kupovina</p>
+        <p className="dawn-pay-line">Plaćanje pouzećem, pouzdana kupovina</p>
 
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           PORUČI SADA

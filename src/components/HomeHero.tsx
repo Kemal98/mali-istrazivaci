@@ -12,7 +12,7 @@ export default function HomeHero() {
               stvarno zavole.
             </h1>
             <p className={styles.heroSub}>
-              Pažljivo birane igračke za djecu svih uzrasta — plaćanje
+              Pažljivo birane igračke za djecu svih uzrasta, plaćanje
               pouzećem, dostava po cijeloj BiH.
             </p>
             <div className={styles.heroBtns}>

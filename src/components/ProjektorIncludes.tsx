@@ -21,7 +21,7 @@ export default function ProjektorIncludes() {
           ))}
         </ul>
         <p className="dawn-includes-note">
-          Uredna kutija — lijep poklon za rođendan ili za polazak u vrtić.
+          Uredna kutija, lijep poklon za rođendan ili za polazak u vrtić.
         </p>
       </div>
     </section>

@@ -9,7 +9,7 @@
 const POINTS = [
   {
     naslov: "Vidi u pokretu.",
-    tekst: "Beba je okreće iznova i iznova — jednostavan pokret, dug interes.",
+    tekst: "Beba je okreće iznova i iznova. Jednostavan pokret, dug interes.",
     src: "/img/rotirajuce-zvecke/giphy-4.gif",
     alt: "Rotirajuća zvečka u pokretu",
   },
@@ -21,18 +21,18 @@ const POINTS = [
   },
   {
     naslov: "Umirujuća igra koja drži pažnju.",
-    tekst: "Vakuum se zalijepi za svaku površinu — ne padaju i ne klize tokom igre.",
+    tekst: "Vakuum se zalijepi za svaku površinu, ne padaju i ne klize tokom igre.",
     src: "/img/rotirajuce-zvecke/icon-motorika.webp",
     alt: "Beba se igra rotirajućom zvečkom na frižideru",
   },
   {
-    naslov: "Prava veličina za male ruke — 10,5 × 4,2 cm.",
+    naslov: "Prava veličina za male ruke: 10,5 × 4,2 cm.",
     tekst: "Igračka kojoj se bebe stalno vraćaju.",
     src: "/img/rotirajuce-zvecke/dimenzije.webp",
-    alt: "Dimenzije rotirajuće zvečke — 10,5 x 4,2 cm",
+    alt: "Dimenzije rotirajuće zvečke: 10,5 x 4,2 cm",
   },
   {
-    naslov: "Bez sitnih dijelova — bezbjedno za male ruke.",
+    naslov: "Bez sitnih dijelova, bezbjedno za male ruke.",
     tekst: "Lako se peru i ponovo koriste.",
     src: "/img/rotirajuce-zvecke/giphy-5.gif",
     alt: "Rotirajuća zvečka u pokretu",

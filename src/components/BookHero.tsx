@@ -40,7 +40,7 @@ export default function BookHero() {
         </div>
 
         <p className="dawn-pay-line">
-          Plaćanje pouzećem — pouzdana kupovina
+          Plaćanje pouzećem, pouzdana kupovina
         </p>
 
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">

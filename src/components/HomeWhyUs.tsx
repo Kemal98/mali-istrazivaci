@@ -5,7 +5,7 @@ import styles from "./Home.module.css";
 const REASONS = [
   {
     naslov: "Pažljivo biramo svaki proizvod",
-    opis: "Ne prodajemo sve što postoji — samo igračke za koje mislimo da vrijede.",
+    opis: "Ne prodajemo sve što postoji, samo igračke za koje mislimo da vrijede.",
   },
   {
     naslov: "Ručno pakujemo svaku narudžbu",
@@ -13,7 +13,7 @@ const REASONS = [
   },
   {
     naslov: "Netoksični materijali",
-    opis: "Brušeno drvo bez oštrih ivica, boje bez štetnih materija — sigurno za malu djecu.",
+    opis: "Brušeno drvo bez oštrih ivica, boje bez štetnih materija, sigurno za malu djecu.",
   },
   {
     naslov: "Plaćanje pouzećem",

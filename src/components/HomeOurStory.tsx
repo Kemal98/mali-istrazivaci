@@ -24,7 +24,7 @@ export default function HomeOurStory() {
             <h2>Igračke koje biramo pažljivo</h2>
             <p>
               [PLACEHOLDER TEKST] Mali Istraživači je nastao iz želje da
-              roditeljima u BiH olakšamo izbor igračaka — bez pretraživanja
+              roditeljima u BiH olakšamo izbor igračaka, bez pretraživanja
               stranih sajtova i čekanja sedmicama na dostavu. Svaki proizvod
               biramo i testiramo prije nego što uđe u ponudu.
             </p>

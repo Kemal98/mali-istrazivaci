@@ -1,7 +1,7 @@
 const items = [
   "Deset strana zadataka na čičak",
-  "Sva slova bosanskog jezika — Č Ć Dž Đ Š Ž",
-  "PDF vodič „30 igara” — šaljemo na Viber odmah",
+  "Sva slova bosanskog jezika: Č Ć Dž Đ Š Ž",
+  "PDF vodič „30 igara”, šaljemo na Viber odmah",
   "Bez ekrana, bez baterija",
 ];
 

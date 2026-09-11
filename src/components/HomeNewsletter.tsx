@@ -12,7 +12,7 @@ export default function HomeNewsletter() {
       <div className={styles.wrap}>
         <h2>Imaš pitanje prije narudžbe?</h2>
         <p>
-          Piši nam na mail — odgovaramo isti ili sljedeći dan i pomažemo
+          Piši nam na mail, odgovaramo isti ili sljedeći dan i pomažemo
           oko izbora igračke po uzrastu djeteta.
         </p>
         <a href={`mailto:${CONTACT_EMAIL}`} className={styles.btnPrimary}>

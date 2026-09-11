@@ -102,7 +102,7 @@ export default function BlingerCheckout() {
             className="dawn-modal"
             role="dialog"
             aria-modal="true"
-            aria-label="Naruči — Blinger aparat za kosu"
+            aria-label="Naruči Blinger aparat za kosu"
           >
             <button
               ref={closeBtnRef}
@@ -161,13 +161,13 @@ export default function BlingerCheckout() {
 
               <div className="dawn-modal-delivery">
                 <span className="dawn-modal-delivery-dot" aria-hidden="true" />
-                Kurirska dostava — plaćanje pouzećem
+                Kurirska dostava, plaćanje pouzećem
                 <b>{DELIVERY} KM</b>
               </div>
 
               {BLINGER_ORDERS_ENABLED ? (
                 <button type="submit" className="dawn-btn-black" disabled={submitting}>
-                  {submitting ? "Šaljem…" : `PORUČI SADA — ${total} KM →`}
+                  {submitting ? "Šaljem…" : `PORUČI SADA (${total} KM) →`}
                 </button>
               ) : (
                 <div className="dawn-checkout-paused">
@@ -176,7 +176,7 @@ export default function BlingerCheckout() {
               )}
               {error && (
                 <p className="dawn-checkout-error">
-                  Greška — pokušaj ponovo ili nam piši na mail.
+                  Greška, pokušaj ponovo ili nam piši na mail.
                 </p>
               )}
             </form>
