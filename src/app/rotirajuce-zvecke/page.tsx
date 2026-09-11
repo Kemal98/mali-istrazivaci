@@ -4,6 +4,7 @@ import { BookCheckoutModalProvider } from "@/components/BookCheckoutModalContext
 import DawnHeader from "@/components/DawnHeader";
 import RattleHero from "@/components/RattleHero";
 import BookSocialProof from "@/components/BookSocialProof";
+import RattleHeart from "@/components/RattleHeart";
 import RattleStory from "@/components/RattleStory";
 import RattleIncludes from "@/components/RattleIncludes";
 import RattleTrust from "@/components/RattleTrust";
@@ -30,6 +31,7 @@ export default function RotirajuceZveckePage() {
           <DawnHeader />
           <RattleHero />
           <BookSocialProof />
+          <RattleHeart />
           <RattleStory />
           <RattleIncludes />
           <RattleTrust />
