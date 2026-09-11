@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function HvalaPage() {
   return (
     <>
-      <Nav logoHref="/" />
+      <Nav logoHref="/" showCta={false} />
       <Suspense fallback={null}>
         <HvalaContent />
       </Suspense>

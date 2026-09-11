@@ -17,6 +17,7 @@ export default function Nav({
   logoHref = "#",
   phone,
   simplified = false,
+  showCta = true,
   topbarFull = (
     <>
       Stiže u <strong>poklon kutiji</strong> &nbsp;·&nbsp; Plaćanje pouzećem
@@ -30,6 +31,11 @@ export default function Nav({
   logoHref?: string;
   phone?: string;
   simplified?: boolean;
+  // Dugme "Naruči – {price} + dostava" — isključi na stranicama gdje
+  // narudžba više nije radnja koju treba ponuditi (npr. /hvala, gdje je
+  // narudžba upravo poslana i cijena u dugmetu ne odgovara stvarnoj
+  // narudžbi jer Nav ne zna koji je proizvod/cijena tamo u pitanju).
+  showCta?: boolean;
   topbarFull?: ReactNode;
   topbarShort?: ReactNode;
 }) {
@@ -71,27 +77,31 @@ export default function Nav({
               </a>
             ))}
           </nav>
-          <div className="nav-actions">
-            {phone && (
-              <a
-                href={`tel:${phone}`}
-                className="nav-phone"
-                aria-label="Pozovi nas"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+          {(phone || showCta) && (
+            <div className="nav-actions">
+              {phone && (
+                <a
+                  href={`tel:${phone}`}
+                  className="nav-phone"
+                  aria-label="Pozovi nas"
                 >
-                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-                </svg>
-              </a>
-            )}
-            <a href="#naruci" className="btn btn-primary">
-              Naruči – {price} + dostava
-            </a>
-          </div>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+                  </svg>
+                </a>
+              )}
+              {showCta && (
+                <a href="#naruci" className="btn btn-primary">
+                  Naruči – {price} + dostava
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </header>
     </>
