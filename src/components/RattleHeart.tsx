@@ -3,7 +3,7 @@
 // srca, kratka lista, rečenica na kraju) da izgleda kao referentna
 // stranica, ali svaka rečenica je vlastita formulacija, ne prepisana.
 const bullets = [
-  "Vakuum osnova se čvrsto lijepi za glatke površine.",
+  "Vakuum se čvrsto lijepi za glatke površine.",
   "Ne padaju i ne klize dok se beba igra.",
   "Beba ih okreće iznova. Jednostavan pokret, dug interes.",
 ];
