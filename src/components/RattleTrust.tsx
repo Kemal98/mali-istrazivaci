@@ -5,7 +5,7 @@ export default function RattleTrust() {
   return (
     <section className="dawn-trust">
       <div className="dawn-col">
-        <h2 className="dawn-h2">Kupovina bez rizika (plaća se pouzećem)</h2>
+        <h2 className="dawn-h2 dawn-h2-sm">Kupovina bez rizika (plaća se pouzećem)</h2>
         <ul>
           {lines.map((t) => (
             <li key={t}>{t}</li>

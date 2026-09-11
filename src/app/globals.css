@@ -801,6 +801,7 @@ body:has(.home-page-root){padding-bottom:0}
 
 /* includes / trust — shared list look */
 .dawn-h2{font-size:1.4rem;margin-bottom:18px}
+.dawn-h2-sm{font-size:1.05rem}
 .dawn-includes ul,.dawn-trust ul{list-style:none;display:inline-flex;
   flex-direction:column;gap:11px;text-align:left}
 .dawn-includes li{font-size:.98rem;font-weight:600;display:flex;

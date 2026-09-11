@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 // Fraze najbliže onome što stoji na referentnoj stranici (iz ranijeg
 // pregleda te iste stranice u ovoj sesiji). Dimenzije (10.5 × 4.2 cm) su
 // stvarno pročitane sa slike dimenzije.webp, ne izmišljene. Redoslijed
@@ -40,32 +42,35 @@ export default function RattleStory() {
   return (
     <section className="dawn-story">
       <div className="dawn-col">
-        {POINTS.map((p) => (
-          <div className="dawn-story-block" key={p.naslov}>
-            <p className="dawn-story-stmt">
-              <span>{p.naslov}</span>
-            </p>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={p.src} alt={p.alt} loading="lazy" />
-            <p className="dawn-story-text">
-              <span>{p.boldTekst ? <strong>{p.tekst}</strong> : p.tekst}</span>
-            </p>
-          </div>
+        {POINTS.map((p, i) => (
+          <Fragment key={p.naslov}>
+            {i === POINTS.length - 1 && (
+              <div className="dawn-hit-block">
+                <span className="dawn-hit-badge">HIT</span>
+                <p className="dawn-hit-tagline">
+                  Igračka koju roditelji
+                  <br />
+                  non-stop hvale!
+                </p>
+                <p className="dawn-hit-sub">
+                  Poklon koji roditeljima
+                  <br />
+                  olakšava svakodnevicu.
+                </p>
+              </div>
+            )}
+            <div className="dawn-story-block">
+              <p className="dawn-story-stmt">
+                <span>{p.naslov}</span>
+              </p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={p.src} alt={p.alt} loading="lazy" />
+              <p className="dawn-story-text">
+                <span>{p.boldTekst ? <strong>{p.tekst}</strong> : p.tekst}</span>
+              </p>
+            </div>
+          </Fragment>
         ))}
-
-        <div className="dawn-hit-block">
-          <span className="dawn-hit-badge">HIT</span>
-          <p className="dawn-hit-tagline">
-            Igračka koju roditelji
-            <br />
-            non-stop hvale!
-          </p>
-          <p className="dawn-hit-sub">
-            Poklon koji roditeljima
-            <br />
-            olakšava svakodnevicu.
-          </p>
-        </div>
       </div>
     </section>
   );
