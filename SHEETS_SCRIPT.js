@@ -55,7 +55,7 @@ const META_PIXEL_ID = "2651862191901133";
 // Conversions API -> Generate access token)
 const META_CAPI_ACCESS_TOKEN = "TVOJ_CAPI_TOKEN";
 // TODO: zamijeni pravom domenom sajta
-const SITE_URL = "https://mali-istrazivaci.vercel.app";
+const SITE_URL = "https://maliistrazivaci.ba";
 
 const STATUS_OPTIONS = [
   "Novo",
@@ -200,6 +200,20 @@ function sha256Hex_(str) {
     .join("");
 }
 
+/**
+ * Google Sheets na neengleskim lokalizacijama (npr. bosanski/hrvatski/
+ * njemački) traži ";" između argumenata formule umjesto ",". setFormula()
+ * to ne prevodi sam — formula sa "," na takvom sheetu ispadne #ERROR!.
+ * Nijedna formula u ovom fajlu nema zarez unutar navodnika (u tekstu),
+ * pa je bezbjedno zamijeniti sve zareze zarezom/tačka-zarezom ovisno o
+ * lokalizaciji trenutnog sheeta.
+ */
+function fx_(ss, formula) {
+  const locale = (ss.getSpreadsheetLocale() || "").toLowerCase();
+  const needsSemicolon = locale.indexOf("en") !== 0; // en_US, en_GB... koriste zarez
+  return needsSemicolon ? formula.replace(/,/g, ";") : formula;
+}
+
 function setupSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheets()[0]; // isti tab kao doPost, ne getActiveSheet()
@@ -226,7 +240,10 @@ function setupSheet() {
   sheet
     .getRange(2, 12)
     .setFormula(
-      '=ARRAYFORMULA(IF(I2:I="","",IFERROR(VALUE(SUBSTITUTE(I2:I," KM","")),"")))'
+      fx_(
+        ss,
+        '=ARRAYFORMULA(IF(I2:I="","",IFERROR(VALUE(SUBSTITUTE(I2:I," KM","")),"")))'
+      )
     );
 
   // Padajući meni za Status (kolona J)
@@ -287,13 +304,13 @@ function setupAnalytics_(ss, dataSheet) {
   a.getRange("A1").setFontWeight("bold").setFontSize(14);
 
   a.getRange("A3").setValue("Ukupno narudžbi");
-  a.getRange("B3").setFormula("=COUNTA(" + q("A") + ")");
+  a.getRange("B3").setFormula(fx_(ss, "=COUNTA(" + q("A") + ")"));
   a.getRange("A4").setValue("Ukupno komada (količina)");
-  a.getRange("B4").setFormula("=SUM(" + q("K") + ")");
+  a.getRange("B4").setFormula(fx_(ss, "=SUM(" + q("K") + ")"));
   a.getRange("A5").setValue("Ukupan prihod (KM)");
-  a.getRange("B5").setFormula("=SUM(" + q("L") + ")");
+  a.getRange("B5").setFormula(fx_(ss, "=SUM(" + q("L") + ")"));
   a.getRange("A6").setValue("Prosječna vrijednost narudžbe (KM)");
-  a.getRange("B6").setFormula("=IFERROR(ROUND(B5/B3,2),0)");
+  a.getRange("B6").setFormula(fx_(ss, "=IFERROR(ROUND(B5/B3,2),0)"));
 
   a.getRange("A3:A6").setFontWeight("bold");
   a.getRange("B3:B6").setHorizontalAlignment("right");
@@ -307,10 +324,10 @@ function setupAnalytics_(ss, dataSheet) {
     const row = 10 + i;
     a.getRange(row, 1).setValue(status);
     a.getRange(row, 2).setFormula(
-      '=COUNTIF(' + q("J") + ',"' + status + '")'
+      fx_(ss, '=COUNTIF(' + q("J") + ',"' + status + '")')
     );
     a.getRange(row, 3).setFormula(
-      '=SUMIF(' + q("J") + ',"' + status + '",' + q("L") + ')'
+      fx_(ss, '=SUMIF(' + q("J") + ',"' + status + '",' + q("L") + ')')
     );
   });
 
