@@ -26,7 +26,7 @@ const reviews = [
     poster: "/img/rotirajuce-zvecke/recenzije/poster-kupanje.png",
   },
   {
-    text: "Prvi put ih je koristila na kupanju i odmah ih je zavoljela.Bas je dugo zabave i moja curica ih stvarno voli. Razmišljam da uzmem još jedne i za unuka. Jednostavne su za koristiti i za sad mi djeluju baš sigurno, čak i kad ih stavi u usta i gricka.",
+    text: "Prvi put ih je koristila na kupanju i odmah ih je zavoljela.Bas je dugo zabave imoja curica ih stvarno voli.Razmišljam da uzmem još jedne i za unuka. Jednostavne su za koristiti i za sad mi djeluju baš sigurno, čak i kad ih stavi u usta i gricka.",
     initial: "Z",
     name: "Zineta H.",
     video: "/img/rotirajuce-zvecke/recenzije/video-pod.mp4",
