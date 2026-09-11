@@ -201,6 +201,29 @@ function sha256Hex_(str) {
 }
 
 /**
+ * JEDNOKRATNO ČIŠĆENJE: obriši sve testne narudžbe (redovi sa "TEST" i
+ * slično, iz debagovanja) i sve prazne redove ispod njih, do kraja tabele.
+ * Sve što je OD reda 9 naniže se briše — prilagodi PRVI_RED_ZA_BRISANJE
+ * ako ti je zadnja PRAVA narudžba na drugom redu.
+ *
+ * Pokreni jednom: pored dugmeta Run izaberi "obrisiTestPodatke", klikni
+ * Run. Poslije toga je slobodno izbrisati i ovu funkciju iz koda, ili je
+ * samo ostaviti (bezbjedna je pokrenuti je više puta, samo neće imati šta
+ * da obriše drugi put).
+ */
+function obrisiTestPodatke() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  const PRVI_RED_ZA_BRISANJE = 9;
+  const maxRow = sheet.getMaxRows();
+  if (maxRow >= PRVI_RED_ZA_BRISANJE) {
+    sheet.deleteRows(PRVI_RED_ZA_BRISANJE, maxRow - PRVI_RED_ZA_BRISANJE + 1);
+  }
+  SpreadsheetApp.getUi().alert(
+    "Gotovo — obrisano redova " + PRVI_RED_ZA_BRISANJE + " do " + maxRow + "."
+  );
+}
+
+/**
  * Google Sheets na neengleskim lokalizacijama (npr. bosanski/hrvatski/
  * njemački) traži ";" između argumenata formule umjesto ",". setFormula()
  * to ne prevodi sam — formula sa "," na takvom sheetu ispadne #ERROR!.
