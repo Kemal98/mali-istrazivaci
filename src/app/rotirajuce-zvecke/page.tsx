@@ -26,7 +26,7 @@ export default function RotirajuceZveckePage() {
     <div className="dawn-page">
       <DawnQtyProvider>
         <BookCheckoutModalProvider>
-          <DawnHeader />
+          <DawnHeader logoHref="#top" />
           <RattleHero />
           <RattleHeart />
           <RattleStory />

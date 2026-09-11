@@ -14,7 +14,15 @@ const ITEMS = [
   "cutoff", // zamjenjeno stvarnom <ShippingCutoff/> komponentom ispod
 ];
 
-export default function DawnHeader() {
+export default function DawnHeader({
+  logoHref = "/",
+}: {
+  // Neke stranice (npr. rotirajuce-zvecke) žele da logo/ime vrati na vrh
+  // TE stranice ("#top") umjesto na "/" — dok početna stranica nije
+  // gotova, ne želimo da klik na logo odvede kupca sa dovršene
+  // proizvod-stranice na nedovršenu početnu.
+  logoHref?: string;
+} = {}) {
   // Traka se duplira jednom da animacija (translateX -50%) izgleda kao
   // beskonačna petlja bez vidljivog "skoka" na kraju.
   const loop = [...ITEMS, ...ITEMS];
@@ -46,7 +54,7 @@ export default function DawnHeader() {
       </BookOrderTrigger>
       <header className="dawn-header">
         <div className="dawn-header-inner">
-          <Link href="/" className="dawn-logo">
+          <Link href={logoHref} className="dawn-logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/img/logo.png" alt="Mali Istraživači" />
             Mali Istraživači
