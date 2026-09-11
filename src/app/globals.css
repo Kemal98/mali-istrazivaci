@@ -776,7 +776,7 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-heart-usecase{font-size:.95rem;color:#555;font-weight:600}
 
 /* mid-page social proof */
-.dawn-social{background:#FAFAFA}
+.dawn-social{background:#FAFAFA;padding:26px 0}
 .dawn-social-headline{font-weight:800;font-size:1.25rem;margin-bottom:10px}
 .dawn-social .dawn-stars{font-size:1.2rem;margin-bottom:4px}
 .dawn-social-sub{font-size:.85rem;color:#777;font-weight:600}
