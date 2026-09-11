@@ -42,18 +42,20 @@ export default function BookStory() {
       <div className="dawn-col">
         {blocks.map((b) => (
           <div className="dawn-story-block" key={b.src}>
-            <p className="dawn-story-stmt">
-              {b.statement.split("\n").map((line, i) => (
-                <span key={i}>{line}</span>
-              ))}
-            </p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={b.src} alt={b.alt} loading="lazy" />
-            <p className="dawn-story-text">
-              {b.text.split("\n").map((line, i) => (
-                <span key={i}>{line}</span>
-              ))}
-            </p>
+            <div className="dawn-story-copy">
+              <p className="dawn-story-stmt">
+                {b.statement.split("\n").map((line, i) => (
+                  <span key={i}>{line}</span>
+                ))}
+              </p>
+              <p className="dawn-story-text">
+                {b.text.split("\n").map((line, i) => (
+                  <span key={i}>{line}</span>
+                ))}
+              </p>
+            </div>
           </div>
         ))}
       </div>

@@ -775,6 +775,7 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-heart-list li{font-size:.95rem;font-weight:500;color:#333;padding-left:20px;position:relative}
 .dawn-heart-list li::before{content:"•";position:absolute;left:2px;color:var(--orange);font-weight:800}
 .dawn-heart-usecase{font-size:.95rem;color:#555;font-weight:600}
+.dawn-heart-usecase+.dawn-heart-usecase{margin-top:8px}
 
 /* mid-page social proof */
 .dawn-social{background:#FAFAFA;padding:26px 0}
@@ -926,4 +927,50 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-price-old{font-size:1.2rem}
   .dawn-story-stmt{font-size:1.05rem}
   .dawn-rating{font-size:.92rem}
+}
+
+/* Desktop layout za Dawn proizvod-stranice (knjiga/Blinger/zvečke/
+   projektor) — ispod ove širine sve ostaje jedna centrirana kolona
+   (mobile-first, kao dosad). Iznad nje: hero postaje slika lijevo/sadržaj
+   desno, a opis proizvoda (.dawn-story) naizmjenično slika-lijevo/
+   slika-desno po bloku, kao na referentnim stranicama. Slika je jedino
+   dijete eksplicitno pozicionirano u grid koloni koja "razvuče" sve
+   redove (grid-row:1/-1) — ostala djeca (naslov, cijena, dugme... /
+   naslov bloka i tekst) se sama poređaju u preostalu kolonu, bez potrebe
+   da se JSX struktura mijenja po stranici. */
+@media(min-width:960px){
+  .dawn-col{max-width:760px}
+
+  .dawn-product .dawn-col{
+    max-width:1100px;display:grid;grid-template-columns:1fr 1fr;
+    column-gap:64px;align-items:center;text-align:left
+  }
+  .dawn-product-img{grid-column:1;grid-row:1/-1;margin-bottom:0}
+  .dawn-product .dawn-h1,
+  .dawn-product .dawn-rating,
+  .dawn-product .dawn-price-row,
+  .dawn-product .dawn-pay-line,
+  .dawn-product .dawn-btn-black,
+  .dawn-product .dawn-hero-usp{grid-column:2}
+  .dawn-product .dawn-rating{margin-left:0;margin-right:0;justify-content:flex-start}
+  .dawn-product .dawn-price-row{justify-content:flex-start}
+  .dawn-product .dawn-hero-usp{justify-content:flex-start}
+  .dawn-product .dawn-h1{font-size:2.6rem}
+  .dawn-product .dawn-h1-lg{font-size:3rem}
+
+  .dawn-story .dawn-col{max-width:1100px}
+  /* .dawn-story-copy obavija naslov+tekst u JEDAN grid item (umjesto da
+     naslov i tekst budu dva odvojena auto-reda pored slike koja se
+     proteže preko oba) — bez toga kratak tekst pored visoke slike grid
+     razvlači u dva reda sa velikim praznim razmakom između njih. Blokovi
+     bez slike (npr. projektor, dok se ne dodaju prave fotografije) nemaju
+     .dawn-story-copy u JSX-u pa ostaju centrirana jedna kolona kao prije. */
+  .dawn-story-block:has(img){
+    display:grid;grid-template-columns:1fr 1fr;column-gap:56px;
+    align-items:center;text-align:left;margin-bottom:64px
+  }
+  .dawn-story-block img{grid-column:1;grid-row:1;margin-bottom:0}
+  .dawn-story-block .dawn-story-copy{grid-column:2;grid-row:1}
+  .dawn-story-block:nth-child(even) img{grid-column:2}
+  .dawn-story-block:nth-child(even) .dawn-story-copy{grid-column:1}
 }

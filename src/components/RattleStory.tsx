@@ -1,18 +1,14 @@
 // Fraze najbliže onome što stoji na referentnoj stranici (iz ranijeg
 // pregleda te iste stranice u ovoj sesiji). Dimenzije (10.5 × 4.2 cm) su
 // stvarno pročitane sa slike dimenzije.webp, ne izmišljene. Redoslijed
-// medija je po tačnom zahtjevu: giphy-4, kupanje/putovanje/kuhinja,
-// icon-motorika, dimenzije, giphy-5.
+// medija je po tačnom zahtjevu: kupanje/putovanje/kuhinja, icon-motorika,
+// dimenzije, giphy-5.
+// giphy-4.gif se više ne ponavlja ovdje — sad je gore u Hero-u i u
+// checkout modalu, pa bi bio duplikat da ostane i kao prva tačka ovdje.
 // u-paketu.webp namjerno uklonjena (bila je četvrta u nizu) — slika
 // prikazuje zvečke u torbici, a torbica se NE dobija uz proizvod, pa bi
 // zadržavanje te slike samo bez teksta i dalje vizuelno tvrdilo suprotno.
 const POINTS = [
-  {
-    naslov: "Vidi u pokretu.",
-    tekst: "Beba je okreće iznova i iznova. Jednostavan pokret, dug interes.",
-    src: "/img/rotirajuce-zvecke/giphy-4.gif",
-    alt: "Rotirajuća zvečka u pokretu",
-  },
   {
     naslov: "Odlične za kupanje, putovanje i kuhinju.",
     tekst: "Idealno dok spremaš ručak, pereš sudove ili se tuširaš.",
@@ -45,14 +41,16 @@ export default function RattleStory() {
       <div className="dawn-col">
         {POINTS.map((p) => (
           <div className="dawn-story-block" key={p.naslov}>
-            <p className="dawn-story-stmt">
-              <span>{p.naslov}</span>
-            </p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={p.src} alt={p.alt} loading="lazy" />
-            <p className="dawn-story-text">
-              <span>{p.tekst}</span>
-            </p>
+            <div className="dawn-story-copy">
+              <p className="dawn-story-stmt">
+                <span>{p.naslov}</span>
+              </p>
+              <p className="dawn-story-text">
+                <span>{p.tekst}</span>
+              </p>
+            </div>
           </div>
         ))}
       </div>

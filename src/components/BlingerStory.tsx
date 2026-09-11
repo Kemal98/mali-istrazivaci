@@ -46,18 +46,20 @@ export default function BlingerStory() {
       <div className="dawn-col">
         {POINTS.map((p) => (
           <div className="dawn-story-block" key={p.naslov}>
-            <p className="dawn-story-stmt">
-              <span>{p.naslov}</span>
-            </p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={p.media.src}
               alt={p.media.tip === "slika" ? p.media.alt : p.naslov}
               loading="lazy"
             />
-            <p className="dawn-story-text">
-              <span>{p.tekst}</span>
-            </p>
+            <div className="dawn-story-copy">
+              <p className="dawn-story-stmt">
+                <span>{p.naslov}</span>
+              </p>
+              <p className="dawn-story-text">
+                <span>{p.tekst}</span>
+              </p>
+            </div>
           </div>
         ))}
       </div>
