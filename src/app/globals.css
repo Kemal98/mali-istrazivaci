@@ -792,6 +792,11 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-story-block img{width:100%;border-radius:4px;margin-bottom:18px}
 .dawn-story-text{font-size:.98rem;color:#333;line-height:1.7}
 .dawn-story-text span{display:block}
+.dawn-story-proof{margin-top:20px;text-align:center}
+.dawn-story-proof-count{font-weight:800;font-size:1.1rem;margin-bottom:6px}
+.dawn-story-proof-stars{font-size:1rem;color:#555;font-weight:600}
+.dawn-includes-inline{margin-top:36px}
+.dawn-includes-inline li{font-size:.88rem}
 
 .dawn-hit-block{margin-top:44px;text-align:center}
 .dawn-hit-badge{display:inline-block;background:var(--red);color:#fff;font-weight:800;
@@ -995,4 +1000,8 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-story-block:has(img) .dawn-story-text{grid-column:2;grid-row:2}
   .dawn-story-block:nth-child(even) img{grid-column:2}
   .dawn-story-block:nth-child(even):has(img) .dawn-story-text{grid-column:1}
+  /* dodatna djeca unutar .dawn-story-block (proof red) — eksplicitno
+     preko cijele širine, ispod slike/teksta, da ne uđe u "sparse"
+     auto-placement nagađanje kao ranije. */
+  .dawn-story-block:has(img) .dawn-story-proof{grid-column:1/-1;grid-row:3;margin-top:24px}
 }

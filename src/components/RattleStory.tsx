@@ -1,4 +1,11 @@
 import { Fragment } from "react";
+import { RATING, FAMILIES_COUNT } from "@/lib/socialProof";
+
+const INCLUDES_ITEMS = [
+  "3 rotirajuća spinera (leptir, bubamara, pčela)",
+  "Vakuum osnova za lijepljenje",
+  "Spremno za igru",
+];
 
 // Fraze najbliže onome što stoji na referentnoj stranici (iz ranijeg
 // pregleda te iste stranice u ovoj sesiji). Dimenzije (10.5 × 4.2 cm) su
@@ -69,7 +76,29 @@ export default function RattleStory() {
               <p className="dawn-story-text">
                 <span>{p.boldTekst ? <strong>{p.tekst}</strong> : p.tekst}</span>
               </p>
+              {i === 0 && (
+                <div className="dawn-story-proof">
+                  <p className="dawn-story-proof-count">
+                    Preko {FAMILIES_COUNT}+ zadovoljnih roditelja
+                  </p>
+                  <p className="dawn-story-proof-stars">
+                    ⭐️⭐️⭐️⭐️⭐️ (prosječna ocjena {RATING}/5)
+                  </p>
+                </div>
+              )}
             </div>
+            {i === 2 && (
+              <div className="dawn-includes dawn-includes-inline">
+                <h2 className="dawn-h2 dawn-h2-sm">U paketu dobijaš:</h2>
+                <ul>
+                  {INCLUDES_ITEMS.map((t) => (
+                    <li key={t}>
+                      {t} <span className="dawn-check" aria-hidden="true">✓</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </Fragment>
         ))}
       </div>

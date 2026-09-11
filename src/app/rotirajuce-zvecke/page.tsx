@@ -5,7 +5,6 @@ import DawnHeader from "@/components/DawnHeader";
 import RattleHero from "@/components/RattleHero";
 import RattleHeart from "@/components/RattleHeart";
 import RattleStory from "@/components/RattleStory";
-import RattleIncludes from "@/components/RattleIncludes";
 import RattleTrust from "@/components/RattleTrust";
 import RattleCtaRepeat from "@/components/RattleCtaRepeat";
 import BookContact from "@/components/BookContact";
@@ -31,7 +30,6 @@ export default function RotirajuceZveckePage() {
           <RattleHero />
           <RattleHeart />
           <RattleStory />
-          <RattleIncludes />
           <RattleTrust />
           <RattleCtaRepeat />
           <BookContact />
