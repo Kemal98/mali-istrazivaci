@@ -815,6 +815,12 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-check{color:var(--orange);font-weight:800}
 .dawn-trust{background:#FAFAFA}
 .dawn-trust li{font-size:.96rem;font-weight:600;color:#333}
+.dawn-trust-list-sm li{font-size:.82rem;font-weight:600;color:#555;
+  display:flex;justify-content:space-between;gap:14px;min-width:260px}
+.dawn-guarantee-badge{display:inline-flex;align-items:center;gap:8px;
+  margin-top:22px;background:#fff;border:1.5px solid var(--green);
+  color:var(--green-d);font-weight:800;font-size:1rem;padding:12px 20px;
+  border-radius:8px}
 
 /* why-love-it */
 .dawn-why ul{list-style:none;display:flex;flex-direction:column;gap:12px;
