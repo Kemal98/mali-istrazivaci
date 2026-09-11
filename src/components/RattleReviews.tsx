@@ -59,6 +59,15 @@ const reviews = [
       src: "/img/rotirajuce-zvecke/recenzije/dijete-hranilica.png",
     },
   },
+  {
+    text: "Moja iskrena preporuka ako idete u restoran ili negdje na odmor sa bebom. Mi ih uvijek ponesemo sa sobom jer ih samo zalijepimo za sto i beba se odmah zabavi. Nama su baš spas dok čekamo hranu ili hoćemo na miru popiti kafu. Stvarno dobro dođu kad ste negdje van kuće.",
+    initial: "S",
+    name: "Selma R.",
+    media: {
+      type: "photo" as const,
+      src: "/img/rotirajuce-zvecke/recenzije/dijete-restoran.png",
+    },
+  },
 ];
 
 type OpenMedia = { type: "video" | "photo"; src: string };
