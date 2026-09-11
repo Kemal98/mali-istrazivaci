@@ -13,7 +13,7 @@ export default function RattleIncludes() {
           ))}
         </ul>
         <p className="dawn-includes-note">
-          Uredno pakovanje — lijep poklon za bebu i tek rođene.
+          Uredno pakovanje - lijep poklon za bebu.
         </p>
       </div>
     </section>

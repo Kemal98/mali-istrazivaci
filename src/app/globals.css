@@ -851,6 +851,8 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-rev-who b{display:block;font-size:.92rem}
 .dawn-rev-verified{font-size:.72rem;font-weight:700;color:var(--green-d)}
 .dawn-rev-card p{font-size:.94rem;color:#333;line-height:1.65}
+.dawn-rev-video{width:100%;border-radius:8px;margin-bottom:14px;background:#000}
+.dawn-rev-photo{width:100%;border-radius:8px;margin-top:26px}
 
 /* checkout — sad popup, vidi .dawn-modal-* niže */
 .dawn-checkout-fields{text-align:left}

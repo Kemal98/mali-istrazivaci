@@ -30,9 +30,7 @@ export default function RattleHeart() {
         <p className="dawn-heart-usecase">
           Razvija finu motoriku i koordinaciju pokreta, kroz igru.
         </p>
-        <p className="dawn-heart-usecase">
-          Idealno dok spremaš ručak, pereš sudove ili se tuširaš.
-        </p>
+     
       </div>
     </section>
   );
