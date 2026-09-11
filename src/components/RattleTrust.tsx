@@ -1,4 +1,4 @@
-const lines = ["Ne plaćaš dok paket ne stigne", "Dostava 2–4 dana", "Cijena dostave 10 KM"];
+const lines = ["Ne plaćaš dok paket ne stigne", "Dostava 2–3 radna dana", "Cijena dostave 10 KM"];
 
 export default function RattleTrust() {
   return (
@@ -13,7 +13,7 @@ export default function RattleTrust() {
           ))}
         </ul>
         <div className="dawn-guarantee-badge">
-          🛡️ 14 dana garancije za povrat — bez pitanja
+          🛡️ 14 dana garancije za povrat
         </div>
       </div>
     </section>
