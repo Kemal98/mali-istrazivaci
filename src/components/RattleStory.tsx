@@ -16,6 +16,7 @@ const POINTS = [
     tekst: "Idealno dok spremaš ručak, pereš sudove ili se tuširaš.",
     src: "/img/rotirajuce-zvecke/kupanje,putovanje,kuhinja.png",
     alt: "Rotirajuće zvečke zalijepljene u kadi, na prozoru aviona i na frižideru",
+    boldTekst: true,
   },
   {
     naslov: "Umirujuća igra koja drži pažnju.",
