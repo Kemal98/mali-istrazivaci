@@ -13,8 +13,14 @@ export default function RattleHeart() {
     <section className="dawn-heart">
       <div className="dawn-col">
         <p className="dawn-heart-tag">♥️ 3 komada u jednom setu ♥️</p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="dawn-heart-gif"
+          src="/img/rotirajuce-zvecke/giphy-4.gif"
+          alt="Rotirajuća zvečka u pokretu"
+        />
         <p className="dawn-heart-lead">
-          Igračka koja zaokupi bebu dok ti završiš svoje.
+          Igračka koja zaokupi bebu dok ti završiš svoje obaveze.
         </p>
         <ul className="dawn-heart-list">
           {bullets.map((b) => (

@@ -769,6 +769,7 @@ body:has(.home-page-root){padding-bottom:0}
 /* heart tagline block */
 .dawn-heart{padding:26px 0}
 .dawn-heart-tag{font-weight:800;font-size:1.05rem;margin-bottom:14px}
+.dawn-heart-gif{width:100%;max-width:420px;margin:0 auto 18px;border-radius:8px}
 .dawn-heart-lead{font-weight:700;font-size:1.15rem;margin-bottom:18px;line-height:1.4}
 .dawn-heart-list{list-style:none;display:inline-flex;flex-direction:column;
   gap:9px;text-align:left;margin-bottom:18px}
@@ -959,18 +960,21 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-product .dawn-h1-lg{font-size:3rem}
 
   .dawn-story .dawn-col{max-width:1100px}
-  /* .dawn-story-copy obavija naslov+tekst u JEDAN grid item (umjesto da
-     naslov i tekst budu dva odvojena auto-reda pored slike koja se
-     proteže preko oba) — bez toga kratak tekst pored visoke slike grid
-     razvlači u dva reda sa velikim praznim razmakom između njih. Blokovi
-     bez slike (npr. projektor, dok se ne dodaju prave fotografije) nemaju
-     .dawn-story-copy u JSX-u pa ostaju centrirana jedna kolona kao prije. */
+  /* Naslov (.dawn-story-stmt) ide preko cijele širine kao red iznad, pa
+     slika i tekst ispod njega u dvije kolone, naizmjenično lijevo/desno.
+     Svaki grid item ima EKSPLICITAN i column i row — namjerno, da nema
+     "sparse" auto-placement nagađanja (ranije, kad je slika bila u koloni
+     2 ali je u DOM-u dolazila prije teksta iz kolone 1, grid ju je
+     gurnuo u sasvim novi red umjesto da je vrati unazad u kolonu 1 istog
+     reda). Blokovi bez slike (npr. projektor, dok se ne dodaju prave
+     fotografije) nemaju :has(img) pa ostaju centrirana jedna kolona. */
   .dawn-story-block:has(img){
     display:grid;grid-template-columns:1fr 1fr;column-gap:56px;
     align-items:center;text-align:left;margin-bottom:64px
   }
-  .dawn-story-block img{grid-column:1;grid-row:1;margin-bottom:0}
-  .dawn-story-block .dawn-story-copy{grid-column:2;grid-row:1}
+  .dawn-story-block:has(img) .dawn-story-stmt{grid-column:1/-1;grid-row:1;margin-bottom:20px}
+  .dawn-story-block img{grid-column:1;grid-row:2;margin-bottom:0}
+  .dawn-story-block:has(img) .dawn-story-text{grid-column:2;grid-row:2}
   .dawn-story-block:nth-child(even) img{grid-column:2}
-  .dawn-story-block:nth-child(even) .dawn-story-copy{grid-column:1}
+  .dawn-story-block:nth-child(even):has(img) .dawn-story-text{grid-column:1}
 }

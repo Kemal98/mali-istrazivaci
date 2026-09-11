@@ -115,7 +115,7 @@ export default function RattleCheckout() {
 
             <div className="dawn-modal-product">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/rotirajuce-zvecke/giphy-4.gif" alt="Vesele rotirajuće zvečke" />
+              <img src="/img/rotirajuce-zvecke/hero.png" alt="Vesele rotirajuće zvečke" />
               <div>
                 <b>Vesele rotirajuće zvečke</b>
                 <span>3 komada u setu</span>

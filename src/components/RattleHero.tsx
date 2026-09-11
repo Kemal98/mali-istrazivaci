@@ -10,8 +10,8 @@ export default function RattleHero() {
         <div className="dawn-product-img">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/img/rotirajuce-zvecke/giphy-4.gif"
-            alt="Rotirajuća zvečka u pokretu"
+            src="/img/rotirajuce-zvecke/hero.png"
+            alt="Vesele rotirajuće zvečke za bebe, tri zvečke sa vakuum osnovom"
           />
         </div>
 

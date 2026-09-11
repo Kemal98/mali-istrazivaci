@@ -41,16 +41,14 @@ export default function RattleStory() {
       <div className="dawn-col">
         {POINTS.map((p) => (
           <div className="dawn-story-block" key={p.naslov}>
+            <p className="dawn-story-stmt">
+              <span>{p.naslov}</span>
+            </p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={p.src} alt={p.alt} loading="lazy" />
-            <div className="dawn-story-copy">
-              <p className="dawn-story-stmt">
-                <span>{p.naslov}</span>
-              </p>
-              <p className="dawn-story-text">
-                <span>{p.tekst}</span>
-              </p>
-            </div>
+            <p className="dawn-story-text">
+              <span>{p.tekst}</span>
+            </p>
           </div>
         ))}
       </div>
