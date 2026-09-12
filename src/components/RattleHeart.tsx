@@ -12,7 +12,7 @@ export default function RattleHeart() {
   return (
     <section className="dawn-heart">
       <div className="dawn-col">
-        <p className="dawn-heart-tag">♥️ 3 komada u jednom setu ♥️</p>
+        <p className="dawn-heart-tag dawn-heart-tag-lg">♥️ 3 komada u jednom setu ♥️</p>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className="dawn-heart-gif"

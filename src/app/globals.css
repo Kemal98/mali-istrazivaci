@@ -776,6 +776,7 @@ body:has(.home-page-root){padding-bottom:0}
 /* heart tagline block */
 .dawn-heart{padding:26px 0}
 .dawn-heart-tag{font-weight:800;font-size:1.05rem;margin-bottom:14px}
+.dawn-heart-tag.dawn-heart-tag-lg{font-size:1.4rem}
 .dawn-heart-gif{width:100%;max-width:420px;margin:0 auto 18px;border-radius:8px}
 .dawn-heart-lead{font-weight:700;font-size:1.15rem;margin-bottom:18px;line-height:1.4}
 .dawn-heart-list{list-style:none;display:inline-flex;flex-direction:column;
