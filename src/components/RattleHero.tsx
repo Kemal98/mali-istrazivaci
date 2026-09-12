@@ -35,13 +35,13 @@ export default function RattleHero() {
           <span className="dawn-badge-sale">SNIŽENO</span>
         </div>
 
-        <p className="dawn-pay-line">
-          Plaćanje pouzećem, pouzdana kupovina
-        </p>
-
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           PORUČI SADA
         </BookOrderTrigger>
+
+        <p className="dawn-pay-line dawn-pay-line-below">
+          Plaćanje pouzećem, pouzdana kupovina
+        </p>
       </div>
     </section>
   );
