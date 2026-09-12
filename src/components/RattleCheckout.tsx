@@ -120,7 +120,10 @@ export default function RattleCheckout() {
                 <b>Vesele rotirajuće zvečke</b>
                 <span>3 komada u setu</span>
               </div>
-              <div className="dawn-modal-price">24 KM</div>
+              <div className="dawn-modal-price">
+                <span className="dawn-modal-price-old">39 KM</span>
+                <span className="dawn-modal-price-new">24 KM</span>
+              </div>
             </div>
 
             <div className="dawn-modal-qty">
