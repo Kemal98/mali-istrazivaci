@@ -684,6 +684,9 @@ body:has(.home-page-root){padding-bottom:0}
   font-family:var(--dawn-sans);font-weight:800;letter-spacing:-.01em;line-height:1.2
 }
 .dawn-page section{padding:44px 0}
+/* anchor skokovi (#recenzije, #top, #kontakt...) inače slete tačno ispod
+   sticky trake+headera pa naslov ostane sakriven iza njih */
+.dawn-page [id]{scroll-margin-top:110px}
 .dawn-col{max-width:600px;margin:0 auto;padding:0 20px;text-align:center}
 
 /* announcement + header — obavijena u jedan sticky omotač, vidi
