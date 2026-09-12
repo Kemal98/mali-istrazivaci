@@ -966,7 +966,7 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-rating{font-size:.92rem}
   /* malo niža hero slika na mobitelu (samo zvečke), da cijena/dugme
      stanu bliže vrhu ekrana bez skrolanja */
-  .dawn-product-img-compact{aspect-ratio:4/3}
+  .dawn-product-img-compact{max-width:78%;margin-left:auto;margin-right:auto}
 }
 
 /* Desktop layout za Dawn proizvod-stranice (knjiga/Blinger/zvečke/
