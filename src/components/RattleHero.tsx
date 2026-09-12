@@ -18,7 +18,9 @@ export default function RattleHero() {
         <h1 className="dawn-h1 dawn-h1-lg">Vesele rotirajuće zvečke za bebe (3 komada u setu)</h1>
 
         <a href="#recenzije" className="dawn-rating dawn-rating-stack">
-          <span className="dawn-rating-cta">Pogledaj šta kažu roditelji</span>
+          <span className="dawn-rating-cta">
+            <strong>HIT IGRA - RODITELJI KAŽU</strong>
+          </span>
           <span className="dawn-rating-sub">
             <span className="dawn-stars" aria-hidden="true">
               ♥♥♥♥♥
