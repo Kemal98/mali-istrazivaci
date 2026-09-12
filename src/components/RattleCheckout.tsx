@@ -20,7 +20,7 @@ export default function RattleCheckout() {
   const [error, setError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const DELIVERY = 10;
-  const productPrice = 24;
+  const productPrice = 19;
   const total = productPrice * qty + DELIVERY;
 
   useEffect(() => {
@@ -122,7 +122,7 @@ export default function RattleCheckout() {
               </div>
               <div className="dawn-modal-price">
                 <span className="dawn-modal-price-old">39 KM</span>
-                <span className="dawn-modal-price-new">24 KM</span>
+                <span className="dawn-modal-price-new">19 KM</span>
               </div>
             </div>
 

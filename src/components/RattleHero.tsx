@@ -31,7 +31,7 @@ export default function RattleHero() {
 
         <div className="dawn-price-row">
           <span className="dawn-price-old">39 KM</span>
-          <span className="dawn-price-new">24 KM</span>
+          <span className="dawn-price-new">19 KM</span>
           <span className="dawn-badge-sale">SNIŽENO</span>
         </div>
 
