@@ -21,7 +21,7 @@ export default function RattleHero() {
           <span className="dawn-stars" aria-hidden="true">
             ♥♥♥♥♥
           </span>
-          {RATING} ({REVIEWS_COUNT} ocjena)
+          {RATING} ({REVIEWS_COUNT} ocjena) · Šta kažu roditelji →
         </a>
 
         <div className="dawn-price-row">
