@@ -37,11 +37,6 @@ export default function RattleHero() {
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           PORUČI SADA
         </BookOrderTrigger>
-        <ul className="dawn-hero-usp">
-          <li>Drži se za svaku glatku površinu</li>
-          <li>Umiruje i drži pažnju bebe</li>
-          <li>Tri različita lika u setu</li>
-        </ul>
       </div>
     </section>
   );
