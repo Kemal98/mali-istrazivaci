@@ -7,7 +7,7 @@ export default function RattleHero() {
   return (
     <section className="dawn-product" id="top">
       <div className="dawn-col">
-        <div className="dawn-product-img">
+        <div className="dawn-product-img dawn-product-img-compact">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/img/rotirajuce-zvecke/hero.png"
