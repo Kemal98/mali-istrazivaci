@@ -1,4 +1,8 @@
-import { RATING, REVIEWS_COUNT } from "@/lib/socialProof";
+// Ocjena/broj ocjena su hardkodirani (4.8 / 22) samo za ovu stranicu —
+// isto kao u BlingerHero.tsx — umjesto sitewide RATING/REVIEWS_COUNT
+// (4.9/87) iz socialProof.ts.
+const PAGE_RATING = 4.8;
+const PAGE_REVIEWS_COUNT = 22;
 
 // Stvarne recenzije koje je poslao vlasnik (tekst prenešen kako je
 // poslan, samo očišćen pravopis/razmaci) — imena su nasumično dodana jer
@@ -75,10 +79,10 @@ export default function BlingerReviews() {
           Roditelji koji su već kupili kod nas ♥️
         </h2>
         <div className="dawn-rev-score">
-          <span className="dawn-rev-num">{RATING}</span>
+          <span className="dawn-rev-num">{PAGE_RATING}</span>
           <div>
             <div className="dawn-stars">★★★★★</div>
-            <small>na osnovu {REVIEWS_COUNT} ocjena</small>
+            <small>na osnovu {PAGE_REVIEWS_COUNT} recenzije</small>
           </div>
         </div>
         <div className="dawn-rev-list">
