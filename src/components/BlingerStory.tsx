@@ -1,4 +1,8 @@
-import { FAMILIES_COUNT, RATING } from "@/lib/socialProof";
+import { FAMILIES_COUNT } from "@/lib/socialProof";
+
+// Ocjena hardkodirana na 4.8 samo za ovu stranicu (isto kao heroj i
+// recenzije), ne sitewide RATING (4.9) iz socialProof.ts.
+const PAGE_RATING = 4.8;
 
 // Struktura/redoslijed prati tačno referentnu stranicu (screenshotovi
 // koje je vlasnik poslao), prevedeno na bosansku ijekavicu — na izričit
@@ -8,7 +12,7 @@ import { FAMILIES_COUNT, RATING } from "@/lib/socialProof";
 // ekrana" — nisu prevedene/dodane).
 export default function BlingerStory() {
   return (
-    <section className="dawn-story">
+    <section className="dawn-story dawn-story-tight-top">
       <div className="dawn-col">
         {/* Sekcija 1 — social proof, stvaran broj (500+), ne tuđih 4500 */}
         <div className="dawn-story-block">
@@ -16,7 +20,7 @@ export default function BlingerStory() {
             Preko {FAMILIES_COUNT}+ zadovoljnih roditelja
           </p>
           <p className="dawn-story-proof-stars" style={{ marginBottom: 18 }}>
-            ⭐️⭐️⭐️⭐️⭐️ (prosječna ocjena {RATING}/5)
+            ⭐️⭐️⭐️⭐️⭐️ (prosječna ocjena {PAGE_RATING}/5)
           </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

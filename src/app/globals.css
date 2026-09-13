@@ -684,6 +684,7 @@ body:has(.home-page-root){padding-bottom:0}
   font-family:var(--dawn-sans);font-weight:800;letter-spacing:-.01em;line-height:1.2
 }
 .dawn-page section{padding:44px 0}
+.dawn-story-tight-top{padding-top:12px}
 /* anchor skokovi (#recenzije, #top, #kontakt...) inače slete tačno ispod
    sticky trake+headera pa naslov ostane sakriven iza njih */
 .dawn-page [id]{scroll-margin-top:110px}
