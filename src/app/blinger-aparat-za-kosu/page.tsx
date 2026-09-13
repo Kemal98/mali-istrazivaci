@@ -15,8 +15,8 @@ import DawnFooter from "@/components/DawnFooter";
 import BookStickyBar from "@/components/BookStickyBar";
 
 // NAPOMENA: proizvod zamijenjen (Blinger 180 perlica -> Sparkling Diamond),
-// isti URL/checkout zadržan namjerno (postojeće reklame vode ovdje). Nema
-// još prave fotografije proizvoda — placeholder dok ne stigne.
+// isti URL/checkout zadržan namjerno (postojeće reklame vode ovdje).
+// Postojeće slike/gifovi zadržani (isti fizički proizvod).
 export const metadata: Metadata = {
   title:
     "Sparkling Diamond — aparat za ukrašavanje kose + 75 dijamanata | Mali Istraživači",

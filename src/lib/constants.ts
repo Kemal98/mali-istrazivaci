@@ -19,8 +19,8 @@ export const CONTACT_EMAIL = "svijetistrazivaca@gmail.com";
 export const BOOK_ORDERS_ENABLED = true;
 
 // Sparkling Diamond (ranije Blinger, isti URL/checkout zadržan) —
-// uključeno, cijena je stvarna. Slika je JOŠ placeholder, nema prave
-// fotografije proizvoda.
+// uključeno, cijena je stvarna. Postojeće Blinger slike/gifovi vraćeni
+// nazad (isti fizički proizvod/aplikator, samo nova ponuda/ime).
 export const BLINGER_ORDERS_ENABLED = true;
 
 // Rotirajuće zvečke — uključeno na izričit zahtjev. Cijena i slika su

@@ -3,18 +3,16 @@
 import { RATING, REVIEWS_COUNT } from "@/lib/socialProof";
 import BookOrderTrigger from "./BookOrderTrigger";
 
-// NAPOMENA: nema stvarne fotografije Sparkling Diamond proizvoda u /img —
-// stare Blinger slike prikazuju drugi (stari) proizvod, ne koriste se.
-// Placeholder okvir dok ne stigne prava fotografija u originalnoj kutiji.
 export default function BlingerHero() {
   return (
     <section className="dawn-product" id="top">
       <div className="dawn-col">
-        <div className="dawn-product-img dawn-img-placeholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z" />
-          </svg>
-          <span>Slika proizvoda dolazi uskoro</span>
+        <div className="dawn-product-img">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/img/blinger/hero.png"
+            alt="Sparkling Diamond aparat za ukrašavanje kose s dijamantima"
+          />
         </div>
 
         <h1 className="dawn-h1 dawn-h1-lg">

@@ -117,11 +117,8 @@ export default function BlingerCheckout() {
             </button>
 
             <div className="dawn-modal-product">
-              <div className="dawn-modal-product-placeholder" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z" />
-                </svg>
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/img/blinger/hero.png" alt="Sparkling Diamond" />
               <div>
                 <b>Sparkling Diamond</b>
                 <span>75 dijamanata, 5 boja</span>
