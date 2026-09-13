@@ -38,8 +38,7 @@ const POINTS = [
   },
   {
     naslov: "Još je zabavnije u dvoje 💕",
-    tekst:
-      "Jedna bira boju, druga pravi frizuru — pa zamijene uloge. Sa mamom, sestrom ili najboljom drugaricom.",
+    tekst: null,
     src: "/img/blinger/stvoreno_za_male_princeze.png",
     alt: "Mama i djevojčice ukrašavaju kosu zajedno",
   },
@@ -58,9 +57,11 @@ export default function BlingerStory() {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={p.src} alt={p.alt} loading="lazy" />
             )}
-            <p className="dawn-story-text">
-              <span>{p.tekst}</span>
-            </p>
+            {p.tekst && (
+              <p className="dawn-story-text">
+                <span>{p.tekst}</span>
+              </p>
+            )}
             {p.steps && (
               <ol className="dawn-step-list">
                 {p.steps.map((s) => (
