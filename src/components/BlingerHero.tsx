@@ -23,6 +23,12 @@ export default function BlingerHero() {
           <span className="dawn-rating-cta">
             <strong>HIT IGRA - RODITELJI KAŽU</strong>
           </span>
+          <span className="dawn-rating-sub">
+            <span className="dawn-stars" aria-hidden="true">
+              ♥♥♥♥♥
+            </span>
+            4.8 (22 ocjene)
+          </span>
         </a>
 
         <div className="dawn-price-row">

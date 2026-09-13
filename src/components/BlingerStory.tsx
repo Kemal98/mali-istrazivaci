@@ -22,6 +22,7 @@ const POINTS = [
       "5 diskova, svaki sa po 15 dijamanata u različitim bojama — svaki put druga kombinacija, drugi izgled.",
     src: "/img/blinger/giphy-2.gif",
     alt: "Dijamanti u više boja",
+    naslovIspodSlike: true,
   },
   {
     naslov: "Svaki put druga frizura ✨",
@@ -50,12 +51,19 @@ export default function BlingerStory() {
       <div className="dawn-col">
         {POINTS.map((p) => (
           <div className="dawn-story-block" key={p.naslov}>
-            <p className="dawn-story-stmt">
-              <span>{p.naslov}</span>
-            </p>
+            {!p.naslovIspodSlike && (
+              <p className="dawn-story-stmt">
+                <span>{p.naslov}</span>
+              </p>
+            )}
             {p.src && (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={p.src} alt={p.alt} loading="lazy" />
+            )}
+            {p.naslovIspodSlike && (
+              <p className="dawn-story-stmt">
+                <span>{p.naslov}</span>
+              </p>
             )}
             {p.tekst && (
               <p className="dawn-story-text">
