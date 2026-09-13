@@ -1,9 +1,4 @@
-const lines = [
-  "Plaćanje pouzećem",
-  "Dostava širom BiH",
-  "Nema online plaćanja unaprijed",
-  "Jednostavno naručivanje",
-];
+const lines = ["Plaćanje pouzećem", "Dostava širom BiH"];
 
 export default function BlingerTrust() {
   return (
