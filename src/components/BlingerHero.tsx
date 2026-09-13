@@ -40,10 +40,6 @@ export default function BlingerHero() {
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           PORUČI SADA
         </BookOrderTrigger>
-
-        <p className="dawn-pay-line dawn-pay-line-below">
-          Plaćanje pouzećem, pouzdana kupovina
-        </p>
       </div>
     </section>
   );
