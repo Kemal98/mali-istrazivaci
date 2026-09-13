@@ -17,6 +17,9 @@ export default function BlingerIncludes() {
             </li>
           ))}
         </ul>
+        <p className="dawn-includes-note">
+          <strong>Poklon koji izaziva iskreno oduševljenje.</strong>
+        </p>
       </div>
     </section>
   );
