@@ -1,6 +1,5 @@
 "use client";
 
-import { RATING, REVIEWS_COUNT } from "@/lib/socialProof";
 import BookOrderTrigger from "./BookOrderTrigger";
 
 export default function BlingerHero() {
@@ -16,7 +15,7 @@ export default function BlingerHero() {
         </div>
 
         <h1 className="dawn-h1 dawn-h1-lg">
-          Sparkling Diamond ✨
+          Sparkling Diamond
           <span>Aparat za ukrašavanje kose + 75 dijamanata</span>
         </h1>
 
@@ -24,21 +23,7 @@ export default function BlingerHero() {
           <span className="dawn-rating-cta">
             <strong>HIT IGRA - RODITELJI KAŽU</strong>
           </span>
-          <span className="dawn-rating-sub">
-            <span className="dawn-stars" aria-hidden="true">
-              ♥♥♥♥♥
-            </span>
-            {RATING} ({REVIEWS_COUNT} ocjena)
-          </span>
         </a>
-
-        <p className="dawn-heart-lead">Njen mali salon kod kuće.</p>
-        <p className="dawn-story-text" style={{ marginBottom: 18 }}>
-          <span>
-            75 dijamanata u 5 boja za frizure koje može praviti iznova i
-            iznova.
-          </span>
-        </p>
 
         <div className="dawn-price-row">
           <span className="dawn-price-old">39 KM</span>
@@ -53,12 +38,6 @@ export default function BlingerHero() {
         <p className="dawn-pay-line dawn-pay-line-below">
           Plaćanje pouzećem, pouzdana kupovina
         </p>
-
-        <ul className="dawn-hero-usp">
-          <li>Plaćanje pouzećem</li>
-          <li>Dostava širom BiH</li>
-          <li>Brza dostava</li>
-        </ul>
       </div>
     </section>
   );

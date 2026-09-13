@@ -3,7 +3,6 @@ import { DawnQtyProvider } from "@/components/DawnQtyContext";
 import { BookCheckoutModalProvider } from "@/components/BookCheckoutModalContext";
 import DawnHeader from "@/components/DawnHeader";
 import BlingerHero from "@/components/BlingerHero";
-import BookSocialProof from "@/components/BookSocialProof";
 import BlingerStory from "@/components/BlingerStory";
 import BlingerIncludes from "@/components/BlingerIncludes";
 import BlingerTrust from "@/components/BlingerTrust";
@@ -31,7 +30,6 @@ export default function BlingerPage() {
         <BookCheckoutModalProvider>
           <DawnHeader />
           <BlingerHero />
-          <BookSocialProof />
           <BlingerStory />
           <BlingerIncludes />
           <BlingerTrust />
