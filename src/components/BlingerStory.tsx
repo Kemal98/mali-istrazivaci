@@ -8,7 +8,7 @@ const POINTS = [
     tekst:
       "Odaberi dijamant, postavi aplikator na kosu i jednim pritiskom dodaj sjaj frizuri.",
     steps: ["Izaberi dijamant", "Postavi aplikator", "Klik — dijamant je na mjestu"],
-    src: "/img/blinger/giphy.gif",
+    src: "/img/blinger/giphy-3.gif",
     alt: "Postavljanje dijamanta aplikatorom",
   },
   {
@@ -26,7 +26,7 @@ const POINTS = [
   {
     naslov: "Svaki put druga frizura ✨",
     tekst: "Za svoju kosu. Za sestru ili prijateljicu. Za lutke. Za rođendane i druženja.",
-    src: "/img/blinger/giphy-3.gif",
+    src: "/img/blinger/giphy.gif",
     alt: "Različite frizure sa dijamantima",
   },
   {
