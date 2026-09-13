@@ -18,7 +18,7 @@ import BookStickyBar from "@/components/BookStickyBar";
 // Postojeće slike/gifovi zadržani (isti fizički proizvod).
 export const metadata: Metadata = {
   title:
-    "Sparkling Diamond — aparat za ukrašavanje kose + 75 dijamanata | Mali Istraživači",
+    "Sparkling Diamond: aparat za ukrašavanje kose + 75 dijamanata | Mali Istraživači",
   description:
     "Sparkling Diamond: aparat za ukrašavanje kose sa 75 dijamanata u 5 boja. Njen mali salon kod kuće. 24 KM, plaćanje pouzećem, dostava po BiH.",
 };

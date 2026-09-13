@@ -7,19 +7,19 @@ const POINTS = [
     naslov: "Stavi. Klikni. Zablistaj.",
     tekst:
       "Odaberi dijamant, postavi aplikator na kosu i jednim pritiskom dodaj sjaj frizuri.",
-    steps: ["Izaberi dijamant", "Postavi aplikator", "Klik — dijamant je na mjestu"],
+    steps: ["Izaberi dijamant", "Postavi aplikator", "Klik, dijamant je na mjestu"],
     src: "/img/blinger/giphy-3.gif",
     alt: "Postavljanje dijamanta aplikatorom",
   },
   {
     naslov: "Njen mali salon kod kuće 💕",
     tekst:
-      "Danas uređuje svoju kosu. Sutra mamu. Onda prijateljicu ili lutku — Sparkling Diamond pretvara obično popodne u mali salon ljepote kod kuće.",
+      "Danas uređuje svoju kosu. Sutra mamu. Onda prijateljicu ili lutku. Sparkling Diamond pretvara obično popodne u mali salon ljepote kod kuće.",
   },
   {
     naslov: "75 dijamanata. 5 boja. Puno kombinacija.",
     tekst:
-      "5 diskova, svaki sa po 15 dijamanata u različitim bojama — svaki put druga kombinacija, drugi izgled.",
+      "5 diskova, svaki sa po 15 dijamanata u različitim bojama, svaki put druga kombinacija, drugi izgled.",
     src: "/img/blinger/giphy-2.gif",
     alt: "Dijamanti u više boja",
     naslovIspodSlike: true,
@@ -33,7 +33,7 @@ const POINTS = [
   {
     naslov: "Još više načina za kreativnost",
     tekst:
-      "Dijamanti nisu samo za kosu — isprobaj ih i na traci za kosu, torbici ili omiljenom modnom dodatku.",
+      "Dijamanti nisu samo za kosu: isprobaj ih i na traci za kosu, torbici ili omiljenom modnom dodatku.",
     src: "/img/blinger/vise-nacina-koristenja.png",
     alt: "Dijamanti zalijepljeni na patiku",
   },
