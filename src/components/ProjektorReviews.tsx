@@ -24,6 +24,9 @@ export default function ProjektorReviews() {
   return (
     <section className="dawn-reviews" id="recenzije">
       <div className="dawn-col">
+        <h2 className="dawn-h2 dawn-h2-lg">
+          Roditelji koji su već kupili kod nas ♥️
+        </h2>
         <div className="dawn-rev-score">
           <span className="dawn-rev-num">{RATING}</span>
           <div>

@@ -24,11 +24,16 @@ export default function ProjektorHero() {
           Projektor za crtanje sa tablom i markerima (12 boja)
         </h1>
 
-        <a href="#recenzije" className="dawn-rating">
-          <span className="dawn-stars" aria-hidden="true">
-            ♥♥♥♥♥
+        <a href="#recenzije" className="dawn-rating dawn-rating-stack">
+          <span className="dawn-rating-cta">
+            <strong>HIT IGRA - RODITELJI KAŽU</strong>
           </span>
-          {RATING} ({REVIEWS_COUNT} ocjena)
+          <span className="dawn-rating-sub">
+            <span className="dawn-stars" aria-hidden="true">
+              ♥♥♥♥♥
+            </span>
+            {RATING} ({REVIEWS_COUNT} ocjena)
+          </span>
         </a>
 
         <div className="dawn-price-row">
@@ -37,11 +42,11 @@ export default function ProjektorHero() {
           <span className="dawn-badge-sale">SNIŽENO</span>
         </div>
 
-        <p className="dawn-pay-line">Plaćanje pouzećem, pouzdana kupovina</p>
-
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           PORUČI SADA
         </BookOrderTrigger>
+
+        <p className="dawn-pay-line dawn-pay-line-below">Plaćanje pouzećem, pouzdana kupovina</p>
         <ul className="dawn-hero-usp">
           <li>Projektor vodi dijete kroz crtež</li>
           <li>12 perivih markera u boji</li>
