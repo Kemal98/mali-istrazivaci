@@ -4,7 +4,7 @@
 // onome što se vidi.
 const POINTS = [
   {
-    naslov: "Stavi. Klikni. Zablistaj. ✨",
+    naslov: "Stavi. Klikni. Zablistaj.",
     tekst:
       "Odaberi dijamant, postavi aplikator na kosu i jednim pritiskom dodaj sjaj frizuri.",
     steps: ["Izaberi dijamant", "Postavi aplikator", "Klik — dijamant je na mjestu"],
