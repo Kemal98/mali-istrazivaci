@@ -9,7 +9,7 @@ export default function BlingerHero() {
         <div className="dawn-product-img">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/img/blinger/hero.png"
+            src="/img/blinger/sparkling-hero.png"
             alt="Sparkling Diamond aparat za ukrašavanje kose s dijamantima"
           />
         </div>

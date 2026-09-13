@@ -118,7 +118,7 @@ export default function BlingerCheckout() {
 
             <div className="dawn-modal-product">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/blinger/hero.png" alt="Sparkling Diamond" />
+              <img src="/img/blinger/sparkling-hero.png" alt="Sparkling Diamond" />
               <div>
                 <b>Sparkling Diamond</b>
                 <span>75 dijamanata, 5 boja</span>
