@@ -16,19 +16,15 @@ export default function BlingerHero() {
 
         <h1 className="dawn-h1 dawn-h1-lg">
           Sparkling Diamond
-          <span>Aparat za ukrašavanje kose + 75 dijamanata</span>
+          <br />
+          Aparat za kosu (75 perlica)
         </h1>
 
-        <a href="#recenzije" className="dawn-rating dawn-rating-stack">
-          <span className="dawn-rating-cta">
-            <strong>HIT IGRA - RODITELJI KAŽU</strong>
+        <a href="#recenzije" className="dawn-rating">
+          <span className="dawn-stars" aria-hidden="true">
+            ♥♥♥♥♥
           </span>
-          <span className="dawn-rating-sub">
-            <span className="dawn-stars" aria-hidden="true">
-              ♥♥♥♥♥
-            </span>
-            4.8 (22 ocjene)
-          </span>
+          4.8 (22 ocjene)
         </a>
 
         <div className="dawn-price-row">
