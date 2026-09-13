@@ -1,10 +1,15 @@
-const items = ["PRO Blinger aparat", "180 perlica za kosu", "Kutija za poklon i odlaganje"];
+const items = [
+  "1x Sparkling Diamond aplikator",
+  "5x diskova sa dijamantima",
+  "75 dijamanata u 5 boja",
+  "Za djecu 3+",
+];
 
 export default function BlingerIncludes() {
   return (
     <section className="dawn-includes">
       <div className="dawn-col">
-        <h2 className="dawn-h2">U paketu dobijaš:</h2>
+        <h2 className="dawn-h2">Šta stiže u tvojoj kutiji?</h2>
         <ul>
           {items.map((t) => (
             <li key={t}>

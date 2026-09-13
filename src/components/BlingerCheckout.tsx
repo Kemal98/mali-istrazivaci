@@ -23,7 +23,7 @@ export default function BlingerCheckout() {
   const [error, setError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const DELIVERY = 10;
-  const productPrice = 29;
+  const productPrice = 24;
   const total = productPrice * qty + DELIVERY;
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function BlingerCheckout() {
       grad: formData.get("grad"),
       uzrast: "",
       napomena: "",
-      proizvod: "Blinger aparat za kosu",
+      proizvod: "Sparkling Diamond aparat za ukrašavanje kose",
       kolicina: qty,
       cijena: `${total} KM`,
       status: "Novo",
@@ -67,7 +67,7 @@ export default function BlingerCheckout() {
 
     if (window.fbq) {
       window.fbq("track", "Lead", {
-        content_name: "Blinger aparat za kosu",
+        content_name: "Sparkling Diamond aparat za ukrašavanje kose",
         value: total,
         currency: "BAM",
       });
@@ -102,7 +102,7 @@ export default function BlingerCheckout() {
             className="dawn-modal"
             role="dialog"
             aria-modal="true"
-            aria-label="Naruči Blinger aparat za kosu"
+            aria-label="Naruči Sparkling Diamond aparat za ukrašavanje kose"
           >
             <button
               ref={closeBtnRef}
@@ -117,13 +117,19 @@ export default function BlingerCheckout() {
             </button>
 
             <div className="dawn-modal-product">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/blinger/hero.png" alt="Blinger aparat za kosu" />
-              <div>
-                <b>Blinger aparat za kosu</b>
-                <span>180 perlica</span>
+              <div className="dawn-modal-product-placeholder" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z" />
+                </svg>
               </div>
-              <div className="dawn-modal-price">29 KM</div>
+              <div>
+                <b>Sparkling Diamond</b>
+                <span>75 dijamanata, 5 boja</span>
+              </div>
+              <div className="dawn-modal-price">
+                <span className="dawn-modal-price-old">39 KM</span>
+                <span className="dawn-modal-price-new">24 KM</span>
+              </div>
             </div>
 
             <div className="dawn-modal-qty">

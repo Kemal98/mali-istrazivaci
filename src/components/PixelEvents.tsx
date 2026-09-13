@@ -15,7 +15,7 @@ declare global {
 // gleda, pa se ViewContent tamo namjerno ne pali, vidi ispod).
 const PRODUCT_PIXEL: { path: string; content_name: string; value: number }[] = [
   { path: "/edukativna-knjiga", content_name: "Interaktivna Montessori knjiga", value: 15 },
-  { path: "/blinger-aparat-za-kosu", content_name: "Blinger aparat za kosu", value: 29 },
+  { path: "/blinger-aparat-za-kosu", content_name: "Sparkling Diamond aparat za ukrašavanje kose", value: 24 },
   { path: "/rotirajuce-zvecke", content_name: "Vesele rotirajuće zvečke", value: 19 },
   { path: "/projektor-za-crtanje", content_name: "Projektor za crtanje", value: 26 },
 ];

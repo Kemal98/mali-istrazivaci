@@ -14,13 +14,14 @@ import BlingerCheckout from "@/components/BlingerCheckout";
 import DawnFooter from "@/components/DawnFooter";
 import BookStickyBar from "@/components/BookStickyBar";
 
-// NAPOMENA: cijena (19 KM) je privremena/placeholder — nema stvarnog broja
-// od tebe. BLINGER_ORDERS_ENABLED = false u constants.ts dok se ne
-// potvrdi cijena, prava slika i zalihe (vidi napomenu u odgovoru).
+// NAPOMENA: proizvod zamijenjen (Blinger 180 perlica -> Sparkling Diamond),
+// isti URL/checkout zadržan namjerno (postojeće reklame vode ovdje). Nema
+// još prave fotografije proizvoda — placeholder dok ne stigne.
 export const metadata: Metadata = {
-  title: "Blinger aparat za kosu (180 perlica) | Mali Istraživači",
+  title:
+    "Sparkling Diamond — aparat za ukrašavanje kose + 75 dijamanata | Mali Istraživači",
   description:
-    "Blinger aparat za brzo i zabavno ukrašavanje kose, 180 perlica u setu. Plaćanje pouzećem, dostava po BiH.",
+    "Sparkling Diamond: aparat za ukrašavanje kose sa 75 dijamanata u 5 boja. Njen mali salon kod kuće. 24 KM, plaćanje pouzećem, dostava po BiH.",
 };
 
 export default function BlingerPage() {

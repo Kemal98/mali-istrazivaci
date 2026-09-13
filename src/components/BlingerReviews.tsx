@@ -1,26 +1,8 @@
 import { RATING, REVIEWS_COUNT } from "@/lib/socialProof";
 
-// TODO: primjer-recenzije, ne stvarni citati kupaca — ovo je nov proizvod,
-// nema još pravih recenzija. Zamijeni kad ih budeš imao (isto upozorenje
-// kao za ostale proizvode na sajtu).
-const reviews = [
-  {
-    text: "Kćerka (6 god.) je sama naučila da radi frizure sebi i lutkama. Perlice se drže, ne otpadaju tokom dana.",
-    initial: "E",
-    name: "Elma S.",
-  },
-  {
-    text: "Uzela sam za rođendan. Nema ljepila ni makaza pa mogu i sama da se igra bez nadzora.",
-    initial: "S",
-    name: "Selma H.",
-  },
-  {
-    text: "Djeca su se igrala i sa trakom za kosu, ne samo kosom. Dobra ideja za mirno popodne.",
-    initial: "I",
-    name: "Ilma K.",
-  },
-];
-
+// Sparkling Diamond je nov proizvod na sajtu — nema još stvarnih recenzija
+// za NJEGA konkretno, pa se namjerno ne izmišljaju (na izričit zahtjev).
+// Zamijeni ovaj blok pravim recenzijama čim ih budeš imao/la.
 export default function BlingerReviews() {
   return (
     <section className="dawn-reviews" id="recenzije">
@@ -35,20 +17,10 @@ export default function BlingerReviews() {
             <small>na osnovu {REVIEWS_COUNT} ocjena</small>
           </div>
         </div>
-        <div className="dawn-rev-list">
-          {reviews.map((r) => (
-            <div className="dawn-rev-card" key={r.name}>
-              <div className="dawn-rev-who">
-                <div className="dawn-rev-av">{r.initial}</div>
-                <div>
-                  <b>{r.name}</b>
-                  <span className="dawn-rev-verified">Verifikovano</span>
-                </div>
-              </div>
-              <p>&ldquo;{r.text}&rdquo;</p>
-            </div>
-          ))}
-        </div>
+        <p className="dawn-rev-intro">
+          Prve recenzije za Sparkling Diamond stižu uskoro — javi nam se sa
+          svojim utiskom nakon kupovine!
+        </p>
       </div>
     </section>
   );

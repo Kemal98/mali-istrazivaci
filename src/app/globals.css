@@ -799,6 +799,13 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-story-stmt span{display:block}
 .dawn-story-block img{width:100%;border-radius:4px;margin-bottom:18px}
 .dawn-story-text{font-size:.98rem;color:#333;line-height:1.7}
+.dawn-step-list{list-style:none;counter-reset:dawnstep;display:inline-flex;
+  flex-direction:column;gap:10px;text-align:left;margin-top:16px}
+.dawn-step-list li{font-size:.95rem;font-weight:600;color:#333;
+  padding-left:28px;position:relative;counter-increment:dawnstep}
+.dawn-step-list li::before{content:counter(dawnstep);position:absolute;left:0;top:-1px;
+  width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;
+  font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center}
 .dawn-story-text span{display:block}
 .dawn-story-proof{margin-top:20px;text-align:center}
 .dawn-story-proof-count{font-weight:800;font-size:1.1rem;margin-bottom:6px}

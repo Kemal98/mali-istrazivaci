@@ -1,42 +1,36 @@
-// Fraze su najbliže onome što stoji na referentnoj stranici (citirano
-// tamo gdje sam imao tačan navod iz ranijeg pregleda te stranice u ovoj
-// sesiji). GIF-ovi (giphy*.gif) nemaju svoj tekst na referenci koji sam
-// zabilježio, pa su njihovi opisi generički/sigurni — ne tvrdim nešto
-// specifično o sadržaju koje ne mogu potvrditi (fajlovi su preveliki za
-// pregled ovdje).
+// Originalni tekstovi, bez tuđih slika (nema pravih fotografija Sparkling
+// Diamond proizvoda još) — isti princip kao ProjektorStory.tsx: blokovi
+// bez slike, centrirani tekst, dok ne stignu prave fotografije.
 const POINTS = [
   {
-    naslov: "Savršena igračka koju djeca ne ispuštaju iz ruku.",
-    tekst: "Perlica se pričvrsti za sekundu, bez ljepila, bez makaza, bez nereda.",
-    media: { tip: "gif" as const, src: "/img/blinger/giphy.gif" },
+    naslov: "Stavi. Klikni. Zablistaj. ✨",
+    tekst:
+      "Odaberi dijamant, postavi aplikator na kosu i jednim pritiskom dodaj sjaj frizuri.",
+    steps: ["Izaberi dijamant", "Postavi aplikator", "Klik — dijamant je na mjestu"],
   },
   {
-    naslov: "Zajednička igra roditelja i djeteta.",
-    tekst: "Slaganje perlica postaje trenutak druženja, ne samo igra za dijete samo.",
-    media: {
-      tip: "slika" as const,
-      src: "/img/blinger/stvoreno_za_male_princeze.png",
-      alt: "Mama i dvije djevojčice ukrašavaju kosu Blinger aparatom",
-    },
+    naslov: "Njen mali salon kod kuće 💕",
+    tekst:
+      "Danas uređuje svoju kosu. Sutra mamu. Onda prijateljicu ili lutku — Sparkling Diamond pretvara obično popodne u mali salon ljepote kod kuće.",
   },
   {
-    naslov: "Vidi u pokretu.",
-    tekst: "Jedan pokret i perlica je na mjestu, brzo, bez muke.",
-    media: { tip: "gif" as const, src: "/img/blinger/giphy-2.gif" },
+    naslov: "75 dijamanata. 5 boja. Puno kombinacija.",
+    tekst:
+      "5 diskova, svaki sa po 15 dijamanata u različitim bojama — svaki put druga kombinacija, drugi izgled.",
   },
   {
-    naslov: "Ne staje samo na kosi.",
-    tekst: "Perlice se lijepe i za traku, obuću, tkaninu. Prostor za maštu van frizure.",
-    media: {
-      tip: "slika" as const,
-      src: "/img/blinger/vise-nacina-koristenja.png",
-      alt: "Blinger perlice zalijepljene na dječijoj patici",
-    },
+    naslov: "Svaki put druga frizura ✨",
+    tekst: "Za svoju kosu. Za sestru ili prijateljicu. Za lutke. Za rođendane i druženja.",
   },
   {
-    naslov: "Igra koja traje, ne dosadi za dan.",
-    tekst: "Svaki put nova kombinacija boja, ista igračka, drugačiji rezultat.",
-    media: { tip: "gif" as const, src: "/img/blinger/giphy-3.gif" },
+    naslov: "Još više načina za kreativnost",
+    tekst:
+      "Dijamanti nisu samo za kosu — isprobaj ih i na traci za kosu, torbici ili omiljenom modnom dodatku.",
+  },
+  {
+    naslov: "Još je zabavnije u dvoje 💕",
+    tekst:
+      "Jedna bira boju, druga pravi frizuru — pa zamijene uloge. Sa mamom, sestrom ili najboljom drugaricom.",
   },
 ];
 
@@ -49,15 +43,16 @@ export default function BlingerStory() {
             <p className="dawn-story-stmt">
               <span>{p.naslov}</span>
             </p>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={p.media.src}
-              alt={p.media.tip === "slika" ? p.media.alt : p.naslov}
-              loading="lazy"
-            />
             <p className="dawn-story-text">
               <span>{p.tekst}</span>
             </p>
+            {p.steps && (
+              <ol className="dawn-step-list">
+                {p.steps.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ol>
+            )}
           </div>
         ))}
       </div>
