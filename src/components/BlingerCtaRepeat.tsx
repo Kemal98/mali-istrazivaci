@@ -4,8 +4,7 @@ export default function BlingerCtaRepeat() {
   return (
     <section className="dawn-repeat-cta">
       <div className="dawn-col">
-        <h2 className="dawn-h2">Poruči ODMAH</h2>
-        <p className="dawn-repeat-sub">Akcija do kraja dana!</p>
+        <h2 className="dawn-h2">Akcija do kraja dana!</h2>
         <BookOrderTrigger className="dawn-btn-black">
           PORUČI SADA
         </BookOrderTrigger>
