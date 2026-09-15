@@ -2,9 +2,9 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GOOGLE_SCRIPT_URL, BLINGER_ORDERS_ENABLED } from "@/lib/constants";
-import { useDawnQty } from "./DawnQtyContext";
-import { useBookCheckoutModal } from "./BookCheckoutModalContext";
+import { GOOGLE_SCRIPT_URL } from "@/lib/constants";
+import { useDawnQty } from "@/components/DawnQtyContext";
+import { useBookCheckoutModal } from "@/components/BookCheckoutModalContext";
 
 declare global {
   interface Window {
@@ -12,10 +12,25 @@ declare global {
   }
 }
 
-// Isti obrazac kao BookCheckout.tsx (popup, ista mehanika slanja) — samo
-// s podacima ovog proizvoda. Vidi BLINGER_ORDERS_ENABLED u constants.ts
-// za zašto je slanje isključeno dok se cijena/slika/zalihe ne potvrde.
-export default function BlingerCheckout() {
+// GENERIČKI checkout za CMS proizvode.
+//
+// VAŽNO: mehanika je 1:1 ista kao postojeći RattleCheckout/BlingerCheckout —
+// isti <span id="naruci"> anchor (PixelEvents sluša klik na a[href="#naruci"]),
+// isti payload prema GOOGLE_SCRIPT_URL (uključujući "kolicina"), isti fbq
+// "Lead" event i isti redirect na /hvala. Ne pravi se paralelni checkout.
+export default function CmsCheckout({
+  naziv,
+  cijena,
+  slika,
+  podnaslov,
+  staraCijena,
+}: {
+  naziv: string;
+  cijena: number;
+  slika?: string;
+  podnaslov?: string;
+  staraCijena?: number | null;
+}) {
   const router = useRouter();
   const { qty, setQty } = useDawnQty();
   const { open, setOpen } = useBookCheckoutModal();
@@ -23,8 +38,7 @@ export default function BlingerCheckout() {
   const [error, setError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const DELIVERY = 10;
-  const productPrice = 24;
-  const total = productPrice * qty + DELIVERY;
+  const total = cijena * qty + DELIVERY;
 
   useEffect(() => {
     if (!open) return;
@@ -41,7 +55,6 @@ export default function BlingerCheckout() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!BLINGER_ORDERS_ENABLED) return;
     setSubmitting(true);
     setError(false);
 
@@ -59,7 +72,7 @@ export default function BlingerCheckout() {
       grad: formData.get("grad"),
       uzrast: "",
       napomena: "",
-      proizvod: "Sparkling Diamond aparat za ukrašavanje kose",
+      proizvod: naziv,
       kolicina: qty,
       cijena: `${total} KM`,
       status: "Novo",
@@ -67,7 +80,7 @@ export default function BlingerCheckout() {
 
     if (window.fbq) {
       window.fbq("track", "Lead", {
-        content_name: "Sparkling Diamond aparat za ukrašavanje kose",
+        content_name: naziv,
         value: total,
         currency: "BAM",
       });
@@ -102,7 +115,7 @@ export default function BlingerCheckout() {
             className="dawn-modal"
             role="dialog"
             aria-modal="true"
-            aria-label="Naruči Sparkling Diamond aparat za ukrašavanje kose"
+            aria-label={`Naruči ${naziv}`}
           >
             <button
               ref={closeBtnRef}
@@ -117,15 +130,21 @@ export default function BlingerCheckout() {
             </button>
 
             <div className="dawn-modal-product">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/blinger/sparkling-hero.png" alt="Sparkling Diamond" />
+              {slika ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={slika} alt={naziv} />
+              ) : (
+                <div className="dawn-modal-product-placeholder" aria-hidden="true" />
+              )}
               <div>
-                <b>Sparkling Diamond</b>
-                <span>75 dijamanata, 5 boja</span>
+                <b>{naziv}</b>
+                {podnaslov ? <span>{podnaslov}</span> : null}
               </div>
               <div className="dawn-modal-price">
-                <span className="dawn-modal-price-old">39 KM</span>
-                <span className="dawn-modal-price-new">24 KM</span>
+                {staraCijena ? (
+                  <span className="dawn-modal-price-old">{staraCijena} KM</span>
+                ) : null}
+                <span className="dawn-modal-price-new">{cijena} KM</span>
               </div>
             </div>
 
@@ -168,15 +187,10 @@ export default function BlingerCheckout() {
                 <b>{DELIVERY} KM</b>
               </div>
 
-              {BLINGER_ORDERS_ENABLED ? (
-                <button type="submit" className="dawn-btn-black" disabled={submitting}>
-                  {submitting ? "Šaljem…" : `PORUČI SADA (${total} KM) →`}
-                </button>
-              ) : (
-                <div className="dawn-checkout-paused">
-                  Narudžbe ovog proizvoda trenutno nisu dostupne.
-                </div>
-              )}
+              <button type="submit" className="dawn-btn-black" disabled={submitting}>
+                {submitting ? "Šaljem…" : `PORUČI SADA (${total} KM) →`}
+              </button>
+
               {error && (
                 <p className="dawn-checkout-error">
                   Greška, pokušaj ponovo ili nam piši na mail.

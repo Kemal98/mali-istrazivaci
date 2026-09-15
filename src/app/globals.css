@@ -1038,3 +1038,21 @@ body:has(.home-page-root){padding-bottom:0}
      auto-placement nagađanje kao ranije. */
   .dawn-story-block:has(img) .dawn-story-proof{grid-column:1/-1;grid-row:3;margin-top:24px}
 }
+
+/* ===== CMS blokovi (page builder) — koriste postojeći design system,
+   ovo su samo dodatne klase koje stari dawn-* set nije imao ===== */
+.dawn-page .cms-bullets{list-style:none;display:inline-flex;flex-direction:column;
+  gap:8px;text-align:left;margin:8px 0}
+.dawn-page .cms-bullets li{position:relative;padding-left:18px}
+.dawn-page .cms-bullets li::before{content:"•";position:absolute;left:2px;
+  color:var(--orange);font-weight:800}
+.dawn-page .cms-divider{border:none;border-top:1px solid #E6E6E6;margin:8px 0}
+.dawn-page .cms-gallery{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dawn-page .cms-gallery img{width:100%;border-radius:14px;display:block}
+.dawn-page .cms-two-col{display:flex;flex-direction:column;gap:18px;text-align:left}
+@media(min-width:860px){
+  .dawn-page .cms-two-col{flex-direction:row;align-items:center;gap:40px}
+  .dawn-page .cms-two-col > *{flex:1 1 0;min-width:0}
+  .dawn-page .cms-two-col-rev{flex-direction:row-reverse}
+  .dawn-page .cms-gallery{grid-template-columns:repeat(3,1fr)}
+}
