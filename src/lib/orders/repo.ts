@@ -112,6 +112,12 @@ export interface InsertOrderRow {
   clientIp?: string;
   source?: string;
   createdAt?: string;
+  /**
+   * Za uvezene narudžbe: one su VEĆ u Google Sheetu (odatle i dolaze),
+   * pa se odmah označe kao sinhronizovane — inače bi admin prikazivao
+   * lažno upozorenje "N narudžbi nije sinhronizovano".
+   */
+  sheetSynced?: boolean;
 }
 
 export async function getOrderByIdempotencyKey(
@@ -150,7 +156,8 @@ export async function insertOrder(input: InsertOrderRow): Promise<Order> {
       payment_method, status,
       utm_source, utm_medium, utm_campaign, utm_content, utm_term,
       fbclid, landing_page, referrer,
-      idempotency_key, import_hash, client_ip, source
+      idempotency_key, import_hash, client_ip, source,
+      sheet_synced, sheet_synced_at
     ) VALUES (
       ${id},
       'MI-' || lpad(nextval('orders_number_seq')::text, 6, '0'),
@@ -168,7 +175,9 @@ export async function insertOrder(input: InsertOrderRow): Promise<Order> {
       ${input.utmTerm ?? ""},
       ${input.fbclid ?? ""}, ${input.landingPage ?? ""}, ${input.referrer ?? ""},
       ${input.idempotencyKey ?? null}, ${input.importHash ?? null},
-      ${input.clientIp ?? ""}, ${input.source ?? "web"}
+      ${input.clientIp ?? ""}, ${input.source ?? "web"},
+      ${input.sheetSynced ?? false},
+      ${input.sheetSynced ? ts : null}
     )
     ON CONFLICT DO NOTHING
     RETURNING *`;

@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import {
   countUnsynced,
   listFilterOptions,
@@ -67,6 +68,11 @@ export default async function OrdersPage({
             {res.total} {res.total === 1 ? "narudžba" : "narudžbi"} po ovim
             filterima. Status se mijenja direktno u tabeli.
           </p>
+        </div>
+        <div className="adm-head-actions">
+          <Link className="adm-btn" href="/admin/orders/import">
+            ⤒ UVEZI IZ GOOGLE SHEETA
+          </Link>
         </div>
       </div>
 
