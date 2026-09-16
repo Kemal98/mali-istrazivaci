@@ -2,7 +2,8 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GOOGLE_SCRIPT_URL, BOOK_ORDERS_ENABLED } from "@/lib/constants";
+import { BOOK_ORDERS_ENABLED } from "@/lib/constants";
+import { newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
 import { useDawnQty } from "./DawnQtyContext";
 import { useBookCheckoutModal } from "./BookCheckoutModalContext";
 
@@ -23,6 +24,9 @@ export default function BookCheckout() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  // Jedan ključ po otvorenoj formi: dupli klik ili retry šalju isti
+  // ključ, pa backend vrati postojeću narudžbu umjesto da napravi drugu.
+  const orderKeyRef = useRef("");
   const DELIVERY = 10;
   const productPrice = 15;
   const total = productPrice * qty + DELIVERY;
@@ -52,20 +56,8 @@ export default function BookCheckout() {
       formData.get("prezime") || ""
     }`.trim();
 
-    const data = {
-      datum: new Date().toLocaleString("bs-BA"),
-      ime,
-      telefon: formData.get("tel"),
-      adresa: formData.get("adresa"),
-      grad: formData.get("grad"),
-      uzrast: "",
-      napomena: "", // polje uklonjeno iz forme na zahtjev; ostaje u payloadu
-                    // praznо da se ne mijenja oblik podataka koji ide u Sheet
-      proizvod: "Interaktivna Montessori knjiga",
-      kolicina: qty,
-      cijena: `${total} KM`,
-      status: "Novo",
-    };
+    const proizvod = "Interaktivna Montessori knjiga";
+    if (!orderKeyRef.current) orderKeyRef.current = newIdempotencyKey();
 
     if (window.fbq) {
       window.fbq("track", "Lead", {
@@ -75,21 +67,29 @@ export default function BookCheckout() {
       });
     }
 
-    try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    const res = await submitOrder({
+      idempotencyKey: orderKeyRef.current,
+      customerName: ime,
+      phone: String(formData.get("tel") || ""),
+      address: String(formData.get("adresa") || ""),
+      city: String(formData.get("grad") || ""),
+      productName: proizvod,
+      quantity: qty,
+      unitPrice: productPrice,
+      shippingPrice: DELIVERY,
+    });
+
+    if (res.ok) {
+      // Namjerno bez setSubmitting(false) na uspjehu — dugme ostaje
+      // onemogućeno dok stranica prelazi na /hvala.
       router.push(
-        `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}`
+        `/hvala?proizvod=${encodeURIComponent(proizvod)}&value=${total}`
       );
-    } catch {
-      setError(true);
-    } finally {
-      setSubmitting(false);
+      return;
     }
+
+    setError(true);
+    setSubmitting(false);
   }
 
   return (

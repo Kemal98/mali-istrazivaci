@@ -8,8 +8,12 @@ export const CLARITY_PROJECT_ID = "ygt72mg3p1";
 // ostaju). Measurement ID iz analytics.google.com -> Data stream -> Web.
 export const GA_MEASUREMENT_ID = "G-61J7H2693T";
 
-export const GOOGLE_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbw2HAwC4MF3Z37SstIPtvMj60Z_KTkXVVD6JCA0gMBQbPCmdE7pKd9iLYbigsbsLgwv/exec";
+// GOOGLE_SCRIPT_URL je NAMJERNO uklonjen odavde.
+// Ovaj fajl uvoze "use client" komponente, pa je URL završavao u JS
+// bundleu koji svako može pročitati u browseru — i slati lažne redove
+// direktno u tabelu. Sada živi samo na serveru, u src/lib/orders/sheets.ts
+// (uz "server-only" zaštitu), i konfiguriše se env varijablom
+// GOOGLE_SCRIPT_URL.
 
 export const CONTACT_EMAIL = "svijetistrazivaca@gmail.com";
 

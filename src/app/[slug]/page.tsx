@@ -77,6 +77,7 @@ export default async function CmsSlugPage({ params }: Props) {
       cijena={d?.cijena ?? p.cijena}
       staraCijena={d?.staraCijena ?? p.staraCijena}
       badge={d?.badge ?? p.badge}
+      productId={p.id}
     />
   );
 }

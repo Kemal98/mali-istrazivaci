@@ -20,6 +20,7 @@ export default function CmsProductPage({
   cijena,
   staraCijena,
   badge,
+  productId,
   preview = false,
 }: {
   naziv: string;
@@ -29,6 +30,8 @@ export default function CmsProductPage({
   cijena: number | null;
   staraCijena: number | null;
   badge: string;
+  /** Veže narudžbu za konkretan CMS proizvod u bazi narudžbi. */
+  productId?: string | null;
   preview?: boolean;
 }) {
   return (
@@ -51,6 +54,7 @@ export default function CmsProductPage({
               staraCijena={staraCijena}
               slika={hero.slika}
               podnaslov={hero.naslovLinija2}
+              productId={productId}
             />
           ) : null}
           <DawnFooter />
