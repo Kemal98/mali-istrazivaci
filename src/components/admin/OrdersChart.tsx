@@ -27,17 +27,17 @@ export default function OrdersChart({ data }: { data: DayPoint[] }) {
   const innerH = H - padT - padB;
 
   const maxOrders = Math.max(1, ...data.map((d) => d.orders));
-  const maxGross = Math.max(1, ...data.map((d) => d.gross));
+  const maxRevenue = Math.max(1, ...data.map((d) => d.revenue));
 
   const bandW = innerW / data.length;
   const barW = Math.max(2, Math.min(26, bandW * 0.6));
 
   const x = (i: number) => padL + bandW * i + bandW / 2;
   const yOrders = (v: number) => padT + innerH - (v / maxOrders) * innerH;
-  const yGross = (v: number) => padT + innerH - (v / maxGross) * innerH;
+  const yRevenue = (v: number) => padT + innerH - (v / maxRevenue) * innerH;
 
   // linija prometa
-  const linePts = data.map((d, i) => `${x(i)},${yGross(d.gross)}`).join(" ");
+  const linePts = data.map((d, i) => `${x(i)},${yRevenue(d.revenue)}`).join(" ");
 
   // horizontalne linije mreže — 4 nivoa
   const grid = [0, 0.25, 0.5, 0.75, 1];
@@ -89,7 +89,7 @@ export default function OrdersChart({ data }: { data: DayPoint[] }) {
                   fontSize="10"
                   fill="#e0632a"
                 >
-                  {Math.round(maxGross * g)}
+                  {Math.round(maxRevenue * g)}
                 </text>
               </g>
             );
@@ -111,7 +111,7 @@ export default function OrdersChart({ data }: { data: DayPoint[] }) {
                 opacity={d.orders ? 0.85 : 0}
               >
                 <title>
-                  {dayLabel(d.day)} — {d.orders} narudžbi, {d.gross} KM
+                  {dayLabel(d.day)} — {d.orders} narudžbi, {d.revenue} KM
                 </title>
               </rect>
             );
@@ -132,12 +132,12 @@ export default function OrdersChart({ data }: { data: DayPoint[] }) {
             <circle
               key={`p-${d.day}`}
               cx={x(i)}
-              cy={yGross(d.gross)}
+              cy={yRevenue(d.revenue)}
               r={data.length > 40 ? 1.6 : 2.8}
               fill="#e0632a"
             >
               <title>
-                {dayLabel(d.day)} — {d.gross} KM
+                {dayLabel(d.day)} — {d.revenue} KM
               </title>
             </circle>
           ))}
@@ -167,7 +167,7 @@ export default function OrdersChart({ data }: { data: DayPoint[] }) {
         </span>
         <span>
           <i style={{ background: "#e0632a" }} />
-          Promet u KM (desna skala)
+          Vrijednost proizvoda u KM (desna skala)
         </span>
       </div>
     </>

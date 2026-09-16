@@ -232,8 +232,7 @@ export default function OrdersTable({
               <th>Proizvod</th>
               <th style={{ textAlign: "right" }}>Kol.</th>
               <th style={{ textAlign: "right" }}>Vrijednost</th>
-              <th style={{ textAlign: "right" }}>Dostava</th>
-              <th style={{ textAlign: "right" }}>Ukupno</th>
+              <th style={{ textAlign: "right" }}>Kurir naplati</th>
               <th>Status</th>
               <th>Kurir</th>
               <th>Sheets</th>
@@ -284,12 +283,13 @@ export default function OrdersTable({
                   </button>
                 </td>
                 <td style={{ textAlign: "right" }}>{o.quantity}</td>
-                <td style={{ textAlign: "right" }}>{o.subtotal} KM</td>
-                <td style={{ textAlign: "right" }} className="adm-hint">
-                  {o.shippingPrice} KM
-                </td>
+                {/* vrijednost proizvoda = prihod, pa je ovo glavni broj */}
                 <td style={{ textAlign: "right" }}>
-                  <b>{o.totalPrice} KM</b>
+                  <b>{o.subtotal} KM</b>
+                </td>
+                {/* ukupno sa dostavom — operativno, šta kurir uzima */}
+                <td style={{ textAlign: "right" }} className="adm-hint">
+                  {o.totalPrice} KM
                 </td>
                 <td>
                   <StatusSelect order={o} onChanged={patchRow} />
@@ -359,14 +359,18 @@ export default function OrdersTable({
               <b>{o.city || "—"}</b>
             </div>
             <div className="adm-order-card-row">
-              <span>Proizvod</span>
+              <span>Artikal</span>
               <b style={{ textAlign: "right" }}>
                 {o.productName} × {o.quantity}
               </b>
             </div>
             <div className="adm-order-card-row">
-              <span>Ukupno</span>
-              <b>{o.totalPrice} KM</b>
+              <span>Proizvod</span>
+              <b>{o.subtotal} KM</b>
+            </div>
+            <div className="adm-order-card-row">
+              <span>Kurir naplati</span>
+              <span>{o.totalPrice} KM</span>
             </div>
             <div className="adm-order-card-row">
               <span>Datum</span>

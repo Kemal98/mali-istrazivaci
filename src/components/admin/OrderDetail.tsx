@@ -185,11 +185,13 @@ export default function OrderDetail({
               </div>
             ) : null}
             <div className="adm-money-row adm-money-total">
-              <span>UKUPNO — plaća kuriru</span>
+              <span>KURIR NAPLATI KUPCU</span>
               <b>{order.totalPrice} KM</b>
             </div>
             <p className="adm-hint" style={{ marginTop: 10 }}>
-              Plaćanje: <b>pouzećem</b>
+              Plaćanje: <b>pouzećem</b>. U statistici se kao prihod računa
+              samo <b>vrijednost proizvoda ({order.subtotal} KM)</b> —
+              dostava ide kuriru.
             </p>
           </div>
 

@@ -117,8 +117,9 @@ export default async function DashboardPage({
         <div>
           <h1>Dashboard</h1>
           <p>
-            Pregled narudžbi, prometa i marketinga. Realizovan promet
-            računa se samo iz <b>dostavljenih</b> narudžbi.
+            Svi iznosi su <b>vrijednost proizvoda, bez dostave</b> —
+            dostavu kupac plaća kuriru i nije prihod shopa. Realizovan
+            promet računa se samo iz <b>dostavljenih</b> narudžbi.
           </p>
         </div>
         <div className="adm-head-actions">
@@ -156,9 +157,9 @@ export default async function DashboardPage({
           <b>{today.orders}</b>
         </div>
         <div className="adm-kpi">
-          <span>Bruto vrijednost</span>
-          <b>{km(today.gross)}</b>
-          <small>bez dostave: {km(today.productGross)}</small>
+          <span>Vrijednost proizvoda</span>
+          <b>{km(today.revenue)}</b>
+          <small>kurir naplati {km(today.collected)} (sa dostavom)</small>
         </div>
         <div className="adm-kpi">
           <span>Prosječna narudžba</span>
@@ -193,8 +194,8 @@ export default async function DashboardPage({
                 <b>{k.orders}</b>
               </div>
               <div className="adm-kpi">
-                <span>Promet (bruto)</span>
-                <b>{km(k.gross)}</b>
+                <span>Vrijednost proizvoda</span>
+                <b>{km(k.revenue)}</b>
               </div>
               <div className="adm-kpi">
                 <span>Prosjek</span>
@@ -230,9 +231,9 @@ export default async function DashboardPage({
             <b>{period.orders}</b>
           </div>
           <div className="adm-kpi">
-            <span>Bruto vrijednost</span>
-            <b>{km(period.gross)}</b>
-            <small>dostava: {km(period.shipping)}</small>
+            <span>Vrijednost proizvoda</span>
+            <b>{km(period.revenue)}</b>
+            <small>bez dostave ({km(period.shipping)})</small>
           </div>
           <div className="adm-kpi adm-kpi-accent">
             <span>Realizovan promet</span>
@@ -301,7 +302,7 @@ export default async function DashboardPage({
                   <th>Proizvod</th>
                   <th style={{ textAlign: "right" }}>Narudžbi</th>
                   <th style={{ textAlign: "right" }}>Komada</th>
-                  <th style={{ textAlign: "right" }}>Bruto</th>
+                  <th style={{ textAlign: "right" }}>Proizvodi</th>
                   <th style={{ textAlign: "right" }}>Dostavljeno</th>
                   <th style={{ textAlign: "right" }}>Vraćeno</th>
                   <th style={{ textAlign: "right" }}>Otkazano</th>
@@ -321,7 +322,7 @@ export default async function DashboardPage({
                     </td>
                     <td style={{ textAlign: "right" }}>{p.orders}</td>
                     <td style={{ textAlign: "right" }}>{p.quantity}</td>
-                    <td style={{ textAlign: "right" }}>{km(p.gross)}</td>
+                    <td style={{ textAlign: "right" }}>{km(p.revenue)}</td>
                     <td style={{ textAlign: "right" }}>{p.delivered}</td>
                     <td style={{ textAlign: "right" }}>{p.returned}</td>
                     <td style={{ textAlign: "right" }}>{p.cancelled}</td>
@@ -349,7 +350,7 @@ export default async function DashboardPage({
                 <tr>
                   <th>Grad</th>
                   <th style={{ textAlign: "right" }}>Narudžbi</th>
-                  <th style={{ textAlign: "right" }}>Promet</th>
+                  <th style={{ textAlign: "right" }}>Proizvodi</th>
                   <th style={{ textAlign: "right" }}>Dost.</th>
                   <th style={{ textAlign: "right" }}>Vrać.</th>
                 </tr>
@@ -363,7 +364,7 @@ export default async function DashboardPage({
                       </Link>
                     </td>
                     <td style={{ textAlign: "right" }}>{c.orders}</td>
-                    <td style={{ textAlign: "right" }}>{km(c.gross)}</td>
+                    <td style={{ textAlign: "right" }}>{km(c.revenue)}</td>
                     <td style={{ textAlign: "right" }}>{c.delivered}</td>
                     <td style={{ textAlign: "right" }}>{c.returned}</td>
                   </tr>
@@ -383,7 +384,7 @@ export default async function DashboardPage({
                 <tr>
                   <th>Kanal</th>
                   <th style={{ textAlign: "right" }}>Narudžbi</th>
-                  <th style={{ textAlign: "right" }}>Promet</th>
+                  <th style={{ textAlign: "right" }}>Proizvodi</th>
                   <th style={{ textAlign: "right" }}>Realiz.</th>
                   <th style={{ textAlign: "right" }}>Delivery</th>
                 </tr>
@@ -395,7 +396,7 @@ export default async function DashboardPage({
                       <b>{s.channel}</b>
                     </td>
                     <td style={{ textAlign: "right" }}>{s.orders}</td>
-                    <td style={{ textAlign: "right" }}>{km(s.gross)}</td>
+                    <td style={{ textAlign: "right" }}>{km(s.revenue)}</td>
                     <td style={{ textAlign: "right" }}>{km(s.realized)}</td>
                     <td style={{ textAlign: "right" }}>{s.deliveryRate}%</td>
                   </tr>
@@ -429,7 +430,7 @@ export default async function DashboardPage({
                   <th>Kampanja</th>
                   <th>Oglas / sadržaj</th>
                   <th style={{ textAlign: "right" }}>Narudžbi</th>
-                  <th style={{ textAlign: "right" }}>Bruto</th>
+                  <th style={{ textAlign: "right" }}>Proizvodi</th>
                   <th style={{ textAlign: "right" }}>Realizovano</th>
                   <th style={{ textAlign: "right" }}>Vraćeno</th>
                 </tr>
@@ -440,7 +441,7 @@ export default async function DashboardPage({
                     <td>{c.campaign}</td>
                     <td>{c.content}</td>
                     <td style={{ textAlign: "right" }}>{c.orders}</td>
-                    <td style={{ textAlign: "right" }}>{km(c.gross)}</td>
+                    <td style={{ textAlign: "right" }}>{km(c.revenue)}</td>
                     <td style={{ textAlign: "right" }}>
                       <b>{km(c.realized)}</b>
                     </td>
@@ -462,14 +463,14 @@ export default async function DashboardPage({
             <b>{all.orders}</b>
           </div>
           <div className="adm-kpi">
-            <span>Bruto vrijednost</span>
-            <b>{km(all.gross)}</b>
-            <small>bez dostave: {km(all.productGross)}</small>
+            <span>Vrijednost proizvoda</span>
+            <b>{km(all.revenue)}</b>
+            <small>kurir naplatio {km(all.collected)}</small>
           </div>
           <div className="adm-kpi adm-kpi-accent">
             <span>Realizovan promet</span>
             <b>{km(all.realized)}</b>
-            <small>bez dostave: {km(all.realizedProduct)}</small>
+            <small>samo dostavljene</small>
           </div>
           <div className="adm-kpi">
             <span>Prosječna narudžba</span>

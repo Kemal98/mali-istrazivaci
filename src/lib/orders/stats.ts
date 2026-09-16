@@ -58,16 +58,22 @@ const CHANNEL_SQL = () => sql()`
 
 export interface Kpi {
   orders: number;
-  /** Bruto vrijednost svih narudžbi (proizvod + dostava). */
-  gross: number;
-  /** Bruto samo proizvodi, bez dostave. */
-  productGross: number;
-  shipping: number;
-  /** Prosječna vrijednost narudžbe. */
-  avg: number;
-  /** Realizovan promet — SAMO dostavljene narudžbe. */
+  /**
+   * PRIHOD = vrijednost proizvoda. Dostava se NE računa — tih 10 KM
+   * kupac plaća kuriru i to nije zarada shopa, samo prolazi kroz
+   * narudžbu. Zato je ovo svuda glavni broj.
+   */
+  revenue: number;
+  /** Realizovano: vrijednost proizvoda SAMO iz dostavljenih narudžbi. */
   realized: number;
-  realizedProduct: number;
+  /**
+   * Ukupno što kurir naplati kupcu (proizvod + dostava). Operativni
+   * broj — koristan da se zna šta kurir treba uzeti, ali NIJE prihod.
+   */
+  collected: number;
+  shipping: number;
+  /** Prosječna vrijednost narudžbe (bez dostave). */
+  avg: number;
   countNew: number;
   confirmed: number;
   packing: number;
@@ -88,11 +94,11 @@ export async function kpi(p: Period = {}): Promise<Kpi> {
   const rows = await db<Row[]>`
     SELECT
       COUNT(*)::int AS orders,
-      COALESCE(SUM(total_price), 0) AS gross,
-      COALESCE(SUM(subtotal), 0) AS product_gross,
+      -- prihod = samo proizvodi; dostava ide kuriru i nije zarada
+      COALESCE(SUM(subtotal), 0) AS revenue,
+      COALESCE(SUM(subtotal) FILTER (WHERE status = 'DELIVERED'), 0) AS realized,
+      COALESCE(SUM(total_price), 0) AS collected,
       COALESCE(SUM(shipping_price), 0) AS shipping,
-      COALESCE(SUM(total_price) FILTER (WHERE status = 'DELIVERED'), 0) AS realized,
-      COALESCE(SUM(subtotal) FILTER (WHERE status = 'DELIVERED'), 0) AS realized_product,
       COUNT(*) FILTER (WHERE status = 'NEW')::int       AS c_new,
       COUNT(*) FILTER (WHERE status = 'CONFIRMED')::int AS c_confirmed,
       COUNT(*) FILTER (WHERE status = 'PACKING')::int   AS c_packing,
@@ -111,12 +117,11 @@ export async function kpi(p: Period = {}): Promise<Kpi> {
 
   return {
     orders,
-    gross: money(r.gross),
-    productGross: money(r.product_gross),
-    shipping: money(r.shipping),
-    avg: orders ? money(n(r.gross) / orders) : 0,
+    revenue: money(r.revenue),
     realized: money(r.realized),
-    realizedProduct: money(r.realized_product),
+    collected: money(r.collected),
+    shipping: money(r.shipping),
+    avg: orders ? money(n(r.revenue) / orders) : 0,
     countNew: n(r.c_new),
     confirmed: n(r.c_confirmed),
     packing: n(r.c_packing),
@@ -140,7 +145,8 @@ export async function kpi(p: Period = {}): Promise<Kpi> {
 export interface DayPoint {
   day: string; // YYYY-MM-DD (lokalni dan, Europe/Sarajevo)
   orders: number;
-  gross: number;
+  /** Vrijednost proizvoda, bez dostave. */
+  revenue: number;
   realized: number;
 }
 
@@ -155,15 +161,15 @@ export async function dailySeries(p: Period): Promise<DayPoint[]> {
       to_char((created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo',
               'YYYY-MM-DD') AS day,
       COUNT(*)::int AS orders,
-      COALESCE(SUM(total_price), 0) AS gross,
-      COALESCE(SUM(total_price) FILTER (WHERE status = 'DELIVERED'), 0) AS realized
+      COALESCE(SUM(subtotal), 0) AS revenue,
+      COALESCE(SUM(subtotal) FILTER (WHERE status = 'DELIVERED'), 0) AS realized
      FROM orders WHERE ${within(p)}
      GROUP BY 1 ORDER BY 1`;
 
   return rows.map((r) => ({
     day: s(r.day),
     orders: n(r.orders),
-    gross: money(r.gross),
+    revenue: money(r.revenue),
     realized: money(r.realized),
   }));
 }
@@ -179,7 +185,7 @@ export function fillDays(points: DayPoint[], from: Date, to: Date): DayPoint[] {
 
   while (cur <= end) {
     const key = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, "0")}-${String(cur.getDate()).padStart(2, "0")}`;
-    out.push(byDay.get(key) ?? { day: key, orders: 0, gross: 0, realized: 0 });
+    out.push(byDay.get(key) ?? { day: key, orders: 0, revenue: 0, realized: 0 });
     cur.setDate(cur.getDate() + 1);
   }
   return out;
@@ -191,7 +197,8 @@ export interface ProductStat {
   productName: string;
   orders: number;
   quantity: number;
-  gross: number;
+  /** Vrijednost proizvoda, bez dostave. */
+  revenue: number;
   delivered: number;
   returned: number;
   cancelled: number;
@@ -209,14 +216,14 @@ export async function topProducts(
       product_name,
       COUNT(*)::int AS orders,
       COALESCE(SUM(quantity), 0)::int AS qty,
-      COALESCE(SUM(total_price), 0) AS gross,
+      COALESCE(SUM(subtotal), 0) AS revenue,
       COUNT(*) FILTER (WHERE status = 'DELIVERED')::int AS delivered,
       COUNT(*) FILTER (WHERE status = 'RETURNED')::int  AS returned,
       COUNT(*) FILTER (WHERE status = 'CANCELLED')::int AS cancelled,
-      COALESCE(SUM(total_price) FILTER (WHERE status = 'DELIVERED'), 0) AS realized
+      COALESCE(SUM(subtotal) FILTER (WHERE status = 'DELIVERED'), 0) AS realized
      FROM orders WHERE ${within(p)} AND product_name <> ''
      GROUP BY product_name
-     ORDER BY gross DESC, orders DESC
+     ORDER BY revenue DESC, orders DESC
      LIMIT ${limit}`;
 
   return rows.map((r) => {
@@ -227,7 +234,7 @@ export async function topProducts(
       productName: s(r.product_name),
       orders: n(r.orders),
       quantity: n(r.qty),
-      gross: money(r.gross),
+      revenue: money(r.revenue),
       delivered,
       returned,
       cancelled: n(r.cancelled),
@@ -242,7 +249,8 @@ export async function topProducts(
 export interface CityStat {
   city: string;
   orders: number;
-  gross: number;
+  /** Vrijednost proizvoda, bez dostave. */
+  revenue: number;
   delivered: number;
   returned: number;
 }
@@ -253,18 +261,18 @@ export async function topCities(p: Period, limit = 15): Promise<CityStat[]> {
     SELECT
       initcap(trim(city)) AS city,
       COUNT(*)::int AS orders,
-      COALESCE(SUM(total_price), 0) AS gross,
+      COALESCE(SUM(subtotal), 0) AS revenue,
       COUNT(*) FILTER (WHERE status = 'DELIVERED')::int AS delivered,
       COUNT(*) FILTER (WHERE status = 'RETURNED')::int  AS returned
      FROM orders WHERE ${within(p)} AND trim(city) <> ''
      GROUP BY initcap(trim(city))
-     ORDER BY orders DESC, gross DESC
+     ORDER BY orders DESC, revenue DESC
      LIMIT ${limit}`;
 
   return rows.map((r) => ({
     city: s(r.city),
     orders: n(r.orders),
-    gross: money(r.gross),
+    revenue: money(r.revenue),
     delivered: n(r.delivered),
     returned: n(r.returned),
   }));
@@ -275,7 +283,8 @@ export async function topCities(p: Period, limit = 15): Promise<CityStat[]> {
 export interface SourceStat {
   channel: string;
   orders: number;
-  gross: number;
+  /** Vrijednost proizvoda, bez dostave. */
+  revenue: number;
   realized: number;
   delivered: number;
   returned: number;
@@ -288,8 +297,8 @@ export async function bySource(p: Period): Promise<SourceStat[]> {
     SELECT
       ${CHANNEL_SQL()} AS channel,
       COUNT(*)::int AS orders,
-      COALESCE(SUM(total_price), 0) AS gross,
-      COALESCE(SUM(total_price) FILTER (WHERE status = 'DELIVERED'), 0) AS realized,
+      COALESCE(SUM(subtotal), 0) AS revenue,
+      COALESCE(SUM(subtotal) FILTER (WHERE status = 'DELIVERED'), 0) AS realized,
       COUNT(*) FILTER (WHERE status = 'DELIVERED')::int AS delivered,
       COUNT(*) FILTER (WHERE status = 'RETURNED')::int  AS returned
      FROM orders WHERE ${within(p)}
@@ -303,7 +312,7 @@ export async function bySource(p: Period): Promise<SourceStat[]> {
     return {
       channel: s(r.channel),
       orders: n(r.orders),
-      gross: money(r.gross),
+      revenue: money(r.revenue),
       realized: money(r.realized),
       delivered,
       returned,
@@ -316,7 +325,8 @@ export interface CampaignStat {
   campaign: string;
   content: string;
   orders: number;
-  gross: number;
+  /** Vrijednost proizvoda, bez dostave. */
+  revenue: number;
   realized: number;
   returned: number;
 }
@@ -336,20 +346,20 @@ export async function byCampaign(
       utm_campaign AS campaign,
       utm_content  AS content,
       COUNT(*)::int AS orders,
-      COALESCE(SUM(total_price), 0) AS gross,
-      COALESCE(SUM(total_price) FILTER (WHERE status = 'DELIVERED'), 0) AS realized,
+      COALESCE(SUM(subtotal), 0) AS revenue,
+      COALESCE(SUM(subtotal) FILTER (WHERE status = 'DELIVERED'), 0) AS realized,
       COUNT(*) FILTER (WHERE status = 'RETURNED')::int AS returned
      FROM orders
      WHERE ${within(p)} AND (utm_campaign <> '' OR utm_content <> '')
      GROUP BY utm_campaign, utm_content
-     ORDER BY gross DESC, orders DESC
+     ORDER BY revenue DESC, orders DESC
      LIMIT ${limit}`;
 
   return rows.map((r) => ({
     campaign: s(r.campaign) || "(bez kampanje)",
     content: s(r.content) || "—",
     orders: n(r.orders),
-    gross: money(r.gross),
+    revenue: money(r.revenue),
     realized: money(r.realized),
     returned: n(r.returned),
   }));
@@ -360,19 +370,19 @@ export async function byCampaign(
 export interface StatusStat {
   status: OrderStatus;
   orders: number;
-  gross: number;
+  revenue: number;
 }
 
 export async function byStatus(p: Period): Promise<StatusStat[]> {
   const db = sql();
   const rows = await db<Row[]>`
     SELECT status, COUNT(*)::int AS orders,
-           COALESCE(SUM(total_price), 0) AS gross
+           COALESCE(SUM(subtotal), 0) AS revenue
      FROM orders WHERE ${within(p)}
      GROUP BY status`;
   return rows.map((r) => ({
     status: s(r.status) as OrderStatus,
     orders: n(r.orders),
-    gross: money(r.gross),
+    revenue: money(r.revenue),
   }));
 }
