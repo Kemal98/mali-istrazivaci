@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { createOrder } from "@/lib/orders/service";
+import { NextResponse, after } from "next/server";
+import { createOrder, syncOrderToSheet } from "@/lib/orders/service";
 
 /**
  * JAVNI endpoint — ovo checkout forma zove kad kupac pošalje narudžbu.
@@ -13,6 +13,12 @@ import { createOrder } from "@/lib/orders/service";
  * Google Apps Script URL se od sada nalazi SAMO na serveru (sheets.ts).
  * Prije ove izmjene je bio u klijentskom bundleu, pa je svako mogao
  * slati lažne redove direktno u tabelu.
+ *
+ * Upis u Google Sheet ide kroz after(): narudžba se snimi u bazu, kupac
+ * ODMAH dobije potvrdu, a sinhronizacija sa tabelom se odvija nakon što
+ * je odgovor poslan. Razlog: Apps Script zna odgovarati i 9 sekundi, a
+ * Vercel ubija funkciju nakon 10 — čekanje bi obaralo narudžbe koje su
+ * već uspjele i bez potrebe držalo kupca na ekranu.
  */
 
 function clientIp(request: Request): string {
@@ -61,7 +67,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: res.error }, { status: res.status });
     }
 
-    // Kupcu se vraća uspjeh i kad Sheet nije prošao — narudžba je u bazi.
+    // Sheet se puni tek nakon što kupac dobije odgovor. Ponovni pokušaj
+    // (duplicate) se NE sinhronizuje opet — red je već upisan prvi put.
+    if (!res.duplicate) {
+      const { order } = res;
+      const extras =
+        body.sheetExtras && typeof body.sheetExtras === "object"
+          ? (body.sheetExtras as Record<string, unknown>)
+          : {};
+      after(async () => {
+        try {
+          await syncOrderToSheet(order, extras);
+        } catch (e) {
+          console.error("[orders] after() sync pao:", e);
+        }
+      });
+    }
+
     return NextResponse.json({
       ok: true,
       orderNumber: res.order.orderNumber,

@@ -19,13 +19,16 @@ import type { CreateOrderInput, Order } from "./types";
  *   2. idempotency provjera (dupli klik / retry)
  *   3. rate limit
  *   4. UPIS U BAZU  <-- narudžba je od ovog trenutka sigurna
- *   5. Google Sheet
- *   6. oznaka sync statusa
  *
- * Baza ide PRVA jer je ona primarna evidencija. Sheet je kopija — ako
- * padne, narudžba je već sačuvana i admin je vidi sa oznakom
- * "nije sinhronizovano" + dugmetom za ponovni pokušaj. Kupcu se u tom
- * slučaju NE prikazuje greška, jer sa njegove strane je sve uspjelo.
+ * Google Sheet se sinhronizuje POSLIJE toga, izvan ovog poziva (vidi
+ * syncOrderToSheet + after() u /api/orders). Razlog: Apps Script
+ * odgovara nepredvidivo (mjereno do 8.8s), a Vercel ubija funkciju nakon
+ * 10s — čekanje na Sheet bi obaralo narudžbe koje su već uspjele, i
+ * kupac bi bez potrebe čekao 5-9 sekundi na potvrdu.
+ *
+ * Baza je primarna evidencija. Sheet je kopija — ako padne, narudžba je
+ * već sačuvana i admin je vidi sa oznakom "nije sinhronizovano" +
+ * dugmetom za ponovni pokušaj.
  */
 
 const MAX_TEXT = 500;
@@ -146,32 +149,27 @@ export async function createOrder(
     source: "web",
   });
 
-  /* ---------- 5. Google Sheet ---------- */
+  // Sheet sync NE ide ovdje — radi se poslije odgovora kupcu.
+  return { ok: true, order, duplicate: false, sheetSynced: false };
+}
 
-  // Payload je identičan onome što je browser dosad slao (uključujući
-  // eventId/purchaseValue/qty koje Apps Script koristi za Meta CAPI).
-  const sheetRes = await sendToSheet(
-    payloadFromOrder(order, raw.sheetExtras ?? {})
-  );
-
-  /* ---------- 6. sync oznaka ---------- */
-
-  if (sheetRes.ok) {
+/**
+ * Upis u Google Sheet. Zove se iz after() — dakle POSLIJE nego što je
+ * kupac dobio potvrdu, pa ga čekanje na Apps Script ne odgađa.
+ */
+export async function syncOrderToSheet(
+  order: Order,
+  extras: Record<string, unknown> = {}
+): Promise<void> {
+  const res = await sendToSheet(payloadFromOrder(order, extras));
+  if (res.ok) {
     await markSheetSynced(order.id);
-  } else {
-    // Namjerno se NE vraća greška kupcu — narudžba je uspjela.
-    console.error(
-      `[orders] Sheet sync pao za ${order.orderNumber}: ${sheetRes.error}`
-    );
-    await markSheetFailed(order.id, sheetRes.error ?? "nepoznata greška");
+    return;
   }
-
-  return {
-    ok: true,
-    order,
-    duplicate: false,
-    sheetSynced: sheetRes.ok,
-  };
+  console.error(
+    `[orders] Sheet sync pao za ${order.orderNumber}: ${res.error}`
+  );
+  await markSheetFailed(order.id, res.error ?? "nepoznata greška");
 }
 
 /** Ponovni pokušaj sinhronizacije iz admina. */
