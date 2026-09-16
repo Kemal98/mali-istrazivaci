@@ -1,101 +1,528 @@
+import { Suspense } from "react";
 import Link from "next/link";
-import {
-  listMedia,
-  listProducts,
-  listReviews,
-  listTemplates,
-  productStats,
-} from "@/lib/cms/repo";
-import NewProductButton from "@/components/admin/NewProductButton";
 import { datum } from "@/lib/cms/datum";
+import { countUnsynced, listOrders } from "@/lib/orders/repo";
+import { shopStats } from "@/lib/orders/dashboard";
+import {
+  bySource,
+  byCampaign,
+  dailySeries,
+  fillDays,
+  kpi,
+  topCities,
+  topProducts,
+  type Period,
+} from "@/lib/orders/stats";
+import { STATUS_CLASS, STATUS_LABEL, type OrderStatus } from "@/lib/orders/types";
+import DashboardPeriod from "@/components/admin/DashboardPeriod";
+import OrdersChart from "@/components/admin/OrdersChart";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
-  const stats = await productStats();
-  const products = (await listProducts()).slice(0, 6);
-  const media = await listMedia();
-  const reviews = await listReviews();
-  const templates = await listTemplates();
+/* ---------- pomoćno: rasponi datuma ---------- */
+
+const startOfDay = (d: Date) => {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+};
+
+function resolvePeriod(
+  period: string | undefined,
+  from?: string,
+  to?: string
+): { range: Period; fromDate: Date; toDate: Date; label: string } {
+  const now = new Date();
+
+  if (from || to) {
+    const f = from ? new Date(from) : startOfDay(new Date(now.getTime() - 29 * 864e5));
+    const t = to ? new Date(to) : now;
+    return {
+      range: { from: f.toISOString(), to: t.toISOString() },
+      fromDate: f,
+      toDate: t,
+      label: "izabrani period",
+    };
+  }
+
+  switch (period) {
+    case "7d": {
+      const f = startOfDay(new Date(now.getTime() - 6 * 864e5));
+      return { range: { from: f.toISOString() }, fromDate: f, toDate: now, label: "7 dana" };
+    }
+    case "90d": {
+      const f = startOfDay(new Date(now.getTime() - 89 * 864e5));
+      return { range: { from: f.toISOString() }, fromDate: f, toDate: now, label: "90 dana" };
+    }
+    case "month": {
+      const f = new Date(now.getFullYear(), now.getMonth(), 1);
+      return { range: { from: f.toISOString() }, fromDate: f, toDate: now, label: "ovaj mjesec" };
+    }
+    case "lastmonth": {
+      const f = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const t = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, -1);
+      return {
+        range: { from: f.toISOString(), to: t.toISOString() },
+        fromDate: f,
+        toDate: t,
+        label: "prošli mjesec",
+      };
+    }
+    default: {
+      const f = startOfDay(new Date(now.getTime() - 29 * 864e5));
+      return { range: { from: f.toISOString() }, fromDate: f, toDate: now, label: "30 dana" };
+    }
+  }
+}
+
+const km = (v: number) => `${v.toLocaleString("bs-BA")} KM`;
+
+/* ---------- stranica ---------- */
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ period?: string; from?: string; to?: string }>;
+}) {
+  const sp = await searchParams;
+  const { range, fromDate, toDate, label } = resolvePeriod(sp.period, sp.from, sp.to);
+
+  const now = new Date();
+  const todayRange: Period = { from: startOfDay(now).toISOString() };
+  const d7: Period = {
+    from: startOfDay(new Date(now.getTime() - 6 * 864e5)).toISOString(),
+  };
+  const d30: Period = {
+    from: startOfDay(new Date(now.getTime() - 29 * 864e5)).toISOString(),
+  };
+
+  // Sve sekvencijalno — vidi komentar u stats.ts o poolu konekcija.
+  const today = await kpi(todayRange);
+  const week = await kpi(d7);
+  const month = await kpi(d30);
+  const all = await kpi({});
+  const period = await kpi(range);
+  const series = fillDays(await dailySeries(range), fromDate, toDate);
+  const products = await topProducts(range);
+  const cities = await topCities(range);
+  const sources = await bySource(range);
+  const campaigns = await byCampaign(range);
+  const unsynced = await countUnsynced();
+  const latest = await listOrders({ page: 1, perPage: 8 });
+  const shop = await shopStats();
 
   return (
     <>
       <div className="adm-head">
         <div>
           <h1>Dashboard</h1>
-          <p>Pregled shopa i brzi pristup uređivanju.</p>
+          <p>
+            Pregled narudžbi, prometa i marketinga. Realizovan promet
+            računa se samo iz <b>dostavljenih</b> narudžbi.
+          </p>
         </div>
         <div className="adm-head-actions">
-          <NewProductButton templates={templates} products={await listProducts()} />
+          <Link className="adm-btn" href="/admin/orders">
+            SVE NARUDŽBE →
+          </Link>
         </div>
       </div>
 
-      <div className="adm-grid-stats">
-        <div className="adm-stat">
-          <b>{stats.total}</b>
-          <span>Proizvoda</span>
+      {unsynced > 0 ? (
+        <div className="adm-note adm-note-err">
+          <b>
+            {unsynced}{" "}
+            {unsynced === 1 ? "narudžba nije" : "narudžbi nije"} sinhronizovano
+            sa Google Sheets.
+          </b>{" "}
+          Sve su sigurne u bazi.{" "}
+          <Link
+            className="adm-btn adm-btn-sm"
+            style={{ marginLeft: 8 }}
+            href="/admin/orders?unsynced=1"
+          >
+            PRIKAŽI I POKUŠAJ PONOVO
+          </Link>
         </div>
-        <div className="adm-stat">
-          <b>{stats.published}</b>
-          <span>Objavljeno</span>
+      ) : null}
+
+      {/* ---------- DANAS ---------- */}
+      <div className="adm-card-title" style={{ marginTop: 4 }}>
+        Danas
+      </div>
+      <div className="adm-kpi-grid">
+        <div className="adm-kpi">
+          <span>Narudžbi</span>
+          <b>{today.orders}</b>
         </div>
-        <div className="adm-stat">
-          <b>{stats.draft}</b>
-          <span>Nacrta</span>
+        <div className="adm-kpi">
+          <span>Bruto vrijednost</span>
+          <b>{km(today.gross)}</b>
+          <small>bez dostave: {km(today.productGross)}</small>
         </div>
-        <div className="adm-stat">
-          <b>{reviews.length}</b>
-          <span>Recenzija</span>
+        <div className="adm-kpi">
+          <span>Prosječna narudžba</span>
+          <b>{km(today.avg)}</b>
         </div>
-        <div className="adm-stat">
-          <b>{media.length}</b>
-          <span>Fajlova u mediji</span>
+        <div className="adm-kpi adm-kpi-accent">
+          <span>Dostavljene</span>
+          <b>{today.delivered}</b>
+          <small>{km(today.realized)} realizovano</small>
+        </div>
+        <div className="adm-kpi adm-kpi-warn">
+          <span>Vraćene</span>
+          <b>{today.returned}</b>
+        </div>
+        <div className="adm-kpi adm-kpi-bad">
+          <span>Otkazane</span>
+          <b>{today.cancelled}</b>
         </div>
       </div>
 
-      <div className="adm-card" style={{ marginTop: 14 }}>
-        <div className="adm-card-title">Zadnje mijenjano</div>
-        {products.length === 0 ? (
-          <div className="adm-empty">
-            Još nema proizvoda. Kliknite <b>+ NOVI PROIZVOD</b> da napravite prvi.
+      {/* ---------- 7 / 30 DANA ---------- */}
+      <div className="adm-row" style={{ marginTop: 14 }}>
+        {[
+          { t: "Posljednjih 7 dana", k: week },
+          { t: "Posljednjih 30 dana", k: month },
+        ].map(({ t, k }) => (
+          <div className="adm-card" key={t}>
+            <div className="adm-card-title">{t}</div>
+            <div className="adm-kpi-grid">
+              <div className="adm-kpi">
+                <span>Narudžbe</span>
+                <b>{k.orders}</b>
+              </div>
+              <div className="adm-kpi">
+                <span>Promet (bruto)</span>
+                <b>{km(k.gross)}</b>
+              </div>
+              <div className="adm-kpi">
+                <span>Prosjek</span>
+                <b>{km(k.avg)}</b>
+              </div>
+              <div className="adm-kpi adm-kpi-accent">
+                <span>Realizovano</span>
+                <b>{km(k.realized)}</b>
+                <small>{k.delivered} dostavljeno</small>
+              </div>
+            </div>
           </div>
+        ))}
+      </div>
+
+      {/* ---------- GRAFIKON ---------- */}
+      <div className="adm-card">
+        <div
+          className="adm-card-title"
+          style={{ display: "flex", justifyContent: "space-between", gap: 12 }}
+        >
+          <span>Narudžbe i promet po danima — {label}</span>
+        </div>
+        <Suspense fallback={<div className="adm-hint">Učitavam…</div>}>
+          <DashboardPeriod />
+        </Suspense>
+        <div style={{ marginTop: 16 }}>
+          <OrdersChart data={series} />
+        </div>
+        <div className="adm-kpi-grid" style={{ marginTop: 16 }}>
+          <div className="adm-kpi">
+            <span>Narudžbe u periodu</span>
+            <b>{period.orders}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>Bruto vrijednost</span>
+            <b>{km(period.gross)}</b>
+            <small>dostava: {km(period.shipping)}</small>
+          </div>
+          <div className="adm-kpi adm-kpi-accent">
+            <span>Realizovan promet</span>
+            <b>{km(period.realized)}</b>
+            <small>samo dostavljene</small>
+          </div>
+          <div className="adm-kpi">
+            <span>Delivery rate</span>
+            <b>{period.deliveryRate}%</b>
+            <small>
+              {period.delivered} dostavljeno / {period.returned} vraćeno
+            </small>
+          </div>
+          <div className="adm-kpi adm-kpi-warn">
+            <span>Return rate</span>
+            <b>{period.returnRate}%</b>
+          </div>
+          <div className="adm-kpi adm-kpi-bad">
+            <span>Cancellation rate</span>
+            <b>{period.cancellationRate}%</b>
+            <small>{period.cancelled} otkazano</small>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------- STATUSI ---------- */}
+      <div className="adm-card">
+        <div className="adm-card-title">Status narudžbi — {label}</div>
+        <div className="adm-chips">
+          {(
+            [
+              ["NEW", period.countNew],
+              ["CONFIRMED", period.confirmed],
+              ["PACKING", period.packing],
+              ["SHIPPED", period.shipped],
+              ["DELIVERED", period.delivered],
+              ["RETURNED", period.returned],
+              ["CANCELLED", period.cancelled],
+            ] as [OrderStatus, number][]
+          ).map(([st, count]) => (
+            <Link
+              key={st}
+              className="adm-chip"
+              href={`/admin/orders?status=${st}`}
+              title={`Prikaži: ${STATUS_LABEL[st]}`}
+            >
+              <span className={`adm-st ${STATUS_CLASS[st]}`} style={{ marginRight: 6 }}>
+                {STATUS_LABEL[st]}
+              </span>
+              {count}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* ---------- TOP PROIZVODI ---------- */}
+      <div className="adm-card">
+        <div className="adm-card-title">Najprodavaniji proizvodi — {label}</div>
+        {products.length === 0 ? (
+          <p className="adm-hint">Nema narudžbi u ovom periodu.</p>
         ) : (
           <div className="adm-table-wrap" style={{ border: "none" }}>
-            <table className="adm-table" style={{ minWidth: 560 }}>
+            <table className="adm-table" style={{ minWidth: 820 }}>
+              <thead>
+                <tr>
+                  <th>Proizvod</th>
+                  <th style={{ textAlign: "right" }}>Narudžbi</th>
+                  <th style={{ textAlign: "right" }}>Komada</th>
+                  <th style={{ textAlign: "right" }}>Bruto</th>
+                  <th style={{ textAlign: "right" }}>Dostavljeno</th>
+                  <th style={{ textAlign: "right" }}>Vraćeno</th>
+                  <th style={{ textAlign: "right" }}>Otkazano</th>
+                  <th style={{ textAlign: "right" }}>Realizovano</th>
+                  <th style={{ textAlign: "right" }}>Delivery</th>
+                </tr>
+              </thead>
               <tbody>
                 {products.map((p) => (
-                  <tr key={p.id}>
-                    <td style={{ width: 66 }}>
-                      {p.hero?.slika ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img className="adm-thumb" src={p.hero.slika} alt="" />
-                      ) : (
-                        <div className="adm-thumb-empty">nema</div>
-                      )}
-                    </td>
+                  <tr key={p.productName}>
                     <td>
-                      <b>{p.naziv}</b>
-                      <div className="adm-hint">/{p.slug}</div>
-                    </td>
-                    <td>
-                      <span
-                        className={`adm-badge ${
-                          p.status === "published"
-                            ? "adm-badge-pub"
-                            : "adm-badge-draft"
-                        }`}
-                      >
-                        {p.status === "published" ? "Objavljeno" : "Nacrt"}
-                      </span>
-                    </td>
-                    <td className="adm-hint">{datum(p.updatedAt)}</td>
-                    <td style={{ textAlign: "right" }}>
                       <Link
-                        className="adm-btn adm-btn-sm"
-                        href={`/admin/products/${p.id}`}
+                        href={`/admin/orders?product=${encodeURIComponent(p.productName)}`}
                       >
-                        UREDI
+                        {p.productName}
                       </Link>
+                    </td>
+                    <td style={{ textAlign: "right" }}>{p.orders}</td>
+                    <td style={{ textAlign: "right" }}>{p.quantity}</td>
+                    <td style={{ textAlign: "right" }}>{km(p.gross)}</td>
+                    <td style={{ textAlign: "right" }}>{p.delivered}</td>
+                    <td style={{ textAlign: "right" }}>{p.returned}</td>
+                    <td style={{ textAlign: "right" }}>{p.cancelled}</td>
+                    <td style={{ textAlign: "right" }}>
+                      <b>{km(p.realized)}</b>
+                    </td>
+                    <td style={{ textAlign: "right" }}>{p.deliveryRate}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* ---------- GRADOVI + MARKETING ---------- */}
+      <div className="adm-detail-grid">
+        <div className="adm-card">
+          <div className="adm-card-title">Top gradovi — {label}</div>
+          {cities.length === 0 ? (
+            <p className="adm-hint">Nema podataka.</p>
+          ) : (
+            <table className="adm-table" style={{ minWidth: 0 }}>
+              <thead>
+                <tr>
+                  <th>Grad</th>
+                  <th style={{ textAlign: "right" }}>Narudžbi</th>
+                  <th style={{ textAlign: "right" }}>Promet</th>
+                  <th style={{ textAlign: "right" }}>Dost.</th>
+                  <th style={{ textAlign: "right" }}>Vrać.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cities.map((c) => (
+                  <tr key={c.city}>
+                    <td>
+                      <Link href={`/admin/orders?city=${encodeURIComponent(c.city)}`}>
+                        {c.city}
+                      </Link>
+                    </td>
+                    <td style={{ textAlign: "right" }}>{c.orders}</td>
+                    <td style={{ textAlign: "right" }}>{km(c.gross)}</td>
+                    <td style={{ textAlign: "right" }}>{c.delivered}</td>
+                    <td style={{ textAlign: "right" }}>{c.returned}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        <div className="adm-card">
+          <div className="adm-card-title">Odakle dolaze narudžbe — {label}</div>
+          {sources.length === 0 ? (
+            <p className="adm-hint">Nema podataka.</p>
+          ) : (
+            <table className="adm-table" style={{ minWidth: 0 }}>
+              <thead>
+                <tr>
+                  <th>Kanal</th>
+                  <th style={{ textAlign: "right" }}>Narudžbi</th>
+                  <th style={{ textAlign: "right" }}>Promet</th>
+                  <th style={{ textAlign: "right" }}>Realiz.</th>
+                  <th style={{ textAlign: "right" }}>Delivery</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sources.map((s) => (
+                  <tr key={s.channel}>
+                    <td>
+                      <b>{s.channel}</b>
+                    </td>
+                    <td style={{ textAlign: "right" }}>{s.orders}</td>
+                    <td style={{ textAlign: "right" }}>{km(s.gross)}</td>
+                    <td style={{ textAlign: "right" }}>{km(s.realized)}</td>
+                    <td style={{ textAlign: "right" }}>{s.deliveryRate}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          <p className="adm-hint" style={{ marginTop: 10 }}>
+            „direct&rdquo; znači da nije bilo UTM parametra ni referrera — npr.
+            kupac je upisao adresu ručno ili došao iz aplikacije.
+          </p>
+        </div>
+      </div>
+
+      {/* ---------- KAMPANJE ---------- */}
+      <div className="adm-card">
+        <div className="adm-card-title">
+          Facebook / Instagram kampanje — {label}
+        </div>
+        {campaigns.length === 0 ? (
+          <p className="adm-hint">
+            Još nema narudžbi sa UTM kampanjom. Kad u oglasu staviš link sa{" "}
+            <code>?utm_source=facebook&utm_campaign=naziv&utm_content=oglas1</code>
+            , ovdje ćeš vidjeti koliko je koji oglas donio stvarnih narudžbi.
+          </p>
+        ) : (
+          <div className="adm-table-wrap" style={{ border: "none" }}>
+            <table className="adm-table" style={{ minWidth: 700 }}>
+              <thead>
+                <tr>
+                  <th>Kampanja</th>
+                  <th>Oglas / sadržaj</th>
+                  <th style={{ textAlign: "right" }}>Narudžbi</th>
+                  <th style={{ textAlign: "right" }}>Bruto</th>
+                  <th style={{ textAlign: "right" }}>Realizovano</th>
+                  <th style={{ textAlign: "right" }}>Vraćeno</th>
+                </tr>
+              </thead>
+              <tbody>
+                {campaigns.map((c) => (
+                  <tr key={`${c.campaign}|${c.content}`}>
+                    <td>{c.campaign}</td>
+                    <td>{c.content}</td>
+                    <td style={{ textAlign: "right" }}>{c.orders}</td>
+                    <td style={{ textAlign: "right" }}>{km(c.gross)}</td>
+                    <td style={{ textAlign: "right" }}>
+                      <b>{km(c.realized)}</b>
+                    </td>
+                    <td style={{ textAlign: "right" }}>{c.returned}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* ---------- UKUPNO OD POČETKA ---------- */}
+      <div className="adm-card">
+        <div className="adm-card-title">Ukupno od početka</div>
+        <div className="adm-kpi-grid">
+          <div className="adm-kpi">
+            <span>Narudžbi</span>
+            <b>{all.orders}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>Bruto vrijednost</span>
+            <b>{km(all.gross)}</b>
+            <small>bez dostave: {km(all.productGross)}</small>
+          </div>
+          <div className="adm-kpi adm-kpi-accent">
+            <span>Realizovan promet</span>
+            <b>{km(all.realized)}</b>
+            <small>bez dostave: {km(all.realizedProduct)}</small>
+          </div>
+          <div className="adm-kpi">
+            <span>Prosječna narudžba</span>
+            <b>{km(all.avg)}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>Delivery rate</span>
+            <b>{all.deliveryRate}%</b>
+          </div>
+          <div className="adm-kpi adm-kpi-bad">
+            <span>Cancellation rate</span>
+            <b>{all.cancellationRate}%</b>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------- NAJNOVIJE NARUDŽBE ---------- */}
+      <div className="adm-card">
+        <div
+          className="adm-card-title"
+          style={{ display: "flex", justifyContent: "space-between" }}
+        >
+          <span>Najnovije narudžbe</span>
+          <Link href="/admin/orders" style={{ textTransform: "none" }}>
+            vidi sve →
+          </Link>
+        </div>
+        {latest.orders.length === 0 ? (
+          <p className="adm-hint">Još nema narudžbi.</p>
+        ) : (
+          <div className="adm-table-wrap" style={{ border: "none" }}>
+            <table className="adm-table" style={{ minWidth: 640 }}>
+              <tbody>
+                {latest.orders.map((o) => (
+                  <tr key={o.id}>
+                    <td>
+                      <Link href={`/admin/orders/${o.id}`}>
+                        <b>{o.orderNumber}</b>
+                      </Link>
+                    </td>
+                    <td className="adm-hint" style={{ whiteSpace: "nowrap" }}>
+                      {datum(o.createdAt)}
+                    </td>
+                    <td>{o.customerName}</td>
+                    <td>{o.city}</td>
+                    <td>{o.productName}</td>
+                    <td style={{ textAlign: "right" }}>
+                      <b>{km(o.totalPrice)}</b>
+                    </td>
+                    <td>
+                      <span className={`adm-st ${STATUS_CLASS[o.status]}`}>
+                        {STATUS_LABEL[o.status]}
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -103,6 +530,44 @@ export default async function DashboardPage() {
             </table>
           </div>
         )}
+      </div>
+
+      {/* ---------- SHOP (postojeće) ---------- */}
+      <div className="adm-card">
+        <div className="adm-card-title">Shop</div>
+        <div className="adm-kpi-grid">
+          <div className="adm-kpi">
+            <span>Proizvoda</span>
+            <b>{shop.total}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>Objavljeno</span>
+            <b>{shop.published}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>Nacrta</span>
+            <b>{shop.draft}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>Recenzija</span>
+            <b>{shop.reviews}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>Fajlova u mediji</span>
+            <b>{shop.media}</b>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+          <Link className="adm-btn" href="/admin/products">
+            PROIZVODI
+          </Link>
+          <Link className="adm-btn" href="/admin/media">
+            MEDIA
+          </Link>
+          <Link className="adm-btn" href="/admin/reviews">
+            RECENZIJE
+          </Link>
+        </div>
       </div>
     </>
   );
