@@ -24,7 +24,11 @@ const SHEETS_URL =
   process.env.GOOGLE_SCRIPT_URL ||
   "https://script.google.com/macros/s/AKfycbw2HAwC4MF3Z37SstIPtvMj60Z_KTkXVVD6JCA0gMBQbPCmdE7pKd9iLYbigsbsLgwv/exec";
 
-const TIMEOUT_MS = 8000;
+// Apps Script odgovara nepredvidivo (mjereno: 0.1s, 1.5s, 3.7s, 4s, 5.7s,
+// 8.8s). Sa 8s je jedan sync lažno prijavljen kao neuspio. Pošto se sync
+// od sada radi POSLIJE odgovora kupcu (after()), čekanje više nikoga ne
+// blokira, pa je granica podignuta.
+const TIMEOUT_MS = 25000;
 
 /** Datum u formatu koji je tabela dosad primala (bs-BA lokalizovan). */
 export function sheetDatum(iso: string): string {
@@ -73,6 +77,12 @@ export function payloadFromOrder(
 export interface SheetResult {
   ok: boolean;
   error?: string;
+  /**
+   * Timeout je poseban slučaj: ne znamo je li Apps Script upisao red ili
+   * nije. Ponovni pokušaj u tom slučaju MOŽE napraviti duplikat u tabeli,
+   * pa admin na to upozori umjesto da tiho ponovi upis.
+   */
+  timedOut?: boolean;
 }
 
 /**
@@ -112,10 +122,14 @@ export async function sendToSheet(payload: SheetPayload): Promise<SheetResult> {
     return { ok: true };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
+    const isTimeout = /abort/i.test(msg) || msg.includes("aborted");
     return {
       ok: false,
-      error: msg === "This operation was aborted" || /abort/i.test(msg)
-        ? `Timeout nakon ${TIMEOUT_MS} ms`
+      timedOut: isTimeout,
+      error: isTimeout
+        ? `Nema odgovora od Google Sheetsa nakon ${TIMEOUT_MS / 1000}s. ` +
+          `Nije poznato je li red upisan — provjerite tabelu prije ponovnog ` +
+          `pokušaja, da ne nastane duplikat.`
         : msg,
     };
   } finally {
