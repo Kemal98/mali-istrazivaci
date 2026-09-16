@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 const ITEMS = [
-  { href: "/admin", label: "DASHBOARD", ico: "▦" },
+  { href: "/admin/dashboard", label: "DASHBOARD", ico: "▦" },
+  { href: "/admin/orders", label: "NARUDŽBE", ico: "🧾" },
   { href: "/admin/products", label: "PROIZVODI", ico: "▤" },
   { href: "/admin/media", label: "MEDIA LIBRARY", ico: "▣" },
   { href: "/admin/reviews", label: "RECENZIJE", ico: "★" },
@@ -31,10 +32,7 @@ export default function AdminNav() {
 
       <nav className="adm-nav">
         {ITEMS.map((it) => {
-          const active =
-            it.href === "/admin"
-              ? pathname === "/admin"
-              : pathname.startsWith(it.href);
+          const active = pathname.startsWith(it.href);
           return (
             <Link key={it.href} href={it.href} data-active={active}>
               <span className="adm-nav-ico" aria-hidden="true">

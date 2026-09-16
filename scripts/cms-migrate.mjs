@@ -15,17 +15,25 @@ if (!conn) {
   process.exit(1);
 }
 
-const schemaPath = path.join(process.cwd(), "src", "lib", "cms", "schema.sql");
-const schema = fs.readFileSync(schemaPath, "utf8");
+// Svi .sql fajlovi se puštaju redom. Redoslijed je važan: orders ima FK
+// referencu samo unutar sebe, ali cms ide prvi jer je stariji.
+const schemaFiles = [
+  path.join(process.cwd(), "src", "lib", "cms", "schema.sql"),
+  path.join(process.cwd(), "src", "lib", "orders", "schema.sql"),
+];
 
 const sql = postgres(conn, { prepare: false, max: 1, onnotice: () => {} });
 
 try {
-  await sql.unsafe(schema);
+  for (const file of schemaFiles) {
+    await sql.unsafe(fs.readFileSync(file, "utf8"));
+    console.log("primijenjeno:", path.relative(process.cwd(), file));
+  }
   const tables = await sql`
     SELECT table_name FROM information_schema.tables
      WHERE table_schema = 'public'
-       AND table_name IN ('products','media','reviews','templates','settings')
+       AND table_name IN ('products','media','reviews','templates','settings',
+                          'orders','order_events')
      ORDER BY table_name`;
   console.log("Tabele u bazi:", tables.map((t) => t.table_name).join(", "));
   console.log("Migracija završena.");

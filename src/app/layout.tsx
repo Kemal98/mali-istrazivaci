@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Script from "next/script";
 import PixelEvents from "@/components/PixelEvents";
+import UtmCapture from "@/components/UtmCapture";
 import { META_PIXEL_ID, CLARITY_PROJECT_ID, GA_MEASUREMENT_ID } from "@/lib/constants";
 import "./globals.css";
 
@@ -77,6 +79,12 @@ export default function RootLayout({
           `}
         </Script>
         <PixelEvents />
+        {/* Hvata UTM/fbclid za analitiku narudžbi. Suspense jer koristi
+            useSearchParams (inače statičke stranice ne mogu da se
+            prerenderuju). Ne renderuje ništa vidljivo. */}
+        <Suspense fallback={null}>
+          <UtmCapture />
+        </Suspense>
         {children}
       </body>
     </html>

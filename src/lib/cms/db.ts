@@ -8,24 +8,31 @@ import postgres from "postgres";
 // — pgBouncer u transaction modu ne podržava prepared statemente.
 const CONN = process.env.DATABASE_URL ?? "";
 
-let _sql: postgres.Sql | null = null;
+// Klijent se kešira na globalThis, ne u modulskoj varijabli: u dev-u
+// Turbopack re-instancira module na hot-reload, pa bi se svaki put
+// otvarao novi pool i konekcije bi se gomilale prema Supabaseu.
+const g = globalThis as { __miSql?: postgres.Sql };
 
 export function sql(): postgres.Sql {
-  if (_sql) return _sql;
+  if (g.__miSql) return g.__miSql;
   if (!CONN) {
     throw new Error(
       "DATABASE_URL nije postavljen. Upišite Supabase connection string " +
         "(Connection pooling / Transaction mode, port 6543) u .env.local."
     );
   }
-  _sql = postgres(CONN, {
+  const client = postgres(CONN, {
     prepare: false,
-    max: 3,
+    // Malo konekcija jer na Vercelu svaka serverless instanca drži svoj
+    // pool. Ako pool zatreba više paralelnih upita nego što ima mjesta,
+    // radi se sekvencijalno (vidi komentare u orders/repo.ts).
+    max: 5,
     idle_timeout: 20,
     connect_timeout: 10,
     onnotice: () => {},
   });
-  return _sql;
+  g.__miSql = client;
+  return client;
 }
 
 export function nowIso() {

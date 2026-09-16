@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GOOGLE_SCRIPT_URL } from "@/lib/constants";
+import { newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
 import { useDawnQty } from "@/components/DawnQtyContext";
 import { useBookCheckoutModal } from "@/components/BookCheckoutModalContext";
 
@@ -14,22 +14,25 @@ declare global {
 
 // GENERIČKI checkout za CMS proizvode.
 //
-// VAŽNO: mehanika je 1:1 ista kao postojeći RattleCheckout/BlingerCheckout —
+// VAŽNO: mehanika je 1:1 ista kao postojeći RattleCheckout —
 // isti <span id="naruci"> anchor (PixelEvents sluša klik na a[href="#naruci"]),
-// isti payload prema GOOGLE_SCRIPT_URL (uključujući "kolicina"), isti fbq
-// "Lead" event i isti redirect na /hvala. Ne pravi se paralelni checkout.
+// isti fbq "Lead" event i isti redirect na /hvala. Ne pravi se paralelni
+// checkout. Narudžba ide na /api/orders (baza + Google Sheet), a ne više
+// direktno u Sheet iz browsera.
 export default function CmsCheckout({
   naziv,
   cijena,
   slika,
   podnaslov,
   staraCijena,
+  productId,
 }: {
   naziv: string;
   cijena: number;
   slika?: string;
   podnaslov?: string;
   staraCijena?: number | null;
+  productId?: string | null;
 }) {
   const router = useRouter();
   const { qty, setQty } = useDawnQty();
@@ -37,6 +40,9 @@ export default function CmsCheckout({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  // Jedan ključ po otvorenoj formi: dupli klik ili retry šalju isti
+  // ključ, pa backend vrati postojeću narudžbu umjesto da napravi drugu.
+  const orderKeyRef = useRef("");
   const DELIVERY = 10;
   const total = cijena * qty + DELIVERY;
 
@@ -64,19 +70,7 @@ export default function CmsCheckout({
       formData.get("prezime") || ""
     }`.trim();
 
-    const data = {
-      datum: new Date().toLocaleString("bs-BA"),
-      ime,
-      telefon: formData.get("tel"),
-      adresa: formData.get("adresa"),
-      grad: formData.get("grad"),
-      uzrast: "",
-      napomena: "",
-      proizvod: naziv,
-      kolicina: qty,
-      cijena: `${total} KM`,
-      status: "Novo",
-    };
+    if (!orderKeyRef.current) orderKeyRef.current = newIdempotencyKey();
 
     if (window.fbq) {
       window.fbq("track", "Lead", {
@@ -86,21 +80,30 @@ export default function CmsCheckout({
       });
     }
 
-    try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    const res = await submitOrder({
+      idempotencyKey: orderKeyRef.current,
+      customerName: ime,
+      phone: String(formData.get("tel") || ""),
+      address: String(formData.get("adresa") || ""),
+      city: String(formData.get("grad") || ""),
+      productId: productId ?? null,
+      productName: naziv,
+      quantity: qty,
+      unitPrice: cijena,
+      shippingPrice: DELIVERY,
+    });
+
+    if (res.ok) {
+      // Namjerno bez setSubmitting(false) na uspjehu — dugme ostaje
+      // onemogućeno dok stranica prelazi na /hvala.
       router.push(
-        `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}`
+        `/hvala?proizvod=${encodeURIComponent(naziv)}&value=${total}`
       );
-    } catch {
-      setError(true);
-    } finally {
-      setSubmitting(false);
+      return;
     }
+
+    setError(true);
+    setSubmitting(false);
   }
 
   return (

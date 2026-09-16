@@ -1,8 +1,9 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GOOGLE_SCRIPT_URL, CONTACT_EMAIL } from "@/lib/constants";
+import { CONTACT_EMAIL } from "@/lib/constants";
+import { newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
 import GuaranteeBadge from "./GuaranteeBadge";
 import ShippingCutoff from "./ShippingCutoff";
 
@@ -35,6 +36,9 @@ export default function Checkout() {
   const [dvojeGodine, setDvojeGodine] = useState("");
   const [ageError, setAgeError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
+  // Jedan ključ po otvorenoj formi: dupli klik ili retry šalju isti
+  // ključ, pa backend vrati postojeću narudžbu umjesto da napravi drugu.
+  const orderKeyRef = useRef("");
   const DELIVERY = 10;
   const productPrice = extraSet ? 49 : 29;
   const total = productPrice + DELIVERY;
@@ -71,49 +75,55 @@ export default function Checkout() {
         ? crypto.randomUUID()
         : `${Date.now()}-${Math.random()}`;
 
-    const data = {
-      datum: new Date().toLocaleString("bs-BA"),
-      ime: formData.get("ime"),
-      telefon: telValue,
-      adresa: formData.get("adresa"),
-      grad: formData.get("grad"),
-      uzrast: uzrastValue,
-      napomena: formData.get("napomena"),
-      proizvod: extraSet ? "SAT MIRA set 3u1 x2" : "SAT MIRA set 3u1",
-      cijena: `${total} KM`,
-      status: "Novo",
-      eventId,
-      purchaseValue: productPrice,
-      qty: brojSetova,
-    };
+    const proizvod = extraSet ? "SAT MIRA set 3u1 x2" : "SAT MIRA set 3u1";
+    if (!orderKeyRef.current) orderKeyRef.current = newIdempotencyKey();
 
-    try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+    const res = await submitOrder({
+      idempotencyKey: orderKeyRef.current,
+      customerName: String(formData.get("ime") || ""),
+      phone: telValue,
+      address: String(formData.get("adresa") || ""),
+      city: String(formData.get("grad") || ""),
+      note: String(formData.get("napomena") || ""),
+      productName: proizvod,
+      quantity: brojSetova,
+      // SAT MIRA ima paketnu cijenu (49 KM za dva seta), pa je jedinična
+      // cijena ukupna cijena proizvoda podijeljena brojem setova — tako
+      // subtotal u bazi ostaje tačan (49), a ne 2 x 29.
+      unitPrice: Math.round((productPrice / brojSetova) * 100) / 100,
+      shippingPrice: DELIVERY,
+      // Ova polja Apps Script koristi za Meta CAPI Purchase (isti eventId
+      // kao browser pixel na /hvala, da Meta ne broji dvaput). Prolaze
+      // kroz backend do Sheeta nepromijenjena.
+      sheetExtras: {
+        eventId,
+        purchaseValue: productPrice,
+        qty: brojSetova,
+        uzrast: uzrastValue,
+      },
+    });
+
+    if (window.fbq) {
+      window.fbq("track", "Lead", {
+        content_name: "SAT MIRA set",
+        value: total,
+        currency: "BAM",
       });
-      if (window.fbq) {
-        window.fbq("track", "Lead", {
-          content_name: "SAT MIRA set",
-          value: total,
-          currency: "BAM",
-        });
-      }
+    }
 
+    if (res.ok) {
       // Purchase se pali na /hvala (kad se stranica stvarno prebaci), ne
-      // ovdje — nosi isti eventId kroz URL. Ako korisnik refresha /hvala,
-      // isti eventID stigne Meti dvaput i ona to sama deduplicira.
+      // ovdje — nosi isti eventId kroz URL. Namjerno bez
+      // setSubmitting(false) na uspjehu, da dugme ostane onemogućeno.
       router.push(
-        `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}` +
+        `/hvala?proizvod=${encodeURIComponent(proizvod)}&value=${total}` +
           `&pp=${productPrice}&qty=${brojSetova}&eid=${eventId}`
       );
-    } catch {
-      setError(true);
-    } finally {
-      setSubmitting(false);
+      return;
     }
+
+    setError(true);
+    setSubmitting(false);
   }
 
   return (

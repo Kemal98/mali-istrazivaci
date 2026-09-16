@@ -46,6 +46,7 @@ export default async function PreviewPage({
         cijena={p.cijena}
         staraCijena={p.staraCijena}
         badge={p.badge}
+        productId={p.id}
         preview
       />
     </>

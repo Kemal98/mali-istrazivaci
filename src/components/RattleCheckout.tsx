@@ -2,7 +2,8 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GOOGLE_SCRIPT_URL, RATTLE_ORDERS_ENABLED } from "@/lib/constants";
+import { RATTLE_ORDERS_ENABLED } from "@/lib/constants";
+import { newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
 import { useDawnQty } from "./DawnQtyContext";
 import { useBookCheckoutModal } from "./BookCheckoutModalContext";
 
@@ -19,6 +20,9 @@ export default function RattleCheckout() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  // Jedan ključ po otvorenoj formi: dupli klik ili retry šalju isti ključ,
+  // pa backend vrati postojeću narudžbu umjesto da napravi drugu.
+  const orderKeyRef = useRef("");
   const DELIVERY = 10;
   const productPrice = 19;
   const total = productPrice * qty + DELIVERY;
@@ -48,43 +52,41 @@ export default function RattleCheckout() {
       formData.get("prezime") || ""
     }`.trim();
 
-    const data = {
-      datum: new Date().toLocaleString("bs-BA"),
-      ime,
-      telefon: formData.get("tel"),
-      adresa: formData.get("adresa"),
-      grad: formData.get("grad"),
-      uzrast: "",
-      napomena: "",
-      proizvod: "Vesele rotirajuće zvečke",
-      kolicina: qty,
-      cijena: `${total} KM`,
-      status: "Novo",
-    };
+    const proizvod = "Vesele rotirajuće zvečke";
+    if (!orderKeyRef.current) orderKeyRef.current = newIdempotencyKey();
 
     if (window.fbq) {
       window.fbq("track", "Lead", {
-        content_name: "Vesele rotirajuće zvečke",
+        content_name: proizvod,
         value: total,
         currency: "BAM",
       });
     }
 
-    try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    const res = await submitOrder({
+      idempotencyKey: orderKeyRef.current,
+      customerName: ime,
+      phone: String(formData.get("tel") || ""),
+      address: String(formData.get("adresa") || ""),
+      city: String(formData.get("grad") || ""),
+      productName: proizvod,
+      quantity: qty,
+      unitPrice: productPrice,
+      shippingPrice: DELIVERY,
+    });
+
+    if (res.ok) {
+      // Dugme ostaje onemogućeno do redirecta — namjerno nema
+      // setSubmitting(false) na uspjehu, da se ne može kliknuti dvaput
+      // dok stranica prelazi na /hvala.
       router.push(
-        `/hvala?proizvod=${encodeURIComponent(data.proizvod)}&value=${total}`
+        `/hvala?proizvod=${encodeURIComponent(proizvod)}&value=${total}`
       );
-    } catch {
-      setError(true);
-    } finally {
-      setSubmitting(false);
+      return;
     }
+
+    setError(true);
+    setSubmitting(false);
   }
 
   return (

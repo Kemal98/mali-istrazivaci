@@ -881,3 +881,288 @@
     padding: 10px 14px;
   }
 }
+
+/* ===========================================================
+   NARUDŽBE — dopuna, koristi iste tokene i stil kao ostatak
+   admina (adm-card, adm-btn, adm-table…). Ništa postojeće se
+   ne mijenja, samo se dodaju nove klase.
+   =========================================================== */
+
+/* status badge-ovi */
+.adm-st {
+  display: inline-block;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.adm-st-new        { background: #e4ecfb; color: #1d4ed8; }
+.adm-st-confirmed  { background: #e0f2f6; color: #0e7490; }
+.adm-st-packing    { background: #fdf1dc; color: #b7791f; }
+.adm-st-shipped    { background: #ede4fb; color: #6d28d9; }
+.adm-st-delivered  { background: #e4f6eb; color: #148a4b; }
+.adm-st-returned   { background: #fdeee0; color: #c2410c; }
+.adm-st-cancelled  { background: #f6e4e4; color: #b3261e; }
+
+/* select za brzu promjenu statusa direktno u tabeli */
+.adm-st-select {
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+  cursor: pointer;
+  max-width: 140px;
+}
+.adm-st-select:disabled { opacity: 0.5; cursor: wait; }
+
+/* traka filtera */
+.adm-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 14px;
+}
+.adm-filters .adm-field { margin-bottom: 0; }
+.adm-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.adm-filter-group > label {
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.adm-filter-group select,
+.adm-filter-group input {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  min-width: 120px;
+}
+.adm-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+.adm-chip {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  font: inherit;
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 6px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.adm-chip:hover { background: #f7f8fa; }
+.adm-chip[data-active="true"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+/* bulk traka */
+.adm-bulk {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  background: #eef2f8;
+  border: 1px solid #d8e0ec;
+  border-radius: 8px;
+  padding: 9px 12px;
+  margin-bottom: 12px;
+  font-size: 0.82rem;
+}
+.adm-bulk b { font-weight: 800; }
+
+/* sync oznaka */
+.adm-sync-ok   { color: var(--green); font-weight: 800; font-size: 0.8rem; }
+.adm-sync-bad  { color: var(--red);   font-weight: 800; font-size: 0.8rem; }
+
+/* paginacija */
+.adm-pager {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.adm-pager-btns { display: flex; gap: 5px; align-items: center; }
+
+/* KPI kartice na dashboardu */
+.adm-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 11px;
+}
+.adm-kpi {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.adm-kpi span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.adm-kpi b {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+.adm-kpi small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 3px;
+}
+.adm-kpi-accent b { color: var(--green); }
+.adm-kpi-warn b { color: var(--amber); }
+.adm-kpi-bad b { color: var(--red); }
+
+/* mobilne kartice narudžbi (tabela se skriva na uskim ekranima) */
+.adm-order-cards { display: none; }
+.adm-order-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 13px;
+  margin-bottom: 9px;
+}
+.adm-order-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.adm-order-card-top a { font-weight: 800; }
+.adm-order-card-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.85rem;
+  padding: 3px 0;
+}
+.adm-order-card-row span { color: var(--muted); }
+.adm-order-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.adm-tel {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .adm-order-table-wrap { display: none; }
+  .adm-order-cards { display: block; }
+}
+
+/* detalji narudžbe */
+.adm-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .adm-detail-grid { grid-template-columns: 1fr; }
+}
+.adm-dl {
+  display: grid;
+  grid-template-columns: minmax(110px, auto) 1fr;
+  gap: 7px 14px;
+  font-size: 0.87rem;
+}
+.adm-dl dt {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+.adm-dl dd { margin: 0; font-weight: 600; word-break: break-word; }
+.adm-money-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid #f0f1f4;
+  font-size: 0.9rem;
+}
+.adm-money-row:last-child { border-bottom: none; }
+.adm-money-total {
+  font-weight: 800;
+  font-size: 1.05rem;
+  border-top: 2px solid var(--line);
+  margin-top: 4px;
+  padding-top: 10px;
+}
+
+/* audit log */
+.adm-log { list-style: none; font-size: 0.84rem; }
+.adm-log li {
+  padding: 9px 0 9px 15px;
+  border-left: 2px solid var(--line);
+  position: relative;
+}
+.adm-log li::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c3c9d2;
+}
+.adm-log time {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-bottom: 2px;
+}
+
+/* grafikon (ručno crtan SVG, bez biblioteke) */
+.adm-chart-wrap { overflow-x: auto; }
+.adm-chart { display: block; width: 100%; min-width: 520px; height: auto; }
+.adm-chart-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.adm-chart-legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 5px;
+}
