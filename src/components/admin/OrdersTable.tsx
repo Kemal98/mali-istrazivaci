@@ -66,15 +66,28 @@ export default function OrdersTable({
   pages: number;
 }) {
   const router = useRouter();
-  const [rows, setRows] = useState(initial);
-  const [selected, setSelected] = useState<string[]>([]);
+  // Redovi se NE kopiraju u state. Prije je bilo useState(initial), pa je
+  // komponenta zadržavala stare narudžbe kad se promijeni filter koji nije
+  // bio u `key` propu (npr. filter po proizvodu) — tabela je pokazivala
+  // nefiltrirane rezultate. Sada su props izvor istine, a u stateu se drže
+  // SAMO narudžbe koje smo lokalno izmijenili (promjena statusa), pa se
+  // svaka nova lista sa servera prikaže odmah i tačno.
+  const [patched, setPatched] = useState<Record<string, Order>>({});
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
+  const rows = initial.map((o) => patched[o.id] ?? o);
+
   function patchRow(o: Order) {
-    setRows((r) => r.map((x) => (x.id === o.id ? o : x)));
+    setPatched((m) => ({ ...m, [o.id]: o }));
   }
 
+  // Označeno se računa prema vidljivim redovima — ID-evi iz prethodnog
+  // filtera se ignorišu sami, bez dodatnog čišćenja.
+  const visibleIds = new Set(rows.map((r) => r.id));
+  const selected = selectedIds.filter((id) => visibleIds.has(id));
+  const setSelected = setSelectedIds;
   const allSelected = rows.length > 0 && selected.length === rows.length;
 
   async function bulkStatus(status: OrderStatus) {
@@ -94,6 +107,14 @@ export default function OrdersTable({
         : data?.error || "Greška."
     );
     router.refresh();
+  }
+
+  /** Klik na naziv proizvoda u tabeli = filtriraj po tom proizvodu. */
+  function filterByProduct(name: string) {
+    const params = new URLSearchParams(window.location.search);
+    params.set("product", name);
+    params.delete("page");
+    router.push(`/admin/orders?${params.toString()}`);
   }
 
   async function retrySheet(ids: string[]) {
@@ -251,7 +272,17 @@ export default function OrdersTable({
                   </a>
                 </td>
                 <td>{o.city || "—"}</td>
-                <td style={{ maxWidth: 190 }}>{o.productName}</td>
+                <td style={{ maxWidth: 190 }}>
+                  {/* klik na naziv filtrira listu po tom proizvodu */}
+                  <button
+                    type="button"
+                    className="adm-cell-link"
+                    title={`Prikaži samo: ${o.productName}`}
+                    onClick={() => filterByProduct(o.productName)}
+                  >
+                    {o.productName}
+                  </button>
+                </td>
                 <td style={{ textAlign: "right" }}>{o.quantity}</td>
                 <td style={{ textAlign: "right" }}>{o.subtotal} KM</td>
                 <td style={{ textAlign: "right" }} className="adm-hint">

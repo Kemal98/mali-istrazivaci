@@ -78,8 +78,10 @@ export default async function OrdersPage({
         />
       </Suspense>
 
+      {/* Bez `key` trika: OrdersTable čita redove direktno iz propsa, pa
+          se svaka promjena filtera odmah i tačno odrazi (ranije je
+          komponenta držala kopiju u stateu i pokazivala stare rezultate). */}
       <OrdersTable
-        key={`${sp.page ?? 1}-${sp.status ?? "ALL"}-${sp.q ?? ""}-${sp.sort ?? ""}`}
         initial={res.orders}
         total={res.total}
         page={res.page}
