@@ -88,6 +88,11 @@ export interface Order {
   discount: number;
   totalPrice: number;
 
+  /** Fotografija products.nabavna_cijena u trenutku prodaje. 0 = nepoznato
+   *  (proizvod bez productId-a ili bez unesene nabavne cijene), ne "besplatno". */
+  costPrice: number;
+  costTotal: number;
+
   paymentMethod: string;
   status: OrderStatus;
 

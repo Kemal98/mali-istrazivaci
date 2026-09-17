@@ -69,6 +69,8 @@ export default function ProjektorCheckout() {
       phone: String(formData.get("tel") || ""),
       address: String(formData.get("adresa") || ""),
       city: String(formData.get("grad") || ""),
+      // "Prazan" CMS zapis samo za nabavnu cijenu — vidi ADR 0002.
+      productId: "prod_static_projektor",
       productName: proizvod,
       quantity: qty,
       unitPrice: productPrice,

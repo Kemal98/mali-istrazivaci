@@ -72,6 +72,9 @@ export interface Product {
   status: ProductStatus;
   cijena: number | null;
   staraCijena: number | null;
+  /** Koliko je plaćeno dobavljaču po komadu. Interno, admin-only — NIKAD
+   *  u PublishedData (javna stranica ovo ne smije vidjeti). */
+  nabavnaCijena: number | null;
   badge: string;
   hero: Hero;
   seo: Seo;

@@ -37,6 +37,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
   if (body.kategorija !== undefined) patch.kategorija = str(body.kategorija, 60);
   if (body.cijena !== undefined) patch.cijena = num(body.cijena);
   if (body.staraCijena !== undefined) patch.staraCijena = num(body.staraCijena);
+  if (body.nabavnaCijena !== undefined) patch.nabavnaCijena = num(body.nabavnaCijena);
   if (body.badge !== undefined) patch.badge = str(body.badge, 40);
   if (body.hero !== undefined) patch.hero = sanitizeHero(body.hero);
   if (body.seo !== undefined) patch.seo = sanitizeSeo(body.seo);

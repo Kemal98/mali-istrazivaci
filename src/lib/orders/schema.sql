@@ -84,6 +84,16 @@ CREATE TABLE IF NOT EXISTS orders (
     ('NEW','CONFIRMED','PACKING','SHIPPED','DELIVERED','RETURNED','CANCELLED'))
 );
 
+-- Dodano naknadno, isto idempotentno kao gore.
+--
+-- Nabavna cijena u trenutku prodaje (fotografija products.nabavna_cijena,
+-- ne referenca) — ako se cijena kod dobavljača poslije promijeni, stare
+-- narudžbe zadrže tačan profit. cost_price je po komadu (kao unit_price),
+-- cost_total = cost_price * quantity (kao subtotal). Nula znači "nepoznato"
+-- (proizvod bez productId-a ili bez unesene nabavne cijene), ne "besplatno".
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS cost_price double precision NOT NULL DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS cost_total double precision NOT NULL DEFAULT 0;
+
 -- Indeksi za filtere i pretragu iz admin tabele
 CREATE INDEX IF NOT EXISTS idx_orders_created   ON orders (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_orders_status    ON orders (status);

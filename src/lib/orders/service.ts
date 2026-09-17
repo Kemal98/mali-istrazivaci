@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getProductCostPrice } from "@/lib/cms/repo";
 import {
   getOrderByIdempotencyKey,
   insertOrder,
@@ -120,6 +121,23 @@ export async function createOrder(
 
   /* ---------- 4. upis u bazu ---------- */
 
+  const productId = raw.productId ? clean(raw.productId, 64) : null;
+
+  // Nabavna cijena se "fotografiše" ovdje, u trenutku prodaje — ne
+  // referenciše proizvod, pa kasnija promjena cijene kod dobavljača ne
+  // mijenja retroaktivno stare narudžbe. Ako lookup padne (baza, ili
+  // proizvod bez productId-a/bez unesene cijene), ostaje 0 = nepoznato;
+  // ovo NIKAD ne smije oboriti narudžbu, pa je namjerno best-effort.
+  let costPrice = 0;
+  if (productId) {
+    try {
+      costPrice = (await getProductCostPrice(productId)) ?? 0;
+    } catch (e) {
+      console.error("[orders] lookup nabavne cijene pao:", e);
+    }
+  }
+  const costTotal = Math.round(costPrice * quantity * 100) / 100;
+
   const a = raw.attribution ?? {};
   const order = await insertOrder({
     customerName,
@@ -129,13 +147,15 @@ export async function createOrder(
     address,
     postalCode: clean(raw.postalCode, 20),
     note: clean(raw.note, MAX_NOTE),
-    productId: raw.productId ? clean(raw.productId, 64) : null,
+    productId,
     productName,
     quantity,
     unitPrice,
     subtotal,
     shippingPrice,
     totalPrice,
+    costPrice,
+    costTotal,
     utmSource: clean(a.utmSource, 120),
     utmMedium: clean(a.utmMedium, 120),
     utmCampaign: clean(a.utmCampaign, 200),

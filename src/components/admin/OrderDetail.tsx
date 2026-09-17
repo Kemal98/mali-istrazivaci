@@ -245,6 +245,25 @@ export default function OrderDetail({
               <span>KURIR NAPLATI KUPCU</span>
               <b>{order.totalPrice} KM</b>
             </div>
+            {order.costTotal > 0 ? (
+              <>
+                <div className="adm-money-row" style={{ marginTop: 10 }}>
+                  <span>Nabavna cijena</span>
+                  <b>−{order.costTotal} KM</b>
+                </div>
+                <div className="adm-money-row adm-money-total">
+                  <span>PROFIT</span>
+                  <b style={{ color: "#148a4b" }}>
+                    {Math.round((order.subtotal - order.costTotal) * 100) / 100} KM
+                  </b>
+                </div>
+              </>
+            ) : (
+              <p className="adm-hint" style={{ marginTop: 10 }}>
+                Nabavna cijena nije upisana za ovaj proizvod — profit se ne
+                može izračunati. Upiši je u uređivaču proizvoda.
+              </p>
+            )}
             <p className="adm-hint" style={{ marginTop: 10 }}>
               Plaćanje: <b>pouzećem</b>. U statistici se kao prihod računa
               samo <b>vrijednost proizvoda ({order.subtotal} KM)</b> —

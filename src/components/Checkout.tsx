@@ -85,6 +85,9 @@ export default function Checkout() {
       address: String(formData.get("adresa") || ""),
       city: String(formData.get("grad") || ""),
       note: String(formData.get("napomena") || ""),
+      // "Prazan" CMS zapis samo za nabavnu cijenu — vidi ADR 0002.
+      // Isti id pokriva i x1 i x2 varijantu (cijena po SETU je ista).
+      productId: "prod_static_sat_mira",
       productName: proizvod,
       quantity: brojSetova,
       // SAT MIRA ima paketnu cijenu (49 KM za dva seta), pa je jedinična

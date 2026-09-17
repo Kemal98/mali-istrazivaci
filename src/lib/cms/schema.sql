@@ -34,6 +34,17 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE UNIQUE INDEX IF NOT EXISTS idx_products_slug_live
   ON products (slug) WHERE deleted_at IS NULL;
 
+-- Dodano naknadno (nakon prve verzije šeme) — CREATE TABLE IF NOT EXISTS
+-- gore ne dira već postojeću tabelu, zato ALTER + IF NOT EXISTS, isto
+-- idempotentno, sigurno se pokreće više puta.
+--
+-- Koliko je vlasnik platio dobavljaču za JEDAN komad — nikad se ne
+-- prikazuje kupcu, samo u adminu, za pravi profit (prihod - nabavna
+-- cijena - reklame). Svaka narudžba "fotografiše" ovu vrijednost u
+-- trenutku prodaje (orders.cost_price), pa promjena ovdje ne mijenja
+-- retroaktivno stare izvještaje.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS nabavna_cijena double precision;
+
 CREATE INDEX IF NOT EXISTS idx_products_updated
   ON products (updated_at DESC);
 

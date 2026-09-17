@@ -27,6 +27,7 @@ interface Draft {
   kategorija: string;
   cijena: number | null;
   staraCijena: number | null;
+  nabavnaCijena: number | null;
   badge: string;
   hero: Hero;
   seo: Seo;
@@ -41,6 +42,7 @@ function toDraft(p: Product): Draft {
     kategorija: p.kategorija,
     cijena: p.cijena,
     staraCijena: p.staraCijena,
+    nabavnaCijena: p.nabavnaCijena,
     badge: p.badge,
     hero: p.hero,
     seo: p.seo,
@@ -413,6 +415,19 @@ export default function ProductEditor({
                 onChange={(v) => patch({ badge: v })}
                 placeholder="npr. AKCIJA"
               />
+            </div>
+            <div className="adm-row-3 adm-row" style={{ marginTop: 10 }}>
+              <NumberField
+                label="Nabavna cijena (KM)"
+                value={draft.nabavnaCijena}
+                onChange={(v) => patch({ nabavnaCijena: v })}
+                hint="Koliko VI platite dobavljaču po komadu — kupac ovo nikad ne vidi."
+              />
+            </div>
+            <div className="adm-note adm-note-info">
+              Nabavna cijena se koristi samo za profit u dashboardu — svaka
+              nova narudžba je "fotografiše" u trenutku prodaje, pa kasnija
+              promjena ne mijenja stare izvještaje.
             </div>
             <div className="adm-note adm-note-info">
               Dostava se dodaje u formi ({10} KM) isto kao i na ostalim

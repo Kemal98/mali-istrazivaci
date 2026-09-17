@@ -34,6 +34,10 @@ function rowToProduct(r: Row): Product {
       r.stara_cijena === null || r.stara_cijena === undefined
         ? null
         : Number(r.stara_cijena),
+    nabavnaCijena:
+      r.nabavna_cijena === null || r.nabavna_cijena === undefined
+        ? null
+        : Number(r.nabavna_cijena),
     badge: String(r.badge ?? ""),
     hero: { ...defaultHero(), ...parseJson<Partial<Hero>>(r.hero as string, {}) },
     seo: parseJson<Seo>(r.seo as string, {}),
@@ -103,6 +107,18 @@ export async function getProduct(id: string): Promise<Product | null> {
   return rows[0] ? rowToProduct(rows[0]) : null;
 }
 
+/**
+ * Samo nabavna cijena, za snapshot na narudžbi. Checkout je "hot path" —
+ * nema smisla vući cijeli proizvod (hero/sections JSON) samo za jedan broj.
+ */
+export async function getProductCostPrice(id: string): Promise<number | null> {
+  const rows = await sql()<{ nabavna_cijena: number | null }[]>`
+    SELECT nabavna_cijena FROM products
+     WHERE id = ${id} AND deleted_at IS NULL`;
+  const v = rows[0]?.nabavna_cijena;
+  return v === null || v === undefined ? null : Number(v);
+}
+
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const rows = await sql()<Row[]>`
     SELECT * FROM products WHERE slug = ${slug} AND deleted_at IS NULL`;
@@ -155,6 +171,7 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
   let sections: Block[] = [];
   let cijena: number | null = null;
   let staraCijena: number | null = null;
+  let nabavnaCijena: number | null = null;
   let badge = "";
 
   if (input.copyFromId) {
@@ -164,6 +181,7 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
       sections = regenIds(src.sections);
       cijena = src.cijena;
       staraCijena = src.staraCijena;
+      nabavnaCijena = src.nabavnaCijena;
       badge = src.badge;
     }
   } else if (input.templateId) {
@@ -178,10 +196,10 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
 
   await sql()`
     INSERT INTO products
-      (id, naziv, slug, sku, kategorija, status, cijena, stara_cijena, badge,
-       hero, seo, sections, created_at, updated_at)
+      (id, naziv, slug, sku, kategorija, status, cijena, stara_cijena,
+       nabavna_cijena, badge, hero, seo, sections, created_at, updated_at)
     VALUES (${id}, ${input.naziv}, ${slug}, '', '', 'draft', ${cijena},
-            ${staraCijena}, ${badge}, ${JSON.stringify(hero)}, ${"{}"},
+            ${staraCijena}, ${nabavnaCijena}, ${badge}, ${JSON.stringify(hero)}, ${"{}"},
             ${JSON.stringify(sections)}, ${ts}, ${ts})`;
 
   return (await getProduct(id))!;
@@ -198,6 +216,7 @@ export interface UpdateProductInput {
   kategorija?: string;
   cijena?: number | null;
   staraCijena?: number | null;
+  nabavnaCijena?: number | null;
   badge?: string;
   hero?: Hero;
   seo?: Seo;
@@ -226,6 +245,8 @@ export async function updateProduct(
     cijena: patch.cijena !== undefined ? patch.cijena : cur.cijena,
     staraCijena:
       patch.staraCijena !== undefined ? patch.staraCijena : cur.staraCijena,
+    nabavnaCijena:
+      patch.nabavnaCijena !== undefined ? patch.nabavnaCijena : cur.nabavnaCijena,
     badge: patch.badge ?? cur.badge,
     hero: patch.hero ?? cur.hero,
     seo: patch.seo ?? cur.seo,
@@ -240,6 +261,7 @@ export async function updateProduct(
       kategorija = ${next.kategorija},
       cijena = ${next.cijena},
       stara_cijena = ${next.staraCijena},
+      nabavna_cijena = ${next.nabavnaCijena},
       badge = ${next.badge},
       hero = ${JSON.stringify(next.hero)},
       seo = ${JSON.stringify(next.seo)},

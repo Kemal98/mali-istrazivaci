@@ -38,6 +38,9 @@ function rowToOrder(r: Row): Order {
     discount: n(r.discount),
     totalPrice: n(r.total_price),
 
+    costPrice: n(r.cost_price),
+    costTotal: n(r.cost_total),
+
     paymentMethod: s(r.payment_method),
     status: (isOrderStatus(r.status) ? r.status : "NEW") as OrderStatus,
 
@@ -97,6 +100,9 @@ export interface InsertOrderRow {
   shippingPrice: number;
   discount?: number;
   totalPrice: number;
+  /** Fotografija nabavne cijene po komadu (0 = nepoznato). */
+  costPrice?: number;
+  costTotal?: number;
   paymentMethod?: string;
   status?: OrderStatus;
   utmSource?: string;
@@ -153,6 +159,7 @@ export async function insertOrder(input: InsertOrderRow): Promise<Order> {
       postal_code, note,
       product_id, product_name, quantity, unit_price,
       subtotal, shipping_price, discount, total_price,
+      cost_price, cost_total,
       payment_method, status,
       utm_source, utm_medium, utm_campaign, utm_content, utm_term,
       fbclid, landing_page, referrer,
@@ -169,6 +176,7 @@ export async function insertOrder(input: InsertOrderRow): Promise<Order> {
       ${input.unitPrice},
       ${input.subtotal}, ${input.shippingPrice}, ${input.discount ?? 0},
       ${input.totalPrice},
+      ${input.costPrice ?? 0}, ${input.costTotal ?? 0},
       ${input.paymentMethod ?? "pouzecem"}, ${input.status ?? "NEW"},
       ${input.utmSource ?? ""}, ${input.utmMedium ?? ""},
       ${input.utmCampaign ?? ""}, ${input.utmContent ?? ""},
