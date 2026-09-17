@@ -45,3 +45,8 @@ next-env.d.ts
 # CMS
 /data
 /public/uploads
+
+# Claude Code skills (lokalni dev alat, nije dio prodavnice)
+/.agents
+/.claude
+/skills-lock.json
