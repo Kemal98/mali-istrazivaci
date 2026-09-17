@@ -26,3 +26,20 @@ CREATE INDEX IF NOT EXISTS idx_ad_spend_date    ON ad_spend (date DESC);
 CREATE INDEX IF NOT EXISTS idx_ad_spend_product ON ad_spend (product_name);
 
 ALTER TABLE ad_spend ENABLE ROW LEVEL SECURITY;
+
+-- Koja Meta kampanja "puni" koji proizvod. Namjerno posebna tabela, ne
+-- nagađanje po imenu: kampanja se zove kako se zove u Ads Manageru
+-- (vlasnikov izbor), a mi ne smijemo tiho pogrešno spojiti novac na
+-- pogrešan proizvod (ista vrsta greške kao "Sparkling Diamond" bug
+-- ranije — string-matching po imenu je krhko). product_name === '' znači
+-- kampanja još nije mapirana; takva potrošnja se svejedno upiše (vidi
+-- meta.ts) pod "Nemapirano: <ime kampanje>" da se novac ne izgubi, dok
+-- admin ne mapira i ponovo povuče.
+CREATE TABLE IF NOT EXISTS ad_campaign_map (
+  campaign_id    text PRIMARY KEY,
+  campaign_name  text NOT NULL DEFAULT '',
+  product_name   text NOT NULL DEFAULT '',
+  updated_at     text NOT NULL
+);
+
+ALTER TABLE ad_campaign_map ENABLE ROW LEVEL SECURITY;

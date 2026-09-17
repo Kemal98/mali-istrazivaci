@@ -110,9 +110,7 @@ export default function OrdersChart({ data }: { data: DayPoint[] }) {
                 fill="#14161a"
                 opacity={d.orders ? 0.85 : 0}
               >
-                <title>
-                  {dayLabel(d.day)} — {d.orders} narudžbi, {d.revenue} KM
-                </title>
+                <title>{`${dayLabel(d.day)} — ${d.orders} narudžbi, ${d.revenue} KM`}</title>
               </rect>
             );
           })}
@@ -136,9 +134,7 @@ export default function OrdersChart({ data }: { data: DayPoint[] }) {
               r={data.length > 40 ? 1.6 : 2.8}
               fill="#e0632a"
             >
-              <title>
-                {dayLabel(d.day)} — {d.revenue} KM
-              </title>
+              <title>{`${dayLabel(d.day)} — ${d.revenue} KM`}</title>
             </circle>
           ))}
 
