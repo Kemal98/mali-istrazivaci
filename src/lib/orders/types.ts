@@ -32,6 +32,33 @@ export const STATUS_CLASS: Record<OrderStatus, string> = {
   CANCELLED: "adm-st-cancelled",
 };
 
+/** Ikonica po statusu — za brzo skeniranje tabele pogledom, bez čitanja teksta. */
+export const STATUS_ICON: Record<OrderStatus, string> = {
+  NEW: "🆕",
+  CONFIRMED: "✅",
+  PACKING: "📦",
+  SHIPPED: "🚚",
+  DELIVERED: "🏁",
+  RETURNED: "↩️",
+  CANCELLED: "❌",
+};
+
+/**
+ * Iste boje kao .adm-st-* klase u admin.css, ali kao hex — za mjesta gdje
+ * treba inline stil (npr. pozadina <select> elementa, koji ne može nositi
+ * proizvoljnu klasu po opciji). Namjerno dupliranje s CSS-om: ako mijenjaš
+ * jedno, promijeni i drugo.
+ */
+export const STATUS_COLOR: Record<OrderStatus, { bg: string; fg: string }> = {
+  NEW: { bg: "#e4ecfb", fg: "#1d4ed8" },
+  CONFIRMED: { bg: "#e0f2f6", fg: "#0e7490" },
+  PACKING: { bg: "#fdf1dc", fg: "#b7791f" },
+  SHIPPED: { bg: "#ede4fb", fg: "#6d28d9" },
+  DELIVERED: { bg: "#e4f6eb", fg: "#148a4b" },
+  RETURNED: { bg: "#fdeee0", fg: "#c2410c" },
+  CANCELLED: { bg: "#f6e4e4", fg: "#b3261e" },
+};
+
 export function isOrderStatus(v: unknown): v is OrderStatus {
   return typeof v === "string" && (ORDER_STATUSES as readonly string[]).includes(v);
 }

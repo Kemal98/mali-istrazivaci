@@ -7,12 +7,19 @@ import { datum } from "@/lib/cms/datum";
 import {
   ORDER_STATUSES,
   STATUS_CLASS,
+  STATUS_COLOR,
+  STATUS_ICON,
   STATUS_LABEL,
   type Order,
   type OrderStatus,
 } from "@/lib/orders/types";
 
-/** Promjena statusa direktno iz tabele, bez ulaska u narudžbu. */
+/**
+ * Promjena statusa direktno iz tabele, bez ulaska u narudžbu. Pozadina i
+ * ikonica prate trenutni status (iste boje kao badge u mobilnoj kartici i
+ * na detalju narudžbe) — cilj je da se stanje vidi pogledom niz tabelu,
+ * bez čitanja teksta u svakom redu.
+ */
 function StatusSelect({
   order,
   onChanged,
@@ -21,6 +28,7 @@ function StatusSelect({
   onChanged: (o: Order) => void;
 }) {
   const [busy, setBusy] = useState(false);
+  const color = STATUS_COLOR[order.status];
 
   async function change(status: OrderStatus) {
     if (status === order.status) return;
@@ -38,6 +46,7 @@ function StatusSelect({
   return (
     <select
       className="adm-st-select"
+      style={{ background: color.bg, color: color.fg, borderColor: color.bg }}
       value={order.status}
       disabled={busy}
       onChange={(e) => change(e.target.value as OrderStatus)}
@@ -45,7 +54,7 @@ function StatusSelect({
     >
       {ORDER_STATUSES.map((s) => (
         <option key={s} value={s}>
-          {STATUS_LABEL[s]}
+          {STATUS_ICON[s]} {STATUS_LABEL[s]}
         </option>
       ))}
     </select>
@@ -240,7 +249,9 @@ export default function OrdersTable({
             </tr>
           </thead>
           <tbody>
-            {rows.map((o) => (
+            {rows.map((o) => {
+              const color = STATUS_COLOR[o.status];
+              return (
               <tr key={o.id}>
                 <td>
                   <input
@@ -256,7 +267,8 @@ export default function OrdersTable({
                     }
                   />
                 </td>
-                <td>
+                {/* obojena traka lijevo = status, vidi se i bez čitanja */}
+                <td style={{ boxShadow: `inset 3px 0 0 0 ${color.fg}` }}>
                   <Link href={`/admin/orders/${o.id}`}>
                     <b>{o.orderNumber}</b>
                   </Link>
@@ -329,7 +341,8 @@ export default function OrdersTable({
                   </Link>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -341,7 +354,7 @@ export default function OrdersTable({
             <div className="adm-order-card-top">
               <Link href={`/admin/orders/${o.id}`}>{o.orderNumber}</Link>
               <span className={`adm-st ${STATUS_CLASS[o.status]}`}>
-                {STATUS_LABEL[o.status]}
+                {STATUS_ICON[o.status]} {STATUS_LABEL[o.status]}
               </span>
             </div>
             <div className="adm-order-card-row">

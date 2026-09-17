@@ -7,6 +7,8 @@ import { channelOf } from "@/lib/orders/attribution";
 import {
   ORDER_STATUSES,
   STATUS_CLASS,
+  STATUS_COLOR,
+  STATUS_ICON,
   STATUS_LABEL,
   type Order,
   type OrderEvent,
@@ -149,14 +151,20 @@ export default function OrderDetail({
           <p>
             {datum(order.createdAt)} ·{" "}
             <span className={`adm-st ${STATUS_CLASS[order.status]}`}>
-              {STATUS_LABEL[order.status]}
+              {STATUS_ICON[order.status]} {STATUS_LABEL[order.status]}
             </span>
           </p>
         </div>
         <div className="adm-head-actions">
           <select
             className="adm-st-select"
-            style={{ maxWidth: 180, padding: "8px 10px" }}
+            style={{
+              maxWidth: 180,
+              padding: "8px 10px",
+              background: STATUS_COLOR[order.status].bg,
+              color: STATUS_COLOR[order.status].fg,
+              borderColor: STATUS_COLOR[order.status].bg,
+            }}
             value={order.status}
             disabled={busy}
             onChange={(e) =>
@@ -171,7 +179,7 @@ export default function OrderDetail({
           >
             {ORDER_STATUSES.map((s) => (
               <option key={s} value={s}>
-                {STATUS_LABEL[s]}
+                {STATUS_ICON[s]} {STATUS_LABEL[s]}
               </option>
             ))}
           </select>
