@@ -512,6 +512,37 @@ export async function listUnsynced(limit = 100): Promise<Order[]> {
   return rows.map(rowToOrder);
 }
 
+/**
+ * Narudžbe koje čekaju pakovanje — sve što još nije poslano (NOVA,
+ * POTVRĐENA, PAKOVANJE), od najstarije ka najnovijoj. Koristi je stranica
+ * za pakovanje (bez logina, za mamu) — namjerno samo minimum podataka.
+ */
+export interface PackingItem {
+  orderNumber: string;
+  customerName: string;
+  productName: string;
+  quantity: number;
+  createdAt: string;
+}
+
+export async function listPackingQueue(): Promise<PackingItem[]> {
+  const rows = await sql()<
+    { order_number: string; customer_name: string; product_name: string; quantity: number; created_at: string }[]
+  >`
+    SELECT order_number, customer_name, product_name, quantity, created_at
+      FROM orders
+     WHERE deleted_at IS NULL
+       AND status IN ('NEW', 'CONFIRMED', 'PACKING')
+     ORDER BY created_at ASC`;
+  return rows.map((r) => ({
+    orderNumber: r.order_number,
+    customerName: r.customer_name,
+    productName: r.product_name,
+    quantity: r.quantity,
+    createdAt: r.created_at,
+  }));
+}
+
 /* ------------------------------ anti-spam ------------------------------ */
 
 /**

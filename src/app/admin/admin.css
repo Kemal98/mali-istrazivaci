@@ -1107,6 +1107,28 @@
   padding-top: 2px;
 }
 .adm-dl dd { margin: 0; font-weight: 600; word-break: break-word; }
+.adm-copy-dd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.adm-copy-btn {
+  flex: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 6px;
+  width: 26px;
+  height: 26px;
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.adm-copy-btn:hover { border-color: #14161a; color: #14161a; }
+.adm-copy-btn.is-copied { color: #1a7a3a; border-color: #1a7a3a; }
 .adm-money-row {
   display: flex;
   justify-content: space-between;

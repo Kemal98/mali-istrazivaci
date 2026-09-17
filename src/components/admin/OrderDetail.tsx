@@ -22,6 +22,52 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
+/**
+ * Samo dugme-ikonica za kopiranje jedne vrijednosti u clipboard. Kurirska
+ * služba (Brza pošta) ima odvojena polja u svojoj formi — ime, telefon,
+ * adresa, grad — pa je kopiranje jedno po jedno brže i bez grešaka nego
+ * ručno prepisivanje napamet.
+ */
+function CopyIconOnly({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copy() {
+    if (!value) return;
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // clipboard API odbijena (rijetko) — nema šta, dugme ostaje tiho
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      className={`adm-copy-btn${copied ? " is-copied" : ""}`}
+      onClick={copy}
+      aria-label={`Kopiraj ${label.toLowerCase()}`}
+      title={`Kopiraj ${label.toLowerCase()}`}
+    >
+      {copied ? "✓" : "📋"}
+    </button>
+  );
+}
+
+/** Isto kao Row, ali s CopyIconOnly pored teksta. */
+function CopyRow({ label, value }: { label: string; value: string }) {
+  return (
+    <>
+      <dt>{label}</dt>
+      <dd className="adm-copy-dd">
+        <span>{value || "—"}</span>
+        {value ? <CopyIconOnly label={label} value={value} /> : null}
+      </dd>
+    </>
+  );
+}
+
 /** Ljudski opis jednog zapisa iz audit loga. */
 function eventText(e: OrderEvent): string {
   if (e.kind === "created") return "Narudžba primljena";
@@ -142,22 +188,25 @@ export default function OrderDetail({
           <div className="adm-card">
             <div className="adm-card-title">Kupac</div>
             <dl className="adm-dl">
-              <Row label="Ime" value={order.customerName} />
-              <Row
-                label="Telefon"
-                value={
-                  order.phone ? (
-                    <a
-                      className="adm-tel"
-                      href={`tel:${order.phone.replace(/\s/g, "")}`}
-                    >
-                      {order.phone}
-                    </a>
-                  ) : null
-                }
-              />
-              <Row label="Adresa" value={order.address} />
-              <Row label="Grad" value={order.city} />
+              <CopyRow label="Ime" value={order.customerName} />
+              <dt>Telefon</dt>
+              <dd className="adm-copy-dd">
+                {order.phone ? (
+                  <a
+                    className="adm-tel"
+                    href={`tel:${order.phone.replace(/\s/g, "")}`}
+                  >
+                    {order.phone}
+                  </a>
+                ) : (
+                  <span>—</span>
+                )}
+                {order.phone ? (
+                  <CopyIconOnly label="telefon" value={order.phone} />
+                ) : null}
+              </dd>
+              <CopyRow label="Adresa" value={order.address} />
+              <CopyRow label="Grad" value={order.city} />
               {order.email ? <Row label="Email" value={order.email} /> : null}
               {order.note ? <Row label="Napomena" value={order.note} /> : null}
             </dl>
