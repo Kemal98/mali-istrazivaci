@@ -24,3 +24,24 @@ export function datum(iso: string): string {
     parts.find((p) => p.type === t)?.value ?? "";
   return `${g("day")}.${g("month")}.${g("year")}. u ${g("hour")}:${g("minute")}`;
 }
+
+const DATE_ONLY_FMT = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Europe/Sarajevo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/**
+ * YYYY-MM-DD za dati trenutak, u Sarajevu — NE `d.toISOString().slice(0,10)`
+ * (to je UTC dan, koji je do 2h iza Sarajeva). Server je na Vercelu u UTC-u,
+ * pa je "danas" u ta dva računa različit dan par sati dnevno (npr. 00-02h
+ * po Sarajevu je i dalje "juče" po UTC-u) — ista greška koja je popravljena
+ * u CSV importu (importer.ts sarajevoToIso), ovdje u suprotnom smjeru.
+ */
+export function sarajevoDateOnly(d: Date = new Date()): string {
+  const parts = DATE_ONLY_FMT.formatToParts(d);
+  const g = (t: Intl.DateTimeFormatPartTypes) =>
+    parts.find((p) => p.type === t)?.value ?? "";
+  return `${g("year")}-${g("month")}-${g("day")}`;
+}

@@ -204,6 +204,8 @@ export interface ProductStat {
   cancelled: number;
   realized: number;
   deliveryRate: number;
+  /** Zbir cost_total (nabavna cijena x količina) — 0 znači nepoznato. */
+  costTotal: number;
 }
 
 export async function topProducts(
@@ -220,7 +222,8 @@ export async function topProducts(
       COUNT(*) FILTER (WHERE status = 'DELIVERED')::int AS delivered,
       COUNT(*) FILTER (WHERE status = 'RETURNED')::int  AS returned,
       COUNT(*) FILTER (WHERE status = 'CANCELLED')::int AS cancelled,
-      COALESCE(SUM(subtotal) FILTER (WHERE status = 'DELIVERED'), 0) AS realized
+      COALESCE(SUM(subtotal) FILTER (WHERE status = 'DELIVERED'), 0) AS realized,
+      COALESCE(SUM(cost_total), 0) AS cost_total
      FROM orders WHERE ${within(p)} AND product_name <> ''
      GROUP BY product_name
      ORDER BY revenue DESC, orders DESC
@@ -240,6 +243,7 @@ export async function topProducts(
       cancelled: n(r.cancelled),
       realized: money(r.realized),
       deliveryRate: closed ? Math.round((delivered / closed) * 1000) / 10 : 0,
+      costTotal: money(r.cost_total),
     };
   });
 }

@@ -20,6 +20,7 @@ if (!conn) {
 const schemaFiles = [
   path.join(process.cwd(), "src", "lib", "cms", "schema.sql"),
   path.join(process.cwd(), "src", "lib", "orders", "schema.sql"),
+  path.join(process.cwd(), "src", "lib", "ads", "schema.sql"),
 ];
 
 const sql = postgres(conn, { prepare: false, max: 1, onnotice: () => {} });
@@ -33,7 +34,7 @@ try {
     SELECT table_name FROM information_schema.tables
      WHERE table_schema = 'public'
        AND table_name IN ('products','media','reviews','templates','settings',
-                          'orders','order_events')
+                          'orders','order_events','ad_spend')
      ORDER BY table_name`;
   console.log("Tabele u bazi:", tables.map((t) => t.table_name).join(", "));
   console.log("Migracija završena.");

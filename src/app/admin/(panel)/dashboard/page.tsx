@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { datum } from "@/lib/cms/datum";
+import { datum, sarajevoDateOnly } from "@/lib/cms/datum";
+import { sumAdSpendByProduct } from "@/lib/ads/repo";
 import { countUnsynced, listOrders } from "@/lib/orders/repo";
 import { shopStats } from "@/lib/orders/dashboard";
 import {
@@ -104,6 +105,10 @@ export default async function DashboardPage({
   const period = await kpi(range);
   const series = fillDays(await dailySeries(range), fromDate, toDate);
   const products = await topProducts(range);
+  const adSpend = await sumAdSpendByProduct(
+    sarajevoDateOnly(fromDate),
+    sarajevoDateOnly(toDate)
+  );
   const cities = await topCities(range);
   const sources = await bySource(range);
   const campaigns = await byCampaign(range);
@@ -335,6 +340,65 @@ export default async function DashboardPage({
               </tbody>
             </table>
           </div>
+        )}
+      </div>
+
+      {/* ---------- PROFIT PO PROIZVODU ---------- */}
+      <div className="adm-card">
+        <div className="adm-card-title">Profit po proizvodu — {label}</div>
+        {products.length === 0 ? (
+          <p className="adm-hint">Nema narudžbi u ovom periodu.</p>
+        ) : (
+          <>
+            <div className="adm-table-wrap" style={{ border: "none" }}>
+              <table className="adm-table" style={{ minWidth: 720 }}>
+                <thead>
+                  <tr>
+                    <th>Proizvod</th>
+                    <th style={{ textAlign: "right" }}>Prihod</th>
+                    <th style={{ textAlign: "right" }}>Nabavna cijena</th>
+                    <th style={{ textAlign: "right" }}>Reklame</th>
+                    <th style={{ textAlign: "right" }}>Profit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((p) => {
+                    const spend = adSpend[p.productName] ?? 0;
+                    const knowsCost = p.costTotal > 0;
+                    const profit =
+                      Math.round((p.revenue - p.costTotal - spend) * 100) / 100;
+                    return (
+                      <tr key={p.productName}>
+                        <td>{p.productName}</td>
+                        <td style={{ textAlign: "right" }}>{km(p.revenue)}</td>
+                        <td style={{ textAlign: "right" }} className="adm-hint">
+                          {knowsCost ? `−${km(p.costTotal)}` : "nepoznato"}
+                        </td>
+                        <td style={{ textAlign: "right" }} className="adm-hint">
+                          {spend > 0 ? `−${km(spend)}` : "—"}
+                        </td>
+                        <td style={{ textAlign: "right" }}>
+                          {knowsCost ? (
+                            <b style={{ color: profit >= 0 ? "#148a4b" : "#b3261e" }}>
+                              {km(profit)}
+                            </b>
+                          ) : (
+                            <span className="adm-hint">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <p className="adm-hint" style={{ marginTop: 10 }}>
+              "Nepoznato" = nabavna cijena nije upisana u{" "}
+              <Link href="/admin/products">uređivaču proizvoda</Link>. Trošak
+              reklama se dodaje u{" "}
+              <Link href="/admin/troskovi">Troškovi reklama</Link>.
+            </p>
+          </>
         )}
       </div>
 
