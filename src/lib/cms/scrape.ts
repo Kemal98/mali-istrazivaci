@@ -1,16 +1,17 @@
 import "server-only";
 
+import { extractContentStructure, type ContentItem } from "./scrapeStructure";
+
 /**
- * Izvlačenje naslova/opisa sa tuđeg linka (dobavljača), da se ne kuca
- * ručno prepisivanje. NIKAD ne pokušava puno "sastaviti stranicu" — samo
- * vrati čist tekst, admin ga zalijepi u chat i odatle se pravi prava
- * stranica (isto kao za sve dosadašnje proizvode).
+ * Izvlačenje naslova/opisa/STRUKTURE sa tuđeg linka (dobavljača), da se
+ * ne kuca ručno prepisivanje. Naslov+opis idu preko meta tagova/JSON-LD
+ * (brzo, pouzdano); puna struktura stranice (naslov/tekst/slika/video
+ * ISTIM redoslijedom kao na izvoru) ide preko cheerio DOM parsera —
+ * vidi scrapeStructure.ts.
  *
- * Namjerno BEZ biblioteke za parsiranje HTML-a (cheerio i sl.) — treba
- * nam par meta tagova, ne puno DOM stablo. Namjerno BEZ headless
- * browsera/plaćenog scraping servisa — dobavljači su "obični" sajtovi,
- * ne AliExpress (koji aktivno blokira automatske pozive); ako neki link
- * ipak odbije, admin ručno kopira tekst — isti krajnji rezultat.
+ * Namjerno BEZ headless browsera/plaćenog scraping servisa — dobavljači
+ * su "obični" sajtovi, ne AliExpress (koji aktivno blokira automatske
+ * pozive); ako neki link ipak odbije, admin ručno kopira tekst.
  */
 
 const TIMEOUT_MS = 10000;
@@ -25,6 +26,8 @@ export interface ScrapeResult {
   image?: string;
   /** Sve pronađene slike (JSON-LD galerija + og:image), do MAX_IMAGES. */
   images?: string[];
+  /** Redoslijed sadržaja sa stranice (naslov/tekst/slika/gif/video), za sekcije. */
+  structure?: ContentItem[];
   error?: string;
 }
 
@@ -213,7 +216,17 @@ export async function scrapeProductPage(url: string): Promise<ScrapeResult> {
       };
     }
 
-    return { ok: true, title, description, image: images[0], images };
+    // Best-effort — ako parsiranje strukture nekako padne (npr. čudan
+    // HTML), ne obaraj cijeli scrape, samo nastavi bez nje (fallback na
+    // title+description u pozivaocu).
+    let structure: ContentItem[] = [];
+    try {
+      structure = extractContentStructure(html, parsed.toString());
+    } catch (e) {
+      console.error("[scrape] parsiranje strukture palo:", e);
+    }
+
+    return { ok: true, title, description, image: images[0], images, structure };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return {

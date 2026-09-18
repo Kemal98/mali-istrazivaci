@@ -18,11 +18,11 @@ export async function POST(request: Request) {
   const res = await startImport(url);
   if (!res.ok) return NextResponse.json({ error: res.error }, { status: 502 });
 
-  if (res.images?.length && res.productId) {
-    const { productId, images, title } = res;
+  if (res.pending?.length && res.productId) {
+    const { productId, pending, title } = res;
     after(async () => {
       try {
-        await importProductImages(productId, images, title || "");
+        await importProductImages(productId, pending, title || "");
       } catch (e) {
         console.error("[import] skidanje slika palo:", e);
       }
@@ -32,6 +32,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     productId: res.productId,
-    imagesQueued: res.images?.length ?? 0,
+    imagesQueued: res.pending?.length ?? 0,
   });
 }
