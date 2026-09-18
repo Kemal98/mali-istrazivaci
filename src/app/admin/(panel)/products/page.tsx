@@ -1,6 +1,7 @@
 import { listProducts, listTemplates } from "@/lib/cms/repo";
 import ProductsTable from "@/components/admin/ProductsTable";
 import NewProductButton from "@/components/admin/NewProductButton";
+import ImportProductButton from "@/components/admin/ImportProductButton";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export default async function ProductsPage() {
           <p>Sve proizvod-stranice shopa. Nacrti se javno ne vide.</p>
         </div>
         <div className="adm-head-actions">
+          <ImportProductButton />
           <NewProductButton templates={templates} products={products} />
         </div>
       </div>
