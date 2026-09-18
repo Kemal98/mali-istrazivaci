@@ -7,13 +7,19 @@ interface Scraped {
   title?: string;
   description?: string;
   image?: string;
+  images?: string[];
 }
 
 /**
- * "Uvezi sa linka" — pokuša sâm izvući naslov/opis sa dobavljačevog
- * linka (besplatno, best-effort — vidi lib/cms/scrape.ts). Ne pravi
- * cijelu stranicu automatski: samo vrati čist tekst koji admin kopira i
- * zalijepi u chat, isto kao za sve dosadašnje proizvode na sajtu.
+ * "Uvezi sa linka" — pokuša sâm izvući naslov/opis/slike sa
+ * dobavljačevog linka (besplatno, best-effort — vidi lib/cms/scrape.ts).
+ *
+ * Dva puta odavde:
+ *  - "Kopiraj tekst" — za kad admin ipak želi ovo zalijepiti meni u chat
+ *    i tražiti da napravim stranicu ručno, kao i do sad.
+ *  - "Napravi nacrt i uvezi sve" — lib/cms/import.ts skine slike na naš
+ *    Storage i odmah popuni nacrt (hero slika + sekcije s tekstom i
+ *    slikama/gifovima). Admin samo pregleda i dotjera, ne kreće prazan.
  */
 export default function ImportProductButton() {
   const router = useRouter();
@@ -63,21 +69,23 @@ export default function ImportProductButton() {
     }
   }
 
-  async function createDraft() {
+  async function importAll() {
+    if (!url.trim()) return;
     setCreating(true);
     setError("");
-    const res = await fetch("/api/admin/products", {
+    const res = await fetch("/api/admin/products/import", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ naziv: result?.title || "Novi proizvod" }),
+      body: JSON.stringify({ url: url.trim() }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      setError(data?.error || "Greška pri kreiranju.");
+      setError(data?.error || "Greška pri uvozu.");
       setCreating(false);
       return;
     }
-    router.push(`/admin/products/${data.product.id}`);
+    const q = data.imagesQueued ? `?uvozSlika=${data.imagesQueued}` : "";
+    router.push(`/admin/products/${data.productId}${q}`);
   }
 
   return (
@@ -134,19 +142,32 @@ export default function ImportProductButton() {
 
             {result ? (
               <div className="adm-card" style={{ marginTop: 4 }}>
-                {result.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={result.image}
-                    alt=""
+                {result.images && result.images.length > 0 ? (
+                  <div
                     style={{
-                      maxWidth: 140,
-                      maxHeight: 140,
-                      borderRadius: 8,
+                      display: "flex",
+                      gap: 8,
+                      flexWrap: "wrap",
                       marginBottom: 10,
-                      objectFit: "contain",
                     }}
-                  />
+                  >
+                    {result.images.map((src) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={src}
+                        src={src}
+                        alt=""
+                        style={{
+                          width: 80,
+                          height: 80,
+                          borderRadius: 8,
+                          objectFit: "contain",
+                          border: "1px solid var(--line)",
+                          background: "#fff",
+                        }}
+                      />
+                    ))}
+                  </div>
                 ) : null}
                 <div className="adm-field">
                   <label>Naslov (izvučeno)</label>
@@ -156,11 +177,13 @@ export default function ImportProductButton() {
                   <label>Opis (izvučeno)</label>
                   <textarea readOnly rows={5} value={result.description || "—"} />
                 </div>
-                {result.image ? (
+                {result.images && result.images.length > 0 ? (
                   <p className="adm-hint">
-                    Slika sa izvora — otvori je u novom tabu i sačuvaj ručno
-                    ako je želiš koristiti (ovo je samo prikaz, ne skida se
-                    automatski).
+                    Pronađeno {result.images.length}{" "}
+                    {result.images.length === 1 ? "slika" : "slika/e"} — "Napravi
+                    nacrt i uvezi sve" će ih pokušati skinuti na naš Media
+                    Library (neke znaju biti zaštićene pa se preskoče, bez
+                    greške).
                   </p>
                 ) : null}
                 <div className="adm-row" style={{ marginTop: 4 }}>
@@ -170,10 +193,10 @@ export default function ImportProductButton() {
                   <button
                     type="button"
                     className="adm-btn adm-btn-primary adm-btn-sm"
-                    onClick={createDraft}
+                    onClick={importAll}
                     disabled={creating}
                   >
-                    {creating ? "Pravim…" : "NAPRAVI NACRT S OVIM NASLOVOM"}
+                    {creating ? "Uvozim…" : "NAPRAVI NACRT I UVEZI SVE"}
                   </button>
                 </div>
               </div>

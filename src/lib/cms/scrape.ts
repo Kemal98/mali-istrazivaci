@@ -15,13 +15,69 @@ import "server-only";
 
 const TIMEOUT_MS = 10000;
 const MAX_DESC = 2000;
+const MAX_IMAGES = 8;
 
 export interface ScrapeResult {
   ok: boolean;
   title?: string;
   description?: string;
+  /** Prva slika — zadržano radi kompatibilnosti sa starijim pozivaocima. */
   image?: string;
+  /** Sve pronađene slike (JSON-LD galerija + og:image), do MAX_IMAGES. */
+  images?: string[];
   error?: string;
+}
+
+interface JsonLdProduct {
+  name?: string;
+  description?: string;
+  image?: string | string[] | { url?: string; contentUrl?: string }[];
+}
+
+/**
+ * Mnoge prodavnice (WooCommerce, OpenCart, Shopify...) ubace
+ * `<script type="application/ld+json">` sa Product šemom — namijenjeno
+ * Google-u za rich snippets, ali nama daje čist strukturiran opis I
+ * CIJELU galeriju slika, ne samo jednu og:image. Pouzdanije od pogađanja
+ * po <img> tagovima (koji su često u JS karuselu, van dohvata plain
+ * fetch-a).
+ */
+function findJsonLdProduct(html: string): JsonLdProduct | null {
+  const scripts = html.matchAll(
+    /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
+  );
+  for (const m of scripts) {
+    let data: unknown;
+    try {
+      data = JSON.parse(m[1].trim());
+    } catch {
+      continue;
+    }
+    const candidates = Array.isArray(data)
+      ? data
+      : (data as { "@graph"?: unknown[] })?.["@graph"] ?? [data];
+    for (const c of candidates as Record<string, unknown>[]) {
+      const type = c?.["@type"];
+      const isProduct =
+        type === "Product" || (Array.isArray(type) && type.includes("Product"));
+      if (isProduct) return c as JsonLdProduct;
+    }
+  }
+  return null;
+}
+
+function imagesFromJsonLd(p: JsonLdProduct): string[] {
+  if (!p.image) return [];
+  if (typeof p.image === "string") return [p.image];
+  if (Array.isArray(p.image)) {
+    return p.image
+      .map((i) =>
+        typeof i === "string" ? i : (i as { url?: string; contentUrl?: string })?.url ??
+          (i as { url?: string; contentUrl?: string })?.contentUrl
+      )
+      .filter((u): u is string => Boolean(u));
+  }
+  return [];
 }
 
 function decodeEntities(s: string): string {
@@ -107,23 +163,46 @@ export async function scrapeProductPage(url: string): Promise<ScrapeResult> {
     const buf = await res.arrayBuffer();
     const html = decodeHtml(buf, res.headers.get("content-type") || "");
 
-    const title = metaContent(html, [
-      /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']*)["']/i,
-      /<meta[^>]+content=["']([^"']*)["'][^>]+property=["']og:title["']/i,
-      /<title[^>]*>([^<]*)<\/title>/i,
-    ]);
+    const ld = findJsonLdProduct(html);
 
-    const description = metaContent(html, [
-      /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']*)["']/i,
-      /<meta[^>]+content=["']([^"']*)["'][^>]+property=["']og:description["']/i,
-      /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i,
-      /<meta[^>]+content=["']([^"']*)["'][^>]+name=["']description["']/i,
-    ]).slice(0, MAX_DESC);
-
-    const image = metaContent(html, [
+    const ogImage = metaContent(html, [
       /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']*)["']/i,
       /<meta[^>]+content=["']([^"']*)["'][^>]+property=["']og:image["']/i,
     ]);
+
+    // apsolutizuj relativne URL-ove (npr. "/slike/x.jpg") u odnosu na stranicu
+    const toAbsolute = (u: string) => {
+      try {
+        return new URL(u, parsed).toString();
+      } catch {
+        return "";
+      }
+    };
+
+    const images = [...(ld ? imagesFromJsonLd(ld) : []), ogImage]
+      .filter(Boolean)
+      .map(toAbsolute)
+      .filter(Boolean)
+      .filter((u, i, arr) => arr.indexOf(u) === i) // bez duplikata
+      .slice(0, MAX_IMAGES);
+
+    const title =
+      decodeEntities(ld?.name ?? "") ||
+      metaContent(html, [
+        /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']*)["']/i,
+        /<meta[^>]+content=["']([^"']*)["'][^>]+property=["']og:title["']/i,
+        /<title[^>]*>([^<]*)<\/title>/i,
+      ]);
+
+    const description = (
+      decodeEntities(ld?.description ?? "") ||
+      metaContent(html, [
+        /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']*)["']/i,
+        /<meta[^>]+content=["']([^"']*)["'][^>]+property=["']og:description["']/i,
+        /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i,
+        /<meta[^>]+content=["']([^"']*)["'][^>]+name=["']description["']/i,
+      ])
+    ).slice(0, MAX_DESC);
 
     if (!title && !description) {
       return {
@@ -134,7 +213,7 @@ export async function scrapeProductPage(url: string): Promise<ScrapeResult> {
       };
     }
 
-    return { ok: true, title, description, image: image || undefined };
+    return { ok: true, title, description, image: images[0], images };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return {

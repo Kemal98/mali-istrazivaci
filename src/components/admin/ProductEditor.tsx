@@ -77,6 +77,16 @@ export default function ProductEditor({
   );
   const [previewNonce, setPreviewNonce] = useState(0);
 
+  // Nakon "Uvezi sa linka" (vidi ImportProductButton) slike se skidaju u
+  // pozadini (after()), pa odmah poslije preusmjeravanja još nisu tu —
+  // pročita se iz URL-a (?uvozSlika=N), ne iz propsa, jer se productId
+  // ne mijenja ali sadržaj hoće kad admin osvježi.
+  const [uvozNajava, setUvozNajava] = useState(0);
+  useEffect(() => {
+    const n = Number(new URLSearchParams(window.location.search).get("uvozSlika"));
+    if (n > 0) setUvozNajava(n);
+  }, []);
+
   const patch = useCallback((p: Partial<Draft>) => {
     setDraft((d) => ({ ...d, ...p }));
     setDirty(true);
@@ -317,6 +327,14 @@ export default function ProductEditor({
               <li key={e}>{e}</li>
             ))}
           </ul>
+        </div>
+      ) : null}
+
+      {uvozNajava > 0 ? (
+        <div className="adm-note adm-note-info">
+          Uvoz u toku — {uvozNajava}{" "}
+          {uvozNajava === 1 ? "slika se" : "slika/e se"} skida u pozadini.
+          Osvježi stranicu za par sekundi da ih vidiš u sadržaju.
         </div>
       ) : null}
 
