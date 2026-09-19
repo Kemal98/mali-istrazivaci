@@ -102,13 +102,28 @@ export function RichTextArea({
   function wrapSelection(mark: string) {
     const el = ref.current;
     if (!el) return;
-    const start = el.selectionStart;
-    const end = el.selectionEnd;
-    if (start === end) {
+    const rawStart = el.selectionStart;
+    const rawEnd = el.selectionEnd;
+    if (rawStart === rawEnd) {
       setMsg("Prvo selektuj riječi koje želiš da promijeniš, pa klikni dugme.");
       setTimeout(() => setMsg(""), 2500);
       return;
     }
+
+    // Trostruki klik (cio red) zna selektovati i razmak/novi red na
+    // kraju reda. Marker mora ostati UNUTAR jednog reda — RichText.tsx
+    // čita tekst red-po-red, pa marker koji pređe granicu reda (zatvarač
+    // završi na početku SLJEDEĆEG reda) se nikad ne prepozna kao bold/
+    // italic, samo ostane vidljiv kao tekst.
+    const raw = value.slice(rawStart, rawEnd);
+    const start = rawStart + (raw.match(/^\s*/)?.[0].length ?? 0);
+    const end = rawEnd - (raw.match(/\s*$/)?.[0].length ?? 0);
+    if (start >= end) {
+      setMsg("Prvo selektuj riječi koje želiš da promijeniš, pa klikni dugme.");
+      setTimeout(() => setMsg(""), 2500);
+      return;
+    }
+
     const next =
       value.slice(0, start) + mark + value.slice(start, end) + mark + value.slice(end);
     onChange(next);
