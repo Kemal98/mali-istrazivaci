@@ -96,6 +96,52 @@ export function TextArea({
   );
 }
 
+/** Boja pozadine za isticanje (bedž stil) — prazno = bez pozadine. */
+export function ColorField({
+  label,
+  value,
+  onChange,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  hint?: string;
+}) {
+  const id = useId();
+  return (
+    <div className="adm-field">
+      <label htmlFor={id}>{label}</label>
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <input
+          id={id}
+          type="color"
+          value={value || "#e0632a"}
+          onChange={(e) => onChange(e.target.value)}
+          style={{ width: 40, height: 32, padding: 2, flex: "none" }}
+        />
+        <input
+          type="text"
+          value={value}
+          placeholder="bez pozadine"
+          onChange={(e) => onChange(e.target.value)}
+          style={{ flex: 1 }}
+        />
+        {value ? (
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm"
+            onClick={() => onChange("")}
+          >
+            UKLONI
+          </button>
+        ) : null}
+      </div>
+      {hint ? <span className="adm-hint">{hint}</span> : null}
+    </div>
+  );
+}
+
 export function SelectField({
   label,
   value,

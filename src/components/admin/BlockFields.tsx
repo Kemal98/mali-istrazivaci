@@ -2,6 +2,7 @@
 
 import MediaField from "./MediaField";
 import {
+  ColorField,
   SelectField,
   StringList,
   TextArea,
@@ -72,6 +73,12 @@ export default function BlockFields({
             value={b("bold", true)}
             onChange={(v) => set({ bold: v })}
           />
+          <ColorField
+            label="Pozadina (isticanje, bedž)"
+            value={s("istaknutoBoja")}
+            onChange={(v) => set({ istaknutoBoja: v })}
+            hint="Za kratak istaknuti tekst kao značka — boja pozadine + bijela/tamna slova automatski, zaobljeni rubovi. Najbolje za kratke fraze, ne cijele pasuse."
+          />
         </>
       );
 
@@ -87,6 +94,18 @@ export default function BlockFields({
           />
           <div className="adm-row">
             <SelectField
+              label="Veličina"
+              value={s("velicina", "")}
+              onChange={(v) => set({ velicina: v })}
+              options={[
+                { value: "", label: "Podrazumijevano" },
+                { value: "S", label: "S — malo" },
+                { value: "M", label: "M — srednje" },
+                { value: "L", label: "L — veliko" },
+                { value: "XL", label: "XL — najveće" },
+              ]}
+            />
+            <SelectField
               label="Poravnanje"
               value={s("align", "center")}
               onChange={(v) => set({ align: v })}
@@ -97,6 +116,12 @@ export default function BlockFields({
             label="Cijeli tekst podebljano"
             value={b("bold")}
             onChange={(v) => set({ bold: v })}
+          />
+          <ColorField
+            label="Pozadina (isticanje, bedž)"
+            value={s("istaknutoBoja")}
+            onChange={(v) => set({ istaknutoBoja: v })}
+            hint="Za kratak istaknuti tekst kao značka — boja pozadine + bijela/tamna slova automatski, zaobljeni rubovi. Najbolje za kratke fraze, ne cijele pasuse."
           />
         </>
       );
@@ -130,6 +155,12 @@ export default function BlockFields({
             label="Tekst podebljano"
             value={b("bold", true)}
             onChange={(v) => set({ bold: v })}
+          />
+          <ColorField
+            label="Pozadina naslova (isticanje, bedž)"
+            value={s("istaknutoBoja")}
+            onChange={(v) => set({ istaknutoBoja: v })}
+            hint="Primjenjuje se samo na naslov (gornji red), ne na tekst ispod."
           />
         </>
       );

@@ -32,6 +32,30 @@ function imgRadius(radius: boolean): React.CSSProperties {
   return { borderRadius: radius ? 20 : 0 };
 }
 
+/** Bijela ili tamna slova, zavisno od svjetline pozadine — čita se uvijek. */
+function contrastColor(hex: string): string {
+  const h = hex.replace("#", "");
+  if (h.length !== 6) return "#fff";
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const bl = parseInt(h.slice(4, 6), 16);
+  if ([r, g, bl].some(Number.isNaN)) return "#fff";
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * bl) / 255;
+  return luminance > 0.6 ? "#14161a" : "#fff";
+}
+
+/** Stil za "bedž" — kratak istaknuti tekst na obojenoj pozadini. */
+function highlightStyle(bg: string): React.CSSProperties | undefined {
+  if (!bg) return undefined;
+  return {
+    display: "inline-block",
+    background: bg,
+    color: contrastColor(bg),
+    padding: "0.3em 0.85em",
+    borderRadius: 999,
+  };
+}
+
 /** Blokovi koji žive unutar zajedničke .dawn-story sekcije. */
 function isStoryBlock(b: Block): boolean {
   if (b.type === "slika_tekst") {
@@ -70,19 +94,23 @@ function StoryInner({ block }: { block: Block }) {
             textAlign: (s("align", "center") || "center") as "center",
           }}
         >
-          <span>
+          <span style={highlightStyle(s("istaknutoBoja"))}>
             <RichText text={s("tekst")} />
           </span>
         </p>
       );
 
-    case "tekst":
+    case "tekst": {
+      const velicina = s("velicina");
       return (
         <p
           className="dawn-story-text"
-          style={{ textAlign: (s("align", "center") || "center") as "center" }}
+          style={{
+            textAlign: (s("align", "center") || "center") as "center",
+            ...(velicina && H_SIZE[velicina] ? { fontSize: H_SIZE[velicina] } : {}),
+          }}
         >
-          <span>
+          <span style={highlightStyle(s("istaknutoBoja"))}>
             {bo("bold") ? (
               <strong>
                 <RichText text={s("tekst")} />
@@ -93,6 +121,7 @@ function StoryInner({ block }: { block: Block }) {
           </span>
         </p>
       );
+    }
 
     case "naslov_tekst":
       return (
@@ -101,7 +130,7 @@ function StoryInner({ block }: { block: Block }) {
             className="dawn-story-stmt"
             style={{ textAlign: (s("align", "center") || "center") as "center" }}
           >
-            <span>
+            <span style={highlightStyle(s("istaknutoBoja"))}>
               <RichText text={s("naslov")} />
             </span>
           </p>

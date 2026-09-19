@@ -51,6 +51,12 @@ function oneOf<T extends string>(v: unknown, allowed: readonly T[], fallback: T)
   return (allowed as readonly string[]).includes(s) ? (s as T) : fallback;
 }
 
+/** #rgb ili #rrggbb — bilo šta drugo (uklj. prazno) postaje "" = bez boje. */
+function hexColor(v: unknown): string {
+  const s = typeof v === "string" ? v.trim() : "";
+  return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s) ? s : "";
+}
+
 function strList(v: unknown, maxItems = 40): string[] {
   if (!Array.isArray(v)) return [];
   return v.slice(0, maxItems).map((x) => str(x, 500)).filter((x) => x.length > 0);
@@ -120,12 +126,15 @@ function sanitizeBlockData(type: BlockType, v: unknown): Record<string, unknown>
         velicina: oneOf(r.velicina, ["S", "M", "L", "XL"] as const, "L"),
         bold: r.bold === undefined ? true : bool(r.bold),
         align: oneOf(r.align, ["left", "center", "right"] as const, "center"),
+        istaknutoBoja: hexColor(r.istaknutoBoja),
       };
     case "tekst":
       return {
         tekst: longStr(r.tekst),
+        velicina: oneOf(r.velicina, ["", "S", "M", "L", "XL"] as const, ""),
         bold: bool(r.bold),
         align: oneOf(r.align, ["left", "center", "right"] as const, "center"),
+        istaknutoBoja: hexColor(r.istaknutoBoja),
       };
     case "naslov_tekst":
       return {
@@ -133,6 +142,7 @@ function sanitizeBlockData(type: BlockType, v: unknown): Record<string, unknown>
         tekst: longStr(r.tekst),
         bold: r.bold === undefined ? true : bool(r.bold),
         align: oneOf(r.align, ["left", "center", "right"] as const, "center"),
+        istaknutoBoja: hexColor(r.istaknutoBoja),
       };
     case "slika":
     case "gif":
