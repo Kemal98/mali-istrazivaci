@@ -66,6 +66,8 @@ function SortableBlock({
   onHide,
   onDelete,
   onMove,
+  canMergeNext,
+  onMergeNext,
 }: {
   block: Block;
   index: number;
@@ -77,6 +79,8 @@ function SortableBlock({
   onHide: () => void;
   onDelete: () => void;
   onMove: (dir: -1 | 1) => void;
+  canMergeNext: boolean;
+  onMergeNext: () => void;
 }) {
   const {
     attributes,
@@ -155,6 +159,16 @@ function SortableBlock({
           >
             DUPLICIRAJ
           </button>
+          {canMergeNext ? (
+            <button
+              type="button"
+              className="adm-btn adm-btn-sm"
+              title="Spoji tekst ovog i narednog bloka u jedan (manje razmaka na stranici)"
+              onClick={onMergeNext}
+            >
+              ↓ SPOJI SA SLJEDEĆIM
+            </button>
+          ) : null}
           <button
             type="button"
             className="adm-btn adm-btn-sm"
@@ -241,6 +255,27 @@ export default function PageBuilder({
     onChange(arrayMove(sections, i, j));
   }
 
+  /**
+   * Spoji tekst ovog bloka sa sljedećim (samo "tekst"-"tekst" parovi) —
+   * riješava previše razmaka na stranici kad "Uvezi sa linka" napravi
+   * blok po pasusu, a admin poslije htio da neke spoji ručno.
+   */
+  function mergeNext(id: string) {
+    const i = sections.findIndex((s) => s.id === id);
+    if (i < 0 || i + 1 >= sections.length) return;
+    const a = sections[i];
+    const bBlock = sections[i + 1];
+    if (a.type !== "tekst" || bBlock.type !== "tekst") return;
+    const merged: Block = {
+      ...a,
+      data: { ...a.data, tekst: `${a.data.tekst ?? ""}\n${bBlock.data.tekst ?? ""}` },
+    };
+    const next = [...sections];
+    next.splice(i, 2, merged);
+    onChange(next);
+    setOpenIds((ids) => [...ids.filter((x) => x !== bBlock.id), merged.id]);
+  }
+
   return (
     <>
       <div className="adm-builder">
@@ -278,6 +313,12 @@ export default function PageBuilder({
                 }
                 onDelete={() => setToDelete(s)}
                 onMove={(dir) => move(s.id, dir)}
+                canMergeNext={
+                  s.type === "tekst" &&
+                  i + 1 < sections.length &&
+                  sections[i + 1].type === "tekst"
+                }
+                onMergeNext={() => mergeNext(s.id)}
               />
             ))}
           </SortableContext>
