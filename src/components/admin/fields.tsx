@@ -124,12 +124,34 @@ export function RichTextArea({
       return;
     }
 
-    const next =
-      value.slice(0, start) + mark + value.slice(start, end) + mark + value.slice(end);
+    // Isto dugme kliknuto dvaput na već označen tekst (ili neko drugo
+    // dugme na tekst koji VEĆ ima TAJ ISTI marker) mora SKINUTI marker,
+    // ne dodati još jedan — inače admin lako napravi "++++**x**++++"
+    // (dvaput uvećano) koje se nikad ne prikaže kako treba, jer marker
+    // nije ugnježđen nego samo nagomilan.
+    const selected = value.slice(start, end);
+    const alreadyWrapped =
+      selected.length > mark.length * 2 &&
+      selected.startsWith(mark) &&
+      selected.endsWith(mark);
+
+    let next: string;
+    let selStart: number;
+    let selEnd: number;
+    if (alreadyWrapped) {
+      const inner = selected.slice(mark.length, selected.length - mark.length);
+      next = value.slice(0, start) + inner + value.slice(end);
+      selStart = start;
+      selEnd = start + inner.length;
+    } else {
+      next = value.slice(0, start) + mark + selected + mark + value.slice(end);
+      selStart = start + mark.length;
+      selEnd = end + mark.length;
+    }
     onChange(next);
     requestAnimationFrame(() => {
       el.focus();
-      el.setSelectionRange(start + mark.length, end + mark.length);
+      el.setSelectionRange(selStart, selEnd);
     });
   }
 
