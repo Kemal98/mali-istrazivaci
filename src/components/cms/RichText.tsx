@@ -2,29 +2,36 @@ import { Fragment, ReactNode } from "react";
 
 // Siguran "rich text": NIKAD ne koristi dangerouslySetInnerHTML, pa iz
 // admin teksta ne može doći XSS. Podržava:
-//   **bold**, *italic*, ++veće++, --manje--,
+//   **bold**, __italic__, ++veće++, --manje--,
 //   novi red (Enter), bullet liste (red počinje s "- ")
-// ++/-- pišu RichTextArea dugmad "A+"/"A−" (selektuj riječi, klikni
-// dugme) — admin ne mora sam kucati sintaksu, ali i dalje radi ako je
-// neko ukuca ručno.
-// REKURZIVNO: kad se kombinuje bold + veličina na istom tekstu (npr.
-// selektuješ pa klikneš B, pa selektuješ opet i klikneš A+), markeri se
+// Legacy *italic* (jedna zvjezdica) se i dalje ČITA — stariji sadržaj je
+// tako pisan — ali RichTextArea dugmad sad PIŠU __italic__, jer se jedna
+// zvjezdica sudara sa **bold** kad se oboje kombinuje na istom tekstu
+// (bold+italic bi dalo "***tekst***", što se ne da nedvosmisleno
+// rastaviti nazad na dva odvojena markera).
+//
+// REKURZIVNO: kad se kombinuje više formata na istom tekstu, markeri se
 // ugnijezde — "++**tekst**++". Prvi prolaz mora i UNUTRAŠNJI marker
 // prepoznati, ne samo spoljni, inače se npr. bold "pojede" kao doslovan
 // tekst unutar uvećanog raspona. Svaki rekurzivni poziv radi na STROGO
 // kraćem tekstu (markeri su odsječeni), pa se sigurno završi.
 function inline(text: string, keyPrefix: string): ReactNode[] {
   const out: ReactNode[] = [];
-  const re = /(\*\*[^*]+\*\*|\*[^*]+\*|\+\+[^+]+\+\+|--[^-]+--)/g;
+  const re = /(\*\*[^*]+\*\*|__[^_]+__|\*[^*]+\*|\+\+[^+]+\+\+|--[^-]+--)/g;
   let last = 0;
   let m: RegExpExecArray | null;
   let i = 0;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) out.push(text.slice(last, m.index));
     const tok = m[0];
-    const inner = inline(tok.slice(2, -2), `${keyPrefix}-n${i}`);
+    // Marker je 1 znak (legacy *italic*) ili 2 (sve ostalo) — odsijeci
+    // tačno onoliko sa svake strane koliko je tok širok njegov marker.
+    const markLen = tok.startsWith("**") || !tok.startsWith("*") ? 2 : 1;
+    const inner = inline(tok.slice(markLen, -markLen), `${keyPrefix}-n${i}`);
     if (tok.startsWith("**")) {
       out.push(<strong key={`${keyPrefix}-b${i}`}>{inner}</strong>);
+    } else if (tok.startsWith("__")) {
+      out.push(<em key={`${keyPrefix}-i${i}`}>{inner}</em>);
     } else if (tok.startsWith("++")) {
       out.push(
         <span key={`${keyPrefix}-g${i}`} style={{ fontSize: "1.25em" }}>

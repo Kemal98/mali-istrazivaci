@@ -73,12 +73,64 @@ export function NumberField({
  * Time ne treba novi format podataka niti drugačiji renderer — samo
  * lakši način da se ta sintaksa upiše, bez ručnog kucanja zvjezdica.
  */
-const MARKERS: { label: string; title: string; mark: string }[] = [
-  { label: "B", title: "Podebljano", mark: "**" },
-  { label: "I", title: "Kurziv", mark: "*" },
-  { label: "A+", title: "Uvećaj selektovano", mark: "++" },
-  { label: "A−", title: "Umanji selektovano", mark: "--" },
+type MarkKind = "b" | "i" | "big" | "small";
+
+const MARKERS: { label: string; title: string; kind: MarkKind }[] = [
+  { label: "B", title: "Podebljano", kind: "b" },
+  { label: "I", title: "Kurziv", kind: "i" },
+  { label: "A+", title: "Uvećaj selektovano", kind: "big" },
+  { label: "A−", title: "Umanji selektovano", kind: "small" },
 ];
+
+/**
+ * Skine SVE markere sa ivica teksta (bilo koliko slojeva, bilo kojim
+ * redom su nagomilani) i vrati čist tekst + koji su formati bili
+ * aktivni. Ovo je ono što sprečava "zapetljavanje" — bez obzira koliko
+ * puta i kojim redom admin klikne dugmad, uvijek se prvo vratimo na
+ * čist tekst pa PONOVO složimo markere uvijek istim redoslijedom.
+ */
+function stripAllMarkers(s: string): { text: string; marks: Set<MarkKind> } {
+  const marks = new Set<MarkKind>();
+  let changed = true;
+  while (changed) {
+    changed = false;
+    if (s.length > 4 && s.startsWith("**") && s.endsWith("**")) {
+      s = s.slice(2, -2);
+      marks.add("b");
+      changed = true;
+    } else if (s.length > 4 && s.startsWith("__") && s.endsWith("__")) {
+      s = s.slice(2, -2);
+      marks.add("i");
+      changed = true;
+    } else if (s.length > 4 && s.startsWith("++") && s.endsWith("++")) {
+      s = s.slice(2, -2);
+      marks.add("big");
+      changed = true;
+    } else if (s.length > 4 && s.startsWith("--") && s.endsWith("--")) {
+      s = s.slice(2, -2);
+      marks.add("small");
+      changed = true;
+    } else if (s.length > 2 && s.startsWith("*") && s.endsWith("*")) {
+      // Legacy jednostruka zvjezdica (stariji sadržaj) — čita se, ali
+      // applyMarkers() dole uvijek piše NAZAD __italic__ (v. komentar u
+      // RichText.tsx zašto: sudara se sa **bold** kad se oboje traži).
+      s = s.slice(1, -1);
+      marks.add("i");
+      changed = true;
+    }
+  }
+  return { text: s, marks };
+}
+
+/** Uvijek isti redoslijed slojeva, bez obzira kojim redom su dodani. */
+function applyMarkers(text: string, marks: Set<MarkKind>): string {
+  let out = text;
+  if (marks.has("i")) out = `__${out}__`;
+  if (marks.has("b")) out = `**${out}**`;
+  if (marks.has("big")) out = `++${out}++`;
+  if (marks.has("small")) out = `--${out}--`;
+  return out;
+}
 
 export function RichTextArea({
   label,
@@ -99,7 +151,7 @@ export function RichTextArea({
   const ref = useRef<HTMLTextAreaElement>(null);
   const [msg, setMsg] = useState("");
 
-  function wrapSelection(mark: string) {
+  function toggleMark(kind: MarkKind) {
     const el = ref.current;
     if (!el) return;
     const rawStart = el.selectionStart;
@@ -124,34 +176,27 @@ export function RichTextArea({
       return;
     }
 
-    // Isto dugme kliknuto dvaput na već označen tekst (ili neko drugo
-    // dugme na tekst koji VEĆ ima TAJ ISTI marker) mora SKINUTI marker,
-    // ne dodati još jedan — inače admin lako napravi "++++**x**++++"
-    // (dvaput uvećano) koje se nikad ne prikaže kako treba, jer marker
-    // nije ugnježđen nego samo nagomilan.
-    const selected = value.slice(start, end);
-    const alreadyWrapped =
-      selected.length > mark.length * 2 &&
-      selected.startsWith(mark) &&
-      selected.endsWith(mark);
-
-    let next: string;
-    let selStart: number;
-    let selEnd: number;
-    if (alreadyWrapped) {
-      const inner = selected.slice(mark.length, selected.length - mark.length);
-      next = value.slice(0, start) + inner + value.slice(end);
-      selStart = start;
-      selEnd = start + inner.length;
+    // Prvo skini SVE postojeće markere (koliko god ih ima, kojim god
+    // redom su dodani), uključi/isključi traženi format, pa ih SLOŽI
+    // NAZAD uvijek istim redoslijedom (applyMarkers) — bez obzira koliko
+    // puta i kojim redom admin klikne dugmad, rezultat je uvijek najviše
+    // jedan sloj po formatu, ispravno ugnježđen. Ovo je jedini pouzdan
+    // način da se spriječi "++**++**++tekst++**++**++" zapetljavanje.
+    const { text: clean, marks } = stripAllMarkers(value.slice(start, end));
+    if (marks.has(kind)) {
+      marks.delete(kind);
     } else {
-      next = value.slice(0, start) + mark + selected + mark + value.slice(end);
-      selStart = start + mark.length;
-      selEnd = end + mark.length;
+      if (kind === "big") marks.delete("small");
+      if (kind === "small") marks.delete("big");
+      marks.add(kind);
     }
+    const rebuilt = applyMarkers(clean, marks);
+
+    const next = value.slice(0, start) + rebuilt + value.slice(end);
     onChange(next);
     requestAnimationFrame(() => {
       el.focus();
-      el.setSelectionRange(selStart, selEnd);
+      el.setSelectionRange(start, start + rebuilt.length);
     });
   }
 
@@ -161,10 +206,10 @@ export function RichTextArea({
       <div className="adm-richbar">
         {MARKERS.map((m) => (
           <button
-            key={m.mark}
+            key={m.kind}
             type="button"
             title={m.title}
-            onClick={() => wrapSelection(m.mark)}
+            onClick={() => toggleMark(m.kind)}
           >
             {m.label}
           </button>
