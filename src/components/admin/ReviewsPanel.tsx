@@ -19,6 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import ConfirmModal from "./ConfirmModal";
+import ImportReviewsModal from "./ImportReviewsModal";
 import MediaField from "./MediaField";
 import { SelectField, TextArea, TextField, Toggle } from "./fields";
 import type { Review } from "@/lib/cms/types";
@@ -158,6 +159,7 @@ export default function ReviewsPanel({
   const [toDelete, setToDelete] = useState<Review | null>(null);
   const [busy, setBusy] = useState(false);
   const [filter, setFilter] = useState<string>(productId ?? "all");
+  const [importing, setImporting] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -255,6 +257,9 @@ export default function ReviewsPanel({
           onClick={() => setDraft(emptyReview(productId))}
         >
           + DODAJ RECENZIJU
+        </button>
+        <button type="button" className="adm-btn" onClick={() => setImporting(true)}>
+          📋 UVEZI RECENZIJE
         </button>
         {!compact ? (
           <select
@@ -430,6 +435,14 @@ export default function ReviewsPanel({
           busy={busy}
           onConfirm={() => doDelete(toDelete)}
           onCancel={() => setToDelete(null)}
+        />
+      ) : null}
+
+      {importing ? (
+        <ImportReviewsModal
+          productId={productId}
+          onClose={() => setImporting(false)}
+          onImported={reload}
         />
       ) : null}
     </>
