@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useRef, useState } from "react";
 
 export function TextField({
   label,
@@ -60,6 +60,88 @@ export function NumberField({
           onChange(e.target.value === "" ? null : Number(e.target.value))
         }
       />
+      {hint ? <span className="adm-hint">{hint}</span> : null}
+    </div>
+  );
+}
+
+/**
+ * TextArea sa trakom za formatiranje SELEKTOVANOG teksta — selektuješ
+ * riječi pa klikneš dugme, isto ponašanje kao Word/Google Docs, samo
+ * što se ispod haube i dalje piše naša mini-markdown sintaksa
+ * (**bold**, *italic*, ++veće++, --manje--) koju RichText.tsx čita.
+ * Time ne treba novi format podataka niti drugačiji renderer — samo
+ * lakši način da se ta sintaksa upiše, bez ručnog kucanja zvjezdica.
+ */
+const MARKERS: { label: string; title: string; mark: string }[] = [
+  { label: "B", title: "Podebljano", mark: "**" },
+  { label: "I", title: "Kurziv", mark: "*" },
+  { label: "A+", title: "Uvećaj selektovano", mark: "++" },
+  { label: "A−", title: "Umanji selektovano", mark: "--" },
+];
+
+export function RichTextArea({
+  label,
+  value,
+  onChange,
+  placeholder,
+  hint,
+  rows = 4,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  hint?: string;
+  rows?: number;
+}) {
+  const id = useId();
+  const ref = useRef<HTMLTextAreaElement>(null);
+  const [msg, setMsg] = useState("");
+
+  function wrapSelection(mark: string) {
+    const el = ref.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    if (start === end) {
+      setMsg("Prvo selektuj riječi koje želiš da promijeniš, pa klikni dugme.");
+      setTimeout(() => setMsg(""), 2500);
+      return;
+    }
+    const next =
+      value.slice(0, start) + mark + value.slice(start, end) + mark + value.slice(end);
+    onChange(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(start + mark.length, end + mark.length);
+    });
+  }
+
+  return (
+    <div className="adm-field">
+      <label htmlFor={id}>{label}</label>
+      <div className="adm-richbar">
+        {MARKERS.map((m) => (
+          <button
+            key={m.mark}
+            type="button"
+            title={m.title}
+            onClick={() => wrapSelection(m.mark)}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
+      <textarea
+        id={id}
+        ref={ref}
+        value={value}
+        rows={rows}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {msg ? <span className="adm-hint" style={{ color: "var(--red)" }}>{msg}</span> : null}
       {hint ? <span className="adm-hint">{hint}</span> : null}
     </div>
   );

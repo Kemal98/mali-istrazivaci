@@ -275,6 +275,24 @@
   text-transform: uppercase;
   color: var(--muted);
 }
+.adm-richbar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: -2px;
+}
+.adm-richbar button {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 6px;
+  min-width: 30px;
+  height: 28px;
+  padding: 0 8px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #333;
+}
+.adm-richbar button:hover { border-color: #14161a; color: #14161a; }
 .adm-field input[type="text"],
 .adm-field input[type="number"],
 .adm-field input[type="password"],

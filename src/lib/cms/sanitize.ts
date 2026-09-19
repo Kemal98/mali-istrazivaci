@@ -13,11 +13,30 @@ const MAX_SHORT = 300;
 
 export function str(v: unknown, max = MAX_SHORT): string {
   if (typeof v !== "string") return "";
-  return v.replace(/[\u0000-\u001f\u007f]/g, "").slice(0, max);
+  let out = "";
+  for (let i = 0; i < v.length; i++) {
+    const code = v.charCodeAt(i);
+    if (code >= 32 && code !== 127) out += v[i];
+  }
+  return out.slice(0, max);
 }
 
+/**
+ * Isto kao str(), ali za VIŠELINIJSKI tekst (naslov/tekst blokovi) — čuva
+ * novi red (\n), jer ga RichText.tsx pretvara u <br>. str() briše SVE
+ * kontrolne znakove, uključujući \n, pa bi ovdje spojila sav tekst u
+ * jednu liniju čim admin snimi nacrt (bug: korisnik ukuca listu
+ * red-po-red, a poslije snimanja se prikaže kao jedan pasus).
+ */
 export function longStr(v: unknown): string {
-  return str(v, MAX_TEXT);
+  if (typeof v !== "string") return "";
+  const s = v.replace(/\r\n?/g, "\n");
+  let out = "";
+  for (let i = 0; i < s.length; i++) {
+    const code = s.charCodeAt(i);
+    if (code === 10 || code === 9 || (code >= 32 && code !== 127)) out += s[i];
+  }
+  return out.slice(0, MAX_TEXT);
 }
 
 export function bool(v: unknown): boolean {

@@ -2,11 +2,14 @@ import { Fragment, ReactNode } from "react";
 
 // Siguran "rich text": NIKAD ne koristi dangerouslySetInnerHTML, pa iz
 // admin teksta ne može doći XSS. Podržava:
-//   **bold**, *italic*, novi red (Enter), bullet liste (red počinje s "- ")
+//   **bold**, *italic*, ++veće++, --manje--,
+//   novi red (Enter), bullet liste (red počinje s "- ")
+// ++/-- pišu RichTextArea dugmad "A+"/"A−" (selektuj riječi, klikni
+// dugme) — admin ne mora sam kucati sintaksu, ali i dalje radi ako je
+// neko ukuca ručno.
 function inline(text: string, keyPrefix: string): ReactNode[] {
   const out: ReactNode[] = [];
-  // Razdvoji po **bold** i *italic*
-  const re = /(\*\*[^*]+\*\*|\*[^*]+\*)/g;
+  const re = /(\*\*[^*]+\*\*|\*[^*]+\*|\+\+[^+]+\+\+|--[^-]+--)/g;
   let last = 0;
   let m: RegExpExecArray | null;
   let i = 0;
@@ -15,6 +18,18 @@ function inline(text: string, keyPrefix: string): ReactNode[] {
     const tok = m[0];
     if (tok.startsWith("**")) {
       out.push(<strong key={`${keyPrefix}-b${i}`}>{tok.slice(2, -2)}</strong>);
+    } else if (tok.startsWith("++")) {
+      out.push(
+        <span key={`${keyPrefix}-g${i}`} style={{ fontSize: "1.25em" }}>
+          {tok.slice(2, -2)}
+        </span>
+      );
+    } else if (tok.startsWith("--")) {
+      out.push(
+        <span key={`${keyPrefix}-s${i}`} style={{ fontSize: "0.82em" }}>
+          {tok.slice(2, -2)}
+        </span>
+      );
     } else {
       out.push(<em key={`${keyPrefix}-i${i}`}>{tok.slice(1, -1)}</em>);
     }

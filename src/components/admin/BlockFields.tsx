@@ -3,6 +3,7 @@
 import MediaField from "./MediaField";
 import {
   ColorField,
+  RichTextArea,
   SelectField,
   StringList,
   TextArea,
@@ -18,7 +19,8 @@ const ALIGN = [
 ];
 
 const RICH_HINT =
-  "Podržano: **bold**, *kurziv*, novi red (Enter) i lista (red počinje sa „- ”).";
+  "Selektuj riječi pa klikni B / I / A+ / A− iznad polja. Novi red (Enter) " +
+  "i lista (red počinje sa „- ”) rade kao u Wordu.";
 
 /** Polja za uređivanje jednog bloka — po tipu. */
 export default function BlockFields({
@@ -42,7 +44,7 @@ export default function BlockFields({
     case "naslov":
       return (
         <>
-          <TextArea
+          <RichTextArea
             label="Tekst naslova"
             value={s("tekst")}
             onChange={(v) => set({ tekst: v })}
@@ -85,7 +87,7 @@ export default function BlockFields({
     case "tekst":
       return (
         <>
-          <TextArea
+          <RichTextArea
             label="Tekst"
             value={s("tekst")}
             onChange={(v) => set({ tekst: v })}
@@ -129,14 +131,14 @@ export default function BlockFields({
     case "naslov_tekst":
       return (
         <>
-          <TextArea
+          <RichTextArea
             label="Naslov"
             value={s("naslov")}
             onChange={(v) => set({ naslov: v })}
             rows={2}
             hint={RICH_HINT}
           />
-          <TextArea
+          <RichTextArea
             label="Tekst ispod naslova"
             value={s("tekst")}
             onChange={(v) => set({ tekst: v })}
