@@ -102,20 +102,33 @@ export async function createDraftFromScrape(
   const pending: PendingImage[] = [];
 
   if (scraped.structure && scraped.structure.length > 0) {
+    // Susjedni "text" redovi (npr. tri pasusa zaredom, bez slike između)
+    // idu u JEDAN "tekst" blok spojen novim redom, ne blok po red —
+    // svaki blok nosi fiksan razmak (.dawn-story-block margin-bottom),
+    // pa bi 6 pasusa = 6 blokova ostavilo mnogo praznog prostora.
+    let textBuf: string[] = [];
+    const flushText = () => {
+      if (!textBuf.length) return;
+      sections.push({
+        id: newId("blk"),
+        type: "tekst",
+        data: { tekst: textBuf.join("\n"), bold: false, align: "center" },
+      });
+      textBuf = [];
+    };
+
     for (const item of scraped.structure) {
       if (item.kind === "heading") {
+        flushText();
         sections.push({
           id: newId("blk"),
           type: "naslov",
           data: { tekst: item.text, velicina: "L", bold: true, align: "center" },
         });
       } else if (item.kind === "text") {
-        sections.push({
-          id: newId("blk"),
-          type: "tekst",
-          data: { tekst: item.text, bold: false, align: "center" },
-        });
+        textBuf.push(item.text);
       } else if (item.kind === "image" || item.kind === "gif") {
+        flushText();
         const id = newId("blk");
         sections.push({
           id,
@@ -126,6 +139,7 @@ export async function createDraftFromScrape(
       } else if (item.kind === "video") {
         // Video se NE skida na naš Storage (veliki fajlovi, nepotreban
         // rizik) — ide direktno sa izvorne adrese.
+        flushText();
         sections.push({
           id: newId("blk"),
           type: "video",
@@ -133,6 +147,7 @@ export async function createDraftFromScrape(
         });
       }
     }
+    flushText();
   } else if (scraped.description) {
     // Fallback kad struktura nije nađena (npr. sajt bez prepoznatljivog
     // kontejnera za opis) — staro ponašanje, jedan blok sa svim tekstom.
