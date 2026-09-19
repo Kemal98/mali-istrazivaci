@@ -7,6 +7,12 @@ import { Fragment, ReactNode } from "react";
 // ++/-- pišu RichTextArea dugmad "A+"/"A−" (selektuj riječi, klikni
 // dugme) — admin ne mora sam kucati sintaksu, ali i dalje radi ako je
 // neko ukuca ručno.
+// REKURZIVNO: kad se kombinuje bold + veličina na istom tekstu (npr.
+// selektuješ pa klikneš B, pa selektuješ opet i klikneš A+), markeri se
+// ugnijezde — "++**tekst**++". Prvi prolaz mora i UNUTRAŠNJI marker
+// prepoznati, ne samo spoljni, inače se npr. bold "pojede" kao doslovan
+// tekst unutar uvećanog raspona. Svaki rekurzivni poziv radi na STROGO
+// kraćem tekstu (markeri su odsječeni), pa se sigurno završi.
 function inline(text: string, keyPrefix: string): ReactNode[] {
   const out: ReactNode[] = [];
   const re = /(\*\*[^*]+\*\*|\*[^*]+\*|\+\+[^+]+\+\+|--[^-]+--)/g;
@@ -16,22 +22,23 @@ function inline(text: string, keyPrefix: string): ReactNode[] {
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) out.push(text.slice(last, m.index));
     const tok = m[0];
+    const inner = inline(tok.slice(2, -2), `${keyPrefix}-n${i}`);
     if (tok.startsWith("**")) {
-      out.push(<strong key={`${keyPrefix}-b${i}`}>{tok.slice(2, -2)}</strong>);
+      out.push(<strong key={`${keyPrefix}-b${i}`}>{inner}</strong>);
     } else if (tok.startsWith("++")) {
       out.push(
         <span key={`${keyPrefix}-g${i}`} style={{ fontSize: "1.25em" }}>
-          {tok.slice(2, -2)}
+          {inner}
         </span>
       );
     } else if (tok.startsWith("--")) {
       out.push(
         <span key={`${keyPrefix}-s${i}`} style={{ fontSize: "0.82em" }}>
-          {tok.slice(2, -2)}
+          {inner}
         </span>
       );
     } else {
-      out.push(<em key={`${keyPrefix}-i${i}`}>{tok.slice(1, -1)}</em>);
+      out.push(<em key={`${keyPrefix}-i${i}`}>{inner}</em>);
     }
     last = m.index + tok.length;
     i++;
