@@ -18,6 +18,11 @@ const STARS_RE = /(\d(?:[.,]\d)?)\s+out of 5 stars?/i;
 const DATE_RE = /^Reviewed in .+ on /i;
 const SKIP_LINE_RE =
   /^(verified purchase|helpful|report|\d+\s+people found this helpful|comment|\|)$/i;
+// Amazon prikazuje izabranu varijantu proizvoda ("Color: Plavo", "Size: L")
+// između datuma i teksta recenzije — MORA imati dvotačku, inače bi
+// pojeo pravu rečenicu koja slučajno počinje riječju "Color"/"Style"...
+const VARIANT_LINE_RE =
+  /^(color|colour|size|style|flavor|flavour|pattern|configuration|package quantity|model|scent)\s*:\s*.+$/i;
 
 const TEMPLATE_NAME_RE = /^ime\s*:/i;
 const TEMPLATE_RATING_RE = /^ocjena\s*:/i;
@@ -117,7 +122,14 @@ function parseAmazonCopy(lines: string[]): ParsedReview[] {
     const body: string[] = [];
     for (let j = idx + 1; j < nextAnchor; j++) {
       const l = lines[j];
-      if (!l || DATE_RE.test(l) || SKIP_LINE_RE.test(l) || reservedNameLines.has(j)) continue;
+      if (
+        !l ||
+        DATE_RE.test(l) ||
+        SKIP_LINE_RE.test(l) ||
+        VARIANT_LINE_RE.test(l) ||
+        reservedNameLines.has(j)
+      )
+        continue;
       body.push(l);
     }
     const tekst = body.join(" ").trim();
