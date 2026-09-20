@@ -512,6 +512,88 @@ export default function ProductEditor({
             onChange={(v) => patchHero({ alt: v })}
           />
 
+          <div className="adm-field">
+            <label>Dodatne slike (male, ispod glavne)</label>
+            <p className="adm-hint" style={{ marginTop: -3, marginBottom: 8 }}>
+              Kupac ih vidi kao red malih slika ispod glavne fotografije —
+              klikne na jednu i ona postane glavna. Isto se automatski
+              popuni kad koristiš "Uvezi sa linka".
+            </p>
+            {(draft.hero.galerija ?? []).map((g, i) => {
+              const gal = draft.hero.galerija ?? [];
+              return (
+                <div
+                  key={i}
+                  style={{
+                    border: "1px solid #e3e5e9",
+                    borderRadius: 8,
+                    padding: 10,
+                    marginBottom: 8,
+                  }}
+                >
+                  <MediaField
+                    label={`Slika ${i + 1}`}
+                    value={g.url}
+                    accept="image"
+                    onChange={(url, alt) =>
+                      patchHero({
+                        galerija: gal.map((x, idx) =>
+                          idx === i ? { url, alt: alt ?? x.alt ?? "" } : x
+                        ),
+                      })
+                    }
+                  />
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button
+                      type="button"
+                      className="adm-btn adm-btn-sm"
+                      disabled={i === 0}
+                      onClick={() => {
+                        const next = [...gal];
+                        [next[i - 1], next[i]] = [next[i], next[i - 1]];
+                        patchHero({ galerija: next });
+                      }}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className="adm-btn adm-btn-sm"
+                      disabled={i === gal.length - 1}
+                      onClick={() => {
+                        const next = [...gal];
+                        [next[i + 1], next[i]] = [next[i], next[i + 1]];
+                        patchHero({ galerija: next });
+                      }}
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      className="adm-btn adm-btn-sm adm-btn-danger"
+                      onClick={() =>
+                        patchHero({ galerija: gal.filter((_, idx) => idx !== i) })
+                      }
+                    >
+                      UKLONI
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+            <button
+              type="button"
+              className="adm-btn adm-btn-sm"
+              onClick={() =>
+                patchHero({
+                  galerija: [...(draft.hero.galerija ?? []), { url: "", alt: "" }],
+                })
+              }
+            >
+              + DODAJ SLIKU
+            </button>
+          </div>
+
           <TextField
             label="Naslov — prva linija"
             value={draft.hero.naslovLinija1}

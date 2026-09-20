@@ -1,4 +1,5 @@
 import BookOrderTrigger from "@/components/BookOrderTrigger";
+import HeroGallery from "./HeroGallery";
 import type { Hero } from "@/lib/cms/types";
 import { ocjene } from "@/lib/cms/plural";
 
@@ -19,10 +20,11 @@ export default function CmsHero({
     <section className="dawn-product" id="top">
       <div className="dawn-col">
         {hero.slika ? (
-          <div className="dawn-product-img">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={hero.slika} alt={hero.alt || hero.naslovLinija1} />
-          </div>
+          <HeroGallery
+            main={hero.slika}
+            mainAlt={hero.alt || hero.naslovLinija1}
+            extra={hero.galerija ?? []}
+          />
         ) : null}
 
         <h1 className="dawn-h1 dawn-h1-lg">
