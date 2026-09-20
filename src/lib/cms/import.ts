@@ -196,20 +196,10 @@ export async function importProductImages(
 
   const byBlockId = new Map(done.filter((d) => d.blockId).map((d) => [d.blockId, d.media]));
   const pendingBlockIds = new Set(pending.filter((p) => p.blockId).map((p) => p.blockId));
-  let heroImages = done.filter((d) => !d.blockId).map((d) => d.media);
-
-  // Neki sajtovi nemaju JSON-LD/og:image galeriju uopšte (sve slike su
-  // samo unutar teksta opisa) — tada heroImages ostaje prazan iako smo
-  // stvarno skinuli gomilu slika za sekcije. U tom slučaju iskoristi PRVIH
-  // par slika iz sekcija i za hero galeriju (isti URL, bez ponovnog
-  // skidanja) — inače uvezen proizvod nikad ne dobije traku malih slika
-  // ispod glavne fotografije, koju admin očekuje da vidi.
-  if (!heroImages.length) {
-    heroImages = done
-      .filter((d) => d.blockId)
-      .slice(0, 6)
-      .map((d) => d.media);
-  }
+  // SAMO "zvanične" slike (JSON-LD/og:image) idu u hero galeriju —
+  // namjerno se NE popunjava automatski iz sekcija kad tih nema, admin
+  // bira ručno u editoru koje slike ide u malu galeriju.
+  const heroImages = done.filter((d) => !d.blockId).map((d) => d.media);
 
   const sections = product.sections.map((s) => {
     const m = byBlockId.get(s.id);
