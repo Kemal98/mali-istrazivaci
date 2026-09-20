@@ -411,6 +411,45 @@
 .adm-table tr:last-child td {
   border-bottom: none;
 }
+
+/* Excel-stil: prave vertikalne linije + naizmjenično sjenčani redovi,
+   kompaktniji razmak — za tabele koje admin skenira brzo pogledom
+   (narudžbe), ne mijenja izgled ostalih tabela u adminu. */
+.adm-table-grid th,
+.adm-table-grid td {
+  padding: 7px 10px;
+  border-right: 1px solid var(--line);
+}
+.adm-table-grid th:last-child,
+.adm-table-grid td:last-child {
+  border-right: none;
+}
+.adm-table-grid th {
+  background: #f6f7f9;
+  text-transform: none;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: #333;
+}
+.adm-table-grid tbody tr:nth-child(even) td {
+  background: #fafbfc;
+}
+.adm-table-grid tr:hover td {
+  background: #f1f4fb !important;
+}
+.adm-sync-retry {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--red);
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  font-weight: 800;
+  cursor: pointer;
+  line-height: 1;
+}
+.adm-sync-retry:hover { border-color: var(--red); }
+
 .adm-table tr:hover td {
   background: #fafbfc;
 }

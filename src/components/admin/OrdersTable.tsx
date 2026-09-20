@@ -218,9 +218,12 @@ export default function OrdersTable({
         </div>
       ) : null}
 
-      {/* desktop: tabela */}
+      {/* desktop: tabela — namjerno malo kolona i prava mreža (kao Excel),
+          spojeno šta se moglo (Kol. uz Proizvod, Kurir naplati ispod
+          Vrijednosti) da je lakše čitati u prolazu. Kurir/tracking je i
+          dalje na detalju narudžbe, samo ne zauzima svoju kolonu ovdje. */}
       <div className="adm-table-wrap adm-order-table-wrap">
-        <table className="adm-table" style={{ minWidth: 1180 }}>
+        <table className="adm-table adm-table-grid" style={{ minWidth: 980 }}>
           <thead>
             <tr>
               <th style={{ width: 34 }}>
@@ -239,13 +242,11 @@ export default function OrdersTable({
               <th>Telefon</th>
               <th>Grad</th>
               <th>Proizvod</th>
-              <th style={{ textAlign: "right" }}>Kol.</th>
               <th style={{ textAlign: "right" }}>Vrijednost</th>
-              <th style={{ textAlign: "right" }}>Kurir naplati</th>
               <th>Status</th>
-              <th>Kurir</th>
-              <th>Sheets</th>
-              <th />
+              <th style={{ width: 40 }} title="Google Sheets">
+                📋
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -293,52 +294,37 @@ export default function OrdersTable({
                   >
                     {o.productName}
                   </button>
+                  {o.quantity > 1 ? (
+                    <span className="adm-hint"> × {o.quantity}</span>
+                  ) : null}
                 </td>
-                <td style={{ textAlign: "right" }}>{o.quantity}</td>
-                {/* vrijednost proizvoda = prihod, pa je ovo glavni broj */}
+                {/* vrijednost proizvoda = prihod, glavni broj; kurir naplati
+                    (sa dostavom) ide sitnije ispod, nije zarada */}
                 <td style={{ textAlign: "right" }}>
                   <b>{o.subtotal} KM</b>
-                </td>
-                {/* ukupno sa dostavom — operativno, šta kurir uzima */}
-                <td style={{ textAlign: "right" }} className="adm-hint">
-                  {o.totalPrice} KM
+                  <div className="adm-hint" style={{ fontSize: "0.72rem" }}>
+                    kurir {o.totalPrice} KM
+                  </div>
                 </td>
                 <td>
                   <StatusSelect order={o} onChanged={patchRow} />
                 </td>
-                <td className="adm-hint" style={{ maxWidth: 120 }}>
-                  {o.courier || o.trackingNumber ? (
-                    <>
-                      {o.courier}
-                      {o.trackingNumber ? (
-                        <div>{o.trackingNumber}</div>
-                      ) : null}
-                    </>
-                  ) : (
-                    "—"
-                  )}
-                </td>
-                <td>
+                <td style={{ textAlign: "center" }}>
                   {o.sheetSynced ? (
-                    <span className="adm-sync-ok" title="Upisano u tabelu">
+                    <span className="adm-sync-ok" title="Upisano u Google Sheet">
                       ✓
                     </span>
                   ) : (
                     <button
                       type="button"
-                      className="adm-btn adm-btn-sm adm-btn-danger"
-                      title={o.sheetError || "Nije sinhronizovano"}
+                      className="adm-sync-retry"
+                      title={o.sheetError || "Nije sinhronizovano — klikni za ponovni pokušaj"}
                       disabled={busy}
                       onClick={() => retrySheet([o.id])}
                     >
-                      ↻ RETRY
+                      ↻
                     </button>
                   )}
-                </td>
-                <td style={{ textAlign: "right" }}>
-                  <Link className="adm-btn adm-btn-sm" href={`/admin/orders/${o.id}`}>
-                    DETALJI
-                  </Link>
                 </td>
               </tr>
               );
