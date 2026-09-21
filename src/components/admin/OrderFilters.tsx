@@ -159,6 +159,31 @@ export default function OrderFilters({
         ))}
       </div>
 
+      {/* proizvod — klik direktno na proizvod, isto kao status gore */}
+      {products.length > 0 ? (
+        <div className="adm-chips" style={{ marginBottom: 10 }}>
+          <button
+            type="button"
+            className="adm-chip"
+            data-active={!params.get("product")}
+            onClick={() => set({ product: undefined })}
+          >
+            Svi proizvodi
+          </button>
+          {products.map((p) => (
+            <button
+              key={p}
+              type="button"
+              className="adm-chip"
+              data-active={params.get("product") === p}
+              onClick={() => set({ product: p })}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       {/* period */}
       <div className="adm-chips" style={{ marginBottom: 10 }}>
         {DATE_PRESETS.map((p) => (
@@ -223,22 +248,6 @@ export default function OrderFilters({
 
       {/* proizvod / grad / sortiranje / broj po stranici */}
       <div className="adm-filters">
-        <div className="adm-filter-group">
-          <label htmlFor="f-prod">Proizvod</label>
-          <select
-            id="f-prod"
-            value={params.get("product") ?? ""}
-            onChange={(e) => set({ product: e.target.value || undefined })}
-          >
-            <option value="">Svi proizvodi</option>
-            {products.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </div>
-
         <div className="adm-filter-group">
           <label htmlFor="f-city">Grad</label>
           <select
