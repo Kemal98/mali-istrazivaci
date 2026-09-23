@@ -19,6 +19,7 @@ import Checkout from "@/components/Checkout";
 import PreOrderNotice from "@/components/PreOrderNotice";
 import Final from "@/components/Final";
 import Footer from "@/components/Footer";
+import MoreProductsLink from "@/components/MoreProductsLink";
 import StickyBar from "@/components/StickyBar";
 
 // Ista naslov/opis koje je ova stranica imala na "/" prije seljenja — samo
@@ -35,6 +36,7 @@ export default function Home() {
   return (
     <>
       <Nav
+        logoHref="/"
         simplified
         topbarFull="🚚 Dostava po BiH · 💵 Plaćanje pouzećem · ↩️ 14 dana povrat novca"
         topbarShort="Pouzeće · Dostava po BiH · 14 dana povrat"
@@ -62,6 +64,7 @@ export default function Home() {
       <Checkout />
       <PreOrderNotice />
       <Final />
+      <MoreProductsLink />
       <Footer />
       <StickyBar simplified />
     </>

@@ -1,10 +1,12 @@
 import { CONTACT_EMAIL } from "@/lib/constants";
+import MoreProductsLink from "./MoreProductsLink";
 
 // Napomena: brief je tražio "🛡️ garancija zadovoljstva" — ne nudimo garanciju
 // povrata, pa je zamijenjeno stvarnom prednošću (plaćanje pouzećem).
 export default function DawnFooter() {
   return (
     <>
+      <MoreProductsLink />
       <p className="dawn-back-top">
         <a href="#top">↑ Vrati se na vrh</a>
       </p>

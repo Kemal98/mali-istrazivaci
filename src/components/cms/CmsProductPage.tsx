@@ -39,7 +39,7 @@ export default function CmsProductPage({
     <div className="dawn-page">
       <DawnQtyProvider>
         <BookCheckoutModalProvider>
-          <DawnHeader logoHref="#top" />
+          <DawnHeader />
           <div className="dawn-intro">
             <div className="dawn-intro-media">
               <CmsHero

@@ -1084,3 +1084,10 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-page .cms-two-col-rev{flex-direction:row-reverse}
   .dawn-page .cms-gallery{grid-template-columns:repeat(3,1fr)}
 }
+
+/* "Pogledaj ostale proizvode" — na dnu svake proizvod-stranice */
+.more-products{text-align:center;padding:36px 20px 8px;background:#fff}
+.more-products-btn{display:inline-block;padding:14px 28px;border:2px solid #111;
+  border-radius:999px;font-weight:800;font-size:1rem;color:#111;text-decoration:none;
+  transition:background .15s,color .15s}
+.more-products-btn:hover{background:#111;color:#fff}
