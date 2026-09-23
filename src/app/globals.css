@@ -992,59 +992,37 @@ body:has(.home-page-root){padding-bottom:0}
 
 /* Desktop layout za Dawn proizvod-stranice (knjiga/Blinger/zvečke/
    projektor) — ispod ove širine sve ostaje jedna centrirana kolona
-   (mobile-first, kao dosad). Iznad nje: hero postaje slika lijevo/sadržaj
-   desno, a opis proizvoda (.dawn-story) naizmjenično slika-lijevo/
-   slika-desno po bloku, kao na referentnim stranicama. Slika je jedino
-   dijete eksplicitno pozicionirano u grid koloni koja "razvuče" sve
-   redove (grid-row:1/-1) — ostala djeca (naslov, cijena, dugme... /
-   naslov bloka i tekst) se sama poređaju u preostalu kolonu, bez potrebe
-   da se JSX struktura mijenja po stranici. */
+   (mobile-first, kao dosad). Iznad nje: hero (slika+naslov+cijena+dugme)
+   i prvi (uvodni) dio opisa dijele JEDNU ".dawn-intro" sekciju — slika i
+   hero tekst ostaju fiksni (sticky) lijevo, uvodni opis skroluje desno.
+   Hero sam po sebi ostaje JEDNA kolona (slika pa tekst ispod) — dvije
+   kolone pravi VANJSKI .dawn-intro grid, ne hero interno. Sekcije poslije
+   uvodnog opisa (šta stiže u kutiji, recenzije, garancija…) vraćaju se na
+   punu širinu — prirodnije za "trust" sekcije nego da se stiskaju pored
+   slike do dna stranice. */
 @media(min-width:960px){
   .dawn-col{max-width:760px}
 
-  .dawn-product .dawn-col{
-    max-width:1100px;display:grid;grid-template-columns:1fr 1fr;
-    column-gap:64px;align-items:center;text-align:left
-  }
-  .dawn-product-img{grid-column:1;grid-row:1/-1;margin-bottom:0}
-  .dawn-product .dawn-h1,
-  .dawn-product .dawn-rating,
-  .dawn-product .dawn-price-row,
-  .dawn-product .dawn-pay-line,
-  .dawn-product .dawn-btn-black,
-  .dawn-product .dawn-hero-usp{grid-column:2}
+  .dawn-product .dawn-col{text-align:left}
   .dawn-product .dawn-rating{margin-left:0;margin-right:0;justify-content:flex-start}
   .dawn-product .dawn-price-row{justify-content:flex-start}
   .dawn-product .dawn-hero-usp{justify-content:flex-start}
   .dawn-product .dawn-h1{font-size:2.6rem}
   .dawn-product .dawn-h1-lg{font-size:3rem}
 
-  .dawn-story .dawn-col{max-width:1100px}
-  /* Naslov (.dawn-story-stmt) ide preko cijele širine kao red iznad, pa
-     slika i tekst ispod njega u dvije kolone, naizmjenično lijevo/desno.
-     Svaki grid item ima EKSPLICITAN i column i row — namjerno, da nema
-     "sparse" auto-placement nagađanja (ranije, kad je slika bila u koloni
-     2 ali je u DOM-u dolazila prije teksta iz kolone 1, grid ju je
-     gurnuo u sasvim novi red umjesto da je vrati unazad u kolonu 1 istog
-     reda). Blokovi bez slike (npr. projektor, dok se ne dodaju prave
-     fotografije) nemaju :has(img) pa ostaju centrirana jedna kolona. */
-  .dawn-story-block:has(img){
-    display:grid;grid-template-columns:1fr 1fr;column-gap:56px;
-    align-items:center;text-align:left;margin-bottom:64px
+  .dawn-intro{
+    max-width:1100px;margin:0 auto;padding:0 20px;
+    display:grid;grid-template-columns:1fr 1fr;column-gap:64px;
+    align-items:start
   }
-  .dawn-story-block:has(img) .dawn-story-stmt{grid-column:1/-1;grid-row:1;margin-bottom:20px}
-  .dawn-story-block img{grid-column:1;grid-row:2;margin-bottom:0}
-  .dawn-story-block:has(img) .dawn-story-text{grid-column:2;grid-row:2}
-  .dawn-story-block:nth-child(even) img{grid-column:2}
-  .dawn-story-block:nth-child(even):has(img) .dawn-story-text{grid-column:1}
-  /* blok bez naslova (nema .dawn-story-stmt) — slika/tekst se penju na
-     red 1 umjesto da red 1 ostane prazan gore */
-  .dawn-story-block:has(img):not(:has(.dawn-story-stmt)) img,
-  .dawn-story-block:has(img):not(:has(.dawn-story-stmt)) .dawn-story-text{grid-row:1}
-  /* dodatna djeca unutar .dawn-story-block (proof red) — eksplicitno
-     preko cijele širine, ispod slike/teksta, da ne uđe u "sparse"
-     auto-placement nagađanje kao ranije. */
-  .dawn-story-block:has(img) .dawn-story-proof{grid-column:1/-1;grid-row:3;margin-top:24px}
+  /* top mora ostati ispod sticky topbar+header trake (.dawn-topbar-wrap)
+     da se slika ne sakrije iza nje dok se skrola. */
+  .dawn-intro-media{position:sticky;top:100px}
+  .dawn-intro-media .dawn-col{padding:0}
+  .dawn-intro-right{padding-top:6px;text-align:left}
+  .dawn-intro-right .dawn-story-block:last-child{margin-bottom:0}
+
+  .dawn-story .dawn-col{max-width:700px}
 }
 
 /* ===== CMS blokovi (page builder) — koriste postojeći design system,

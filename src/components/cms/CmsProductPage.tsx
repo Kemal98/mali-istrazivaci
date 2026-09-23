@@ -5,7 +5,7 @@ import DawnFooter from "@/components/DawnFooter";
 import BookContact from "@/components/BookContact";
 import BookStickyBar from "@/components/BookStickyBar";
 import CmsHero from "./CmsHero";
-import { CmsBlocks } from "./CmsBlocks";
+import { CmsBlocks, IntroDescription, splitIntroSections } from "./CmsBlocks";
 import CmsCheckout from "./CmsCheckout";
 import CmsPixel from "./CmsPixel";
 import type { Block, Hero, Review } from "@/lib/cms/types";
@@ -34,18 +34,24 @@ export default function CmsProductPage({
   productId?: string | null;
   preview?: boolean;
 }) {
+  const { lead, rest } = splitIntroSections(sections);
   return (
     <div className="dawn-page">
       <DawnQtyProvider>
         <BookCheckoutModalProvider>
           <DawnHeader logoHref="#top" />
-          <CmsHero
-            hero={hero}
-            cijena={cijena}
-            staraCijena={staraCijena}
-            badge={badge}
-          />
-          <CmsBlocks sections={sections} reviews={reviews} />
+          <div className="dawn-intro">
+            <div className="dawn-intro-media">
+              <CmsHero
+                hero={hero}
+                cijena={cijena}
+                staraCijena={staraCijena}
+                badge={badge}
+              />
+            </div>
+            <IntroDescription blocks={lead} />
+          </div>
+          <CmsBlocks sections={rest} reviews={reviews} />
           <BookContact />
           {cijena !== null ? (
             <CmsCheckout

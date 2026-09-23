@@ -508,6 +508,39 @@ function SoloBlock({ block, reviews }: { block: Block; reviews: Review[] }) {
   }
 }
 
+/* Prvi neprekinuti niz "story" blokova (odmah nakon hero-a) ide u
+ * desktop sticky uvod (vidi CmsProductPage) — ostatak se renderuje kao
+ * i dosad. Sakriveni blokovi (hidden) se preskaču pri odlučivanju gdje
+ * niz staje, isto kao što groupBlocks() dolje ignoriše hidden blokove. */
+export function splitIntroSections(sections: Block[]): {
+  lead: Block[];
+  rest: Block[];
+} {
+  const visible = sections.filter((s) => !s.hidden);
+  const lead: Block[] = [];
+  for (const b of visible) {
+    if (!isStoryBlock(b)) break;
+    lead.push(b);
+  }
+  const leadIds = new Set(lead.map((b) => b.id));
+  return { lead, rest: sections.filter((s) => !leadIds.has(s.id)) };
+}
+
+/** Uvodni opis — jednostavna jedna kolona (bez naizmjeničnog rasporeda),
+ * jer na desktopu sjedi pored fiksne hero slike u .dawn-intro-right. */
+export function IntroDescription({ blocks }: { blocks: Block[] }) {
+  if (!blocks.length) return null;
+  return (
+    <div className="dawn-intro-right">
+      {blocks.map((b) => (
+        <div className="dawn-story-block" key={b.id}>
+          <StoryInner block={b} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* --------------------------- grupisanje --------------------------- */
 
 type Group =

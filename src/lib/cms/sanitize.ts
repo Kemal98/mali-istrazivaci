@@ -36,7 +36,10 @@ export function longStr(v: unknown): string {
     const code = s.charCodeAt(i);
     if (code === 10 || code === 9 || (code >= 32 && code !== 127)) out += s[i];
   }
-  return out.slice(0, MAX_TEXT);
+  // Prazne linije na POČETKU/KRAJU (ostatak copy-paste uvoza) se u
+  // RichText.tsx renderuju kao vidljivi <br>, pa nepotrebno razmiču
+  // blok od susjednog — praznine UNUTAR teksta se ne diraju, samo ivice.
+  return out.trim().slice(0, MAX_TEXT);
 }
 
 export function bool(v: unknown): boolean {
