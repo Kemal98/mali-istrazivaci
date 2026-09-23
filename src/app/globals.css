@@ -689,6 +689,8 @@ body:has(.home-page-root){padding-bottom:0}
    sticky trake+headera pa naslov ostane sakriven iza njih */
 .dawn-page [id]{scroll-margin-top:110px}
 .dawn-col{max-width:600px;margin:0 auto;padding:0 20px;text-align:center}
+/* uvodni opis (mobitel): isti bočni razmak i širina kao .dawn-col */
+.dawn-intro-right{max-width:600px;margin:0 auto;padding:0 20px;text-align:center}
 
 /* announcement + header — obavijena u jedan sticky omotač, vidi
    .dawn-topbar-wrap, umjesto da svaki dio bude sam za sebe fiksiran */
@@ -1061,7 +1063,7 @@ body:has(.home-page-root){padding-bottom:0}
      da se slika ne sakrije iza nje dok se skrola. */
   .dawn-intro-media{position:sticky;top:72px}
   .dawn-intro-media .dawn-col{padding:0}
-  .dawn-intro-right{padding-top:6px;text-align:left}
+  .dawn-intro-right{max-width:none;margin:0;padding:6px 0 0;text-align:left}
   .dawn-intro-right .dawn-story-block:last-child{margin-bottom:0}
 
   .dawn-story .dawn-col{max-width:700px}
