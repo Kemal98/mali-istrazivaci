@@ -143,7 +143,7 @@ export default function MediaBrowser({
         onDrop={onDrop}
       >
         <b>Prevucite fajlove ovdje</b>
-        JPG, PNG, WEBP, AVIF, GIF, MP4, WEBM, MOV — do 4 MB po fajlu.
+        JPG, PNG, WEBP, AVIF, GIF, MP4, WEBM, MOV — do 40 MB po fajlu.
         <div style={{ marginTop: 12 }}>
           <button
             type="button"
