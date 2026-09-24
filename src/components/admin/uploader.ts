@@ -13,38 +13,54 @@ export interface UploadRow {
  * Namjerno po jedan: ako jedan fajl padne, ostali se i dalje pošalju
  * i uploaduju — jedan neuspjeh ne smije srušiti cijeli batch ni stranicu.
  */
-export function uploadOne(
+export async function uploadOne(
   file: File,
   onProgress: (pct: number) => void
 ): Promise<{ media?: Media; error?: string }> {
-  return new Promise((resolve) => {
-    const fd = new FormData();
-    fd.append("file", file);
+  // Direktan upload u Storage (potpisani URL) — zaobilazi Vercelov limit
+  // tijela zahtjeva od ~4.5 MB, pa rade i veliki GIF-ovi/videi.
+  const post = async (payload: Record<string, unknown>) => {
+    const res = await fetch("/api/admin/media/direct", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        filename: file.name,
+        mime: file.type,
+        size: file.size,
+        ...payload,
+      }),
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data) {
+      throw new Error(data?.error || "Server je vratio neočekivan odgovor.");
+    }
+    return data;
+  };
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/admin/media");
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 96));
-    };
-    xhr.onload = () => {
-      let data: { uploaded?: Media[]; errors?: string[]; error?: string } = {};
-      try {
-        data = JSON.parse(xhr.responseText);
-      } catch {
-        resolve({ error: "Server je vratio neočekivan odgovor." });
-        return;
-      }
-      if (xhr.status >= 400) {
-        resolve({ error: data.error || "Upload nije uspio." });
-        return;
-      }
-      if (data.uploaded?.length) {
-        resolve({ media: data.uploaded[0] });
-        return;
-      }
-      resolve({ error: data.errors?.[0] || "Upload nije uspio." });
-    };
-    xhr.onerror = () => resolve({ error: "Prekinuta veza pri uploadu." });
-    xhr.send(fd);
-  });
+  try {
+    const { key, signedUrl } = await post({ action: "sign" });
+
+    await new Promise<void>((resolve, reject) => {
+      const fd = new FormData();
+      fd.append("cacheControl", "31536000");
+      fd.append("", file);
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", signedUrl);
+      xhr.setRequestHeader("x-upsert", "false");
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 96));
+      };
+      xhr.onload = () =>
+        xhr.status < 300
+          ? resolve()
+          : reject(new Error(`Storage je odbio upload (${xhr.status}).`));
+      xhr.onerror = () => reject(new Error("Prekinuta veza pri uploadu."));
+      xhr.send(fd);
+    });
+
+    const { media } = await post({ action: "register", key });
+    return { media };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Upload nije uspio." };
+  }
 }

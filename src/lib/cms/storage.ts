@@ -52,3 +52,19 @@ export async function removeFromStorage(key: string): Promise<void> {
   if (!key) return;
   await client().storage.from(BUCKET).remove([key]);
 }
+
+/** Potpisan URL za direktan upload iz browsera (zaobilazi Vercelov ~4.5 MB limit tijela zahtjeva). */
+export async function createSignedUpload(
+  key: string
+): Promise<{ signedUrl: string }> {
+  const { data, error } = await client()
+    .storage.from(BUCKET)
+    .createSignedUploadUrl(key);
+  if (error || !data) throw new Error(error?.message ?? "Nema potpisanog URL-a.");
+  return { signedUrl: data.signedUrl };
+}
+
+export async function storageObjectExists(key: string): Promise<boolean> {
+  const { data, error } = await client().storage.from(BUCKET).exists(key);
+  return !error && data === true;
+}
