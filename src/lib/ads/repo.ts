@@ -1,5 +1,6 @@
 import { newId, nowIso, sql } from "@/lib/cms/db";
 import type { AdSpend, CampaignMapping } from "./types";
+import { META_USD_TO_KM, adAmountKm } from "./currency";
 
 type Row = Record<string, unknown>;
 const n = (v: unknown) => (v === null || v === undefined ? 0 : Number(v));
@@ -10,7 +11,7 @@ function rowToAdSpend(r: Row): AdSpend {
     id: s(r.id),
     date: s(r.date),
     productName: s(r.product_name),
-    amount: Math.round(n(r.amount) * 100) / 100,
+    amount: Math.round(adAmountKm(n(r.amount), s(r.source)) * 100) / 100,
     note: s(r.note),
     source: r.source === "meta" ? "meta" : "manual",
     createdAt: s(r.created_at),
@@ -60,7 +61,8 @@ export async function sumAdSpendByProduct(
   if (from) w = db`${w} AND date >= ${from}`;
   if (to) w = db`${w} AND date <= ${to}`;
   const rows = await db<{ product_name: string; total: number }[]>`
-    SELECT product_name, COALESCE(SUM(amount), 0) AS total
+    SELECT product_name,
+           COALESCE(SUM(CASE WHEN source = 'meta' THEN amount * ${META_USD_TO_KM} ELSE amount END), 0) AS total
       FROM ad_spend WHERE ${w}
      GROUP BY product_name`;
   const out: Record<string, number> = {};

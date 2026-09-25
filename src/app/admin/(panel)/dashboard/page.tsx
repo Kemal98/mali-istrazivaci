@@ -1,7 +1,11 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { after } from "next/server";
+import { metaConfigured } from "@/lib/ads/meta";
+import { syncMetaSpend } from "@/lib/ads/sync";
 import { datum, sarajevoDateOnly } from "@/lib/cms/datum";
-import { sumAdSpendByProduct } from "@/lib/ads/repo";
+import { META_USD_TO_KM } from "@/lib/ads/currency";
+import { profitAsIfSold } from "@/lib/orders/profit";
 import { countUnsynced, listOrders } from "@/lib/orders/repo";
 import { shopStats } from "@/lib/orders/dashboard";
 import {
@@ -76,6 +80,11 @@ function resolvePeriod(
   }
 }
 
+// Potrošnja iz Mete se osvježi u pozadini kad se dashboard otvori (najviše
+// jednom u 10 min), pa brojke nisu stare do dnevnog cron-a u 6:00. Vidi se
+// pri sljedećem učitavanju stranice.
+let lastMetaRefresh = 0;
+
 const km = (v: number) => `${v.toLocaleString("bs-BA")} KM`;
 
 /* ---------- stranica ---------- */
@@ -86,6 +95,19 @@ export default async function DashboardPage({
   searchParams: Promise<{ period?: string; from?: string; to?: string }>;
 }) {
   const sp = await searchParams;
+  if (metaConfigured() && Date.now() - lastMetaRefresh > 10 * 60_000) {
+    lastMetaRefresh = Date.now();
+    after(async () => {
+      try {
+        await syncMetaSpend(
+          sarajevoDateOnly(new Date(Date.now() - 3 * 864e5)),
+          sarajevoDateOnly(new Date())
+        );
+      } catch (e) {
+        console.error("[dashboard] osvježavanje Meta potrošnje palo:", e);
+      }
+    });
+  }
   const { range, fromDate, toDate, label } = resolvePeriod(sp.period, sp.from, sp.to);
 
   const now = new Date();
@@ -105,7 +127,8 @@ export default async function DashboardPage({
   const period = await kpi(range);
   const series = fillDays(await dailySeries(range), fromDate, toDate);
   const products = await topProducts(range);
-  const adSpend = await sumAdSpendByProduct(
+  const profit = await profitAsIfSold(
+    range,
     sarajevoDateOnly(fromDate),
     sarajevoDateOnly(toDate)
   );
@@ -343,63 +366,95 @@ export default async function DashboardPage({
         )}
       </div>
 
-      {/* ---------- PROFIT PO PROIZVODU ---------- */}
+      {/* ---------- ZARADA (kao da je sve prodano) ---------- */}
       <div className="adm-card">
-        <div className="adm-card-title">Profit po proizvodu — {label}</div>
-        {products.length === 0 ? (
-          <p className="adm-hint">Nema narudžbi u ovom periodu.</p>
-        ) : (
-          <>
-            <div className="adm-table-wrap" style={{ border: "none" }}>
-              <table className="adm-table" style={{ minWidth: 720 }}>
-                <thead>
-                  <tr>
-                    <th>Proizvod</th>
-                    <th style={{ textAlign: "right" }}>Prihod</th>
-                    <th style={{ textAlign: "right" }}>Nabavna cijena</th>
-                    <th style={{ textAlign: "right" }}>Reklame</th>
-                    <th style={{ textAlign: "right" }}>Profit</th>
+        <div className="adm-card-title">Zarada — {label}</div>
+        <p className="adm-hint" style={{ marginBottom: 14 }}>
+          Računa se <b>kao da je sve prodano</b>: sve narudžbe iz perioda
+          (bez obzira na status), vrijednost proizvoda bez dostave, minus
+          nabavna cijena i minus sav novac potrošen na reklame (Meta u USD
+          pretvoren u KM po kursu {META_USD_TO_KM}).
+        </p>
+        <div className="adm-kpi-grid">
+          <div className="adm-kpi">
+            <span>Prihod</span>
+            <b>{km(profit.revenue)}</b>
+            <small>{profit.orders} narudžbi · {profit.quantity} kom</small>
+          </div>
+          <div className="adm-kpi">
+            <span>Nabavna cijena</span>
+            <b>−{km(profit.cost)}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>Reklame</span>
+            <b>−{km(profit.adSpend)}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>ZARADA</span>
+            <b style={{ color: profit.profit >= 0 ? "#148a4b" : "#b3261e" }}>
+              {km(profit.profit)}
+            </b>
+            <small>
+              {profit.revenue > 0
+                ? `marža ${Math.round((profit.profit / profit.revenue) * 1000) / 10}%`
+                : ""}
+            </small>
+          </div>
+        </div>
+
+        {profit.rows.length > 0 ? (
+          <div className="adm-table-wrap" style={{ border: "none", marginTop: 14 }}>
+            <table className="adm-table" style={{ minWidth: 720 }}>
+              <thead>
+                <tr>
+                  <th>Proizvod</th>
+                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Narudž.</th>
+                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Prihod</th>
+                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Nabavna</th>
+                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Reklame</th>
+                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Zarada</th>
+                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Po narudž.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {profit.rows.map((p) => (
+                  <tr key={p.productName}>
+                    <td>
+                      {p.productName}
+                      {p.missingCost ? (
+                        <span className="adm-hint"> · fali nabavna cijena</span>
+                      ) : null}
+                    </td>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>{p.orders || "—"}</td>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>{km(p.revenue)}</td>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
+                      {p.cost > 0 ? `−${km(p.cost)}` : "—"}
+                    </td>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
+                      {p.adSpend > 0 ? `−${km(p.adSpend)}` : "—"}
+                    </td>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                      <b style={{ color: p.profit >= 0 ? "#148a4b" : "#b3261e" }}>
+                        {km(p.profit)}
+                      </b>
+                    </td>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
+                      {p.orders ? km(Math.round((p.profit / p.orders) * 100) / 100) : "—"}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {products.map((p) => {
-                    const spend = adSpend[p.productName] ?? 0;
-                    const knowsCost = p.costTotal > 0;
-                    const profit =
-                      Math.round((p.revenue - p.costTotal - spend) * 100) / 100;
-                    return (
-                      <tr key={p.productName}>
-                        <td>{p.productName}</td>
-                        <td style={{ textAlign: "right" }}>{km(p.revenue)}</td>
-                        <td style={{ textAlign: "right" }} className="adm-hint">
-                          {knowsCost ? `−${km(p.costTotal)}` : "nepoznato"}
-                        </td>
-                        <td style={{ textAlign: "right" }} className="adm-hint">
-                          {spend > 0 ? `−${km(spend)}` : "—"}
-                        </td>
-                        <td style={{ textAlign: "right" }}>
-                          {knowsCost ? (
-                            <b style={{ color: profit >= 0 ? "#148a4b" : "#b3261e" }}>
-                              {km(profit)}
-                            </b>
-                          ) : (
-                            <span className="adm-hint">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            <p className="adm-hint" style={{ marginTop: 10 }}>
-              "Nepoznato" = nabavna cijena nije upisana u{" "}
-              <Link href="/admin/products">uređivaču proizvoda</Link>. Trošak
-              reklama se dodaje u{" "}
-              <Link href="/admin/troskovi">Troškovi reklama</Link>.
-            </p>
-          </>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="adm-hint">Nema narudžbi ni reklama u ovom periodu.</p>
         )}
+        <p className="adm-hint" style={{ marginTop: 10 }}>
+          Nabavna cijena se upisuje u{" "}
+          <Link href="/admin/products">uređivaču proizvoda</Link>; reklame se
+          same povlače iz Mete, ručni unos je u{" "}
+          <Link href="/admin/troskovi">Troškovi reklama</Link>.
+        </p>
       </div>
 
       {/* ---------- GRADOVI + MARKETING ---------- */}

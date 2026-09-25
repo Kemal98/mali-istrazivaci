@@ -1,5 +1,6 @@
 import "server-only";
 
+import { adAmountKm } from "./currency";
 import { fetchMetaDailySpend, listMetaCampaigns } from "./meta";
 import {
   listCampaignMap,
@@ -60,7 +61,7 @@ export async function syncMetaSpend(
     const mapped = byId.get(r.campaignId);
     const productName = mapped || `Nemapirano: ${r.campaignName}`;
     if (!mapped) unmapped.add(r.campaignName);
-    totalSpend += r.spend;
+    totalSpend += adAmountKm(r.spend, "meta");
     await upsertMetaAdSpend({
       date: r.date,
       campaignId: r.campaignId,
