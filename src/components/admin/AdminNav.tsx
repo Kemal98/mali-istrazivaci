@@ -8,6 +8,7 @@ const ITEMS = [
   { href: "/admin/orders", label: "NARUDŽBE", ico: "🧾" },
   { href: "/admin/products", label: "PROIZVODI", ico: "▤" },
   { href: "/admin/troskovi", label: "TROŠKOVI REKLAMA", ico: "📣" },
+  { href: "/admin/nabavka", label: "NABAVKA ROBE", ico: "📦" },
   { href: "/admin/media", label: "MEDIA LIBRARY", ico: "▣" },
   { href: "/admin/reviews", label: "RECENZIJE", ico: "★" },
   { href: "/admin/templates", label: "ŠABLONI", ico: "◲" },

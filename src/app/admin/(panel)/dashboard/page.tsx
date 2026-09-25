@@ -372,7 +372,7 @@ export default async function DashboardPage({
         <p className="adm-hint" style={{ marginBottom: 14 }}>
           Računa se <b>kao da je sve prodano</b>: sve narudžbe iz perioda
           (bez obzira na status), vrijednost proizvoda bez dostave, minus
-          nabavna cijena i minus sav novac potrošen na reklame (Meta u USD
+          nabavna cijena (stvarna prosječna iz <b>Nabavka robe</b>, ako je uneseno; inače cijena iz proizvoda) i minus sav novac potrošen na reklame (Meta u USD
           pretvoren u KM po kursu {META_USD_TO_KM}).
         </p>
         <div className="adm-kpi-grid">
@@ -385,6 +385,13 @@ export default async function DashboardPage({
             <span>Nabavna cijena</span>
             <b>−{km(profit.cost)}</b>
           </div>
+          {profit.purchasedCost > 0 ? (
+            <div className="adm-kpi">
+              <span>Uloženo u robu</span>
+              <b>{km(profit.purchasedCost)}</b>
+              <small>sve nabavke (unosi se u Nabavka robe)</small>
+            </div>
+          ) : null}
           <div className="adm-kpi">
             <span>Reklame</span>
             <b>−{km(profit.adSpend)}</b>
@@ -414,6 +421,7 @@ export default async function DashboardPage({
                   <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Reklame</th>
                   <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Zarada</th>
                   <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Po narudž.</th>
+                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Na stanju</th>
                 </tr>
               </thead>
               <tbody>
@@ -440,6 +448,9 @@ export default async function DashboardPage({
                     </td>
                     <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
                       {p.orders ? km(Math.round((p.profit / p.orders) * 100) / 100) : "—"}
+                    </td>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
+                      {p.stock === null ? "—" : `${p.stock} kom`}
                     </td>
                   </tr>
                 ))}

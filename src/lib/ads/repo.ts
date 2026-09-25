@@ -1,5 +1,5 @@
 import { newId, nowIso, sql } from "@/lib/cms/db";
-import type { AdSpend, CampaignMapping } from "./types";
+import type { AdSpend, CampaignMapping, StockPurchase } from "./types";
 import { META_USD_TO_KM, adAmountKm } from "./currency";
 
 type Row = Record<string, unknown>;
@@ -132,4 +132,43 @@ export async function setCampaignProduct(
   await sql()`
     UPDATE ad_campaign_map SET product_name = ${productName}, updated_at = ${nowIso()}
      WHERE campaign_id = ${campaignId}`;
+}
+
+/* ------------------------------- nabavke robe ------------------------------- */
+
+function rowToPurchase(r: Row): StockPurchase {
+  return {
+    id: s(r.id),
+    date: s(r.date),
+    productName: s(r.product_name),
+    quantity: Math.round(n(r.quantity)),
+    totalCost: Math.round(n(r.total_cost) * 100) / 100,
+    note: s(r.note),
+    createdAt: s(r.created_at),
+  };
+}
+
+export async function insertPurchase(input: {
+  date: string;
+  productName: string;
+  quantity: number;
+  totalCost: number;
+  note?: string;
+}): Promise<StockPurchase> {
+  const rows = await sql()<Row[]>`
+    INSERT INTO stock_purchases (id, date, product_name, quantity, total_cost, note, created_at)
+    VALUES (${newId("stk")}, ${input.date}, ${input.productName}, ${input.quantity},
+            ${input.totalCost}, ${input.note ?? ""}, ${nowIso()})
+    RETURNING *`;
+  return rowToPurchase(rows[0]);
+}
+
+export async function deletePurchase(id: string): Promise<void> {
+  await sql()`DELETE FROM stock_purchases WHERE id = ${id}`;
+}
+
+export async function listPurchases(limit = 200): Promise<StockPurchase[]> {
+  const rows = await sql()<Row[]>`
+    SELECT * FROM stock_purchases ORDER BY date DESC, created_at DESC LIMIT ${limit}`;
+  return rows.map(rowToPurchase);
 }

@@ -22,6 +22,11 @@ export interface ProfitRow {
   profit: number;
   missingCost: boolean;
   unmapped: boolean;
+  /** Kupljeno komada (sve vrijeme) i koliko je to koštalo — iz "Nabavka robe". */
+  purchasedQty: number;
+  purchasedCost: number;
+  /** kupljeno − prodano (sve vrijeme); null ako nema unesenih nabavki. */
+  stock: number | null;
 }
 
 export interface ProfitSummary {
@@ -32,6 +37,8 @@ export interface ProfitSummary {
   cost: number;
   adSpend: number;
   profit: number;
+  /** Ukupno uloženo u kupljenu robu (sve vrijeme). */
+  purchasedCost: number;
 }
 
 export async function profitAsIfSold(
@@ -67,6 +74,26 @@ export async function profitAsIfSold(
      WHERE date >= ${fromDate} AND date <= ${toDate}
      GROUP BY 1`;
 
+  // Nabavke (sve vrijeme) i ukupno prodano komada (sve vrijeme) po proizvodu
+  const purchaseRows = await db<Row[]>`
+    SELECT product_name, SUM(quantity) AS qty, SUM(total_cost) AS cost
+      FROM stock_purchases GROUP BY 1`;
+  const soldAllRows = await db<Row[]>`
+    SELECT COALESCE(pr.naziv, o.product_name) AS name, COALESCE(SUM(o.quantity), 0) AS qty
+      FROM orders o
+      LEFT JOIN products pr
+        ON pr.deleted_at IS NULL
+       AND (pr.id = o.product_id
+            OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
+     WHERE o.deleted_at IS NULL AND o.product_name <> ''
+     GROUP BY 1`;
+  const purchased = new Map<string, { qty: number; cost: number }>();
+  for (const r of purchaseRows) {
+    purchased.set(norm(String(r.product_name)), { qty: n(r.qty), cost: n(r.cost) });
+  }
+  const soldAll = new Map<string, number>();
+  for (const r of soldAllRows) soldAll.set(norm(String(r.name)), n(r.qty));
+
   const map = new Map<string, ProfitRow>();
   const blank = (name: string, unmapped = false): ProfitRow => ({
     productName: name.trim(),
@@ -78,6 +105,9 @@ export async function profitAsIfSold(
     profit: 0,
     missingCost: false,
     unmapped,
+    purchasedQty: 0,
+    purchasedCost: 0,
+    stock: null,
   });
 
   for (const r of orderRows) {
@@ -104,10 +134,30 @@ export async function profitAsIfSold(
     map.set(norm(name), row);
   }
 
+  // Proizvodi s nabavkom a bez narudžbi/reklama u periodu također dobiju red
+  for (const [key, pu] of purchased) {
+    if (!map.has(key)) {
+      const nameRow = purchaseRows.find((r) => norm(String(r.product_name)) === key);
+      map.set(key, blank(String(nameRow?.product_name ?? key)));
+      void pu;
+    }
+  }
+
+  for (const [key, row] of map) {
+    const pu = purchased.get(key);
+    if (!pu || pu.qty <= 0) continue;
+    // Ima unesenih nabavki: stvarna prosječna cijena po komadu (plaćeno / kupljeno)
+    row.cost = row.quantity * (pu.cost / pu.qty);
+    row.missingCost = false;
+    row.purchasedQty = pu.qty;
+    row.purchasedCost = pu.cost;
+    row.stock = pu.qty - (soldAll.get(key) ?? 0);
+  }
+
   const rows = [...map.values()];
   if (unmappedRow.adSpend > 0) rows.push(unmappedRow);
 
-  let orders = 0, quantity = 0, revenue = 0, cost = 0, adSpend = 0;
+  let orders = 0, quantity = 0, revenue = 0, cost = 0, adSpend = 0, purchasedCost = 0;
   for (const row of rows) {
     row.revenue = r2(row.revenue);
     row.cost = r2(row.cost);
@@ -118,6 +168,7 @@ export async function profitAsIfSold(
     revenue += row.revenue;
     cost += row.cost;
     adSpend += row.adSpend;
+    purchasedCost += row.purchasedCost;
   }
   rows.sort((a, b) => b.revenue - a.revenue || b.adSpend - a.adSpend);
 
@@ -129,5 +180,6 @@ export async function profitAsIfSold(
     cost: r2(cost),
     adSpend: r2(adSpend),
     profit: r2(revenue - cost - adSpend),
+    purchasedCost: r2(purchasedCost),
   };
 }

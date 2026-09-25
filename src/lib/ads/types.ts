@@ -16,3 +16,13 @@ export interface CampaignMapping {
   productName: string;
   updatedAt: string;
 }
+
+export interface StockPurchase {
+  id: string;
+  date: string;
+  productName: string;
+  quantity: number;
+  totalCost: number;
+  note: string;
+  createdAt: string;
+}

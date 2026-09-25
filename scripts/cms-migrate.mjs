@@ -34,7 +34,7 @@ try {
     SELECT table_name FROM information_schema.tables
      WHERE table_schema = 'public'
        AND table_name IN ('products','media','reviews','templates','settings',
-                          'orders','order_events','ad_spend')
+                          'orders','order_events','ad_spend','stock_purchases')
      ORDER BY table_name`;
   console.log("Tabele u bazi:", tables.map((t) => t.table_name).join(", "));
   console.log("Migracija završena.");

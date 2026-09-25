@@ -43,3 +43,17 @@ CREATE TABLE IF NOT EXISTS ad_campaign_map (
 );
 
 ALTER TABLE ad_campaign_map ENABLE ROW LEVEL SECURITY;
+
+-- Nabavke robe: koliko je komada kupljeno i koliko je plaćeno. Iz ovoga se
+-- računa prosječna stvarna nabavna cijena i stanje zaliha (kupljeno − prodano).
+CREATE TABLE IF NOT EXISTS stock_purchases (
+  id            text PRIMARY KEY,
+  date          text NOT NULL,
+  product_name  text NOT NULL,
+  quantity      integer NOT NULL,
+  total_cost    double precision NOT NULL DEFAULT 0,
+  note          text NOT NULL DEFAULT '',
+  created_at    text NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_stock_purchases_product ON stock_purchases (product_name);
+ALTER TABLE stock_purchases ENABLE ROW LEVEL SECURITY;
