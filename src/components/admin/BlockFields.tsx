@@ -543,6 +543,125 @@ export default function BlockFields({
         </p>
       );
 
+    case "koristi": {
+      type K = { url: string; alt: string; naslov: string; tekst: string };
+      const items = (Array.isArray(d.items) ? d.items : []) as K[];
+      const setItem = (i: number, patch: Partial<K>) =>
+        set({ items: items.map((x, j) => (j === i ? { ...x, ...patch } : x)) });
+      const move = (i: number, dir: -1 | 1) => {
+        const j = i + dir;
+        if (j < 0 || j >= items.length) return;
+        const next = [...items];
+        [next[i], next[j]] = [next[j], next[i]];
+        set({ items: next });
+      };
+      return (
+        <>
+          <TextField
+            label="Naslov sekcije (opcionalno)"
+            value={s("naslov")}
+            onChange={(v) => set({ naslov: v })}
+            placeholder="npr. Zašto roditelji biraju ovo"
+          />
+          {items.map((it, i) => (
+            <div key={i} className="adm-subcard">
+              <div className="adm-subcard-head">
+                <b>Korist {i + 1}</b>
+                <span>
+                  <button type="button" className="adm-btn adm-btn-icon" onClick={() => move(i, -1)} disabled={i === 0}>↑</button>
+                  <button type="button" className="adm-btn adm-btn-icon" onClick={() => move(i, 1)} disabled={i === items.length - 1}>↓</button>
+                  <button
+                    type="button"
+                    className="adm-btn adm-btn-icon adm-btn-danger"
+                    onClick={() => set({ items: items.filter((_, j) => j !== i) })}
+                  >
+                    ✕
+                  </button>
+                </span>
+              </div>
+              <MediaField
+                label="Slika ili GIF (opcionalno)"
+                value={it.url}
+                accept="image"
+                onChange={(url, alt) => setItem(i, { url, alt: alt ?? it.alt })}
+              />
+              <TextField
+                label="Kratak naslov (ishod)"
+                value={it.naslov}
+                onChange={(v) => setItem(i, { naslov: v })}
+                placeholder="npr. Ne treba baterije"
+              />
+              <TextArea
+                label="Detalj (mjera, materijal, broj)"
+                value={it.tekst}
+                onChange={(v) => setItem(i, { tekst: v })}
+                rows={2}
+                placeholder="npr. Radi na magnetu, nema punjenja ni zamjene."
+              />
+            </div>
+          ))}
+          {items.length < 5 ? (
+            <button
+              type="button"
+              className="adm-btn adm-btn-sm"
+              style={{ alignSelf: "flex-start" }}
+              onClick={() => set({ items: [...items, { url: "", alt: "", naslov: "", tekst: "" }] })}
+            >
+              + DODAJ KORIST
+            </button>
+          ) : null}
+          <p className="adm-hint">Najbolje 3–5. Svaka neka ima konkretan detalj, ne samo pridjev.</p>
+        </>
+      );
+    }
+
+    case "faq": {
+      type Q = { pitanje: string; odgovor: string };
+      const items = (Array.isArray(d.items) ? d.items : []) as Q[];
+      const setItem = (i: number, patch: Partial<Q>) =>
+        set({ items: items.map((x, j) => (j === i ? { ...x, ...patch } : x)) });
+      return (
+        <>
+          <TextField label="Naslov sekcije" value={s("naslov")} onChange={(v) => set({ naslov: v })} />
+          {items.map((it, i) => (
+            <div key={i} className="adm-subcard">
+              <div className="adm-subcard-head">
+                <b>Pitanje {i + 1}</b>
+                <button
+                  type="button"
+                  className="adm-btn adm-btn-icon adm-btn-danger"
+                  onClick={() => set({ items: items.filter((_, j) => j !== i) })}
+                >
+                  ✕
+                </button>
+              </div>
+              <TextField
+                label="Pitanje"
+                value={it.pitanje}
+                onChange={(v) => setItem(i, { pitanje: v })}
+                placeholder="npr. Za koji uzrast je?"
+              />
+              <TextArea
+                label="Odgovor"
+                value={it.odgovor}
+                onChange={(v) => setItem(i, { odgovor: v })}
+                rows={3}
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm"
+            style={{ alignSelf: "flex-start" }}
+            onClick={() => set({ items: [...items, { pitanje: "", odgovor: "" }] })}
+          >
+            + DODAJ PITANJE
+          </button>
+          <p className="adm-hint">Prvo pitanje je na stranici otvoreno, ostala se otvaraju klikom.</p>
+        </>
+      );
+    }
+
     default:
       return null;
   }
@@ -586,6 +705,11 @@ export function blockPreview(block: Block): string {
       return `${(Array.isArray(d.items) ? d.items : []).length} slika`;
     case "recenzije":
       return first("naslov");
+    case "koristi":
+    case "faq": {
+      const n = (Array.isArray(d.items) ? d.items : []).length;
+      return first("naslov") || `${n} stavki`;
+    }
     default:
       return "";
   }

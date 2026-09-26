@@ -1093,3 +1093,51 @@ body:has(.home-page-root){padding-bottom:0}
   border-radius:999px;font-weight:800;font-size:1rem;color:#111;text-decoration:none;
   transition:background .15s,color .15s}
 .more-products-btn:hover{background:#111;color:#fff}
+
+/* traka povjerenja ispod dugmeta (hero) */
+.cms-povjerenje{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;
+  margin:14px 0 0;padding:0;text-align:left}
+.cms-povjerenje li{font-size:.82rem;font-weight:700;color:#444;background:#f6f6f4;
+  border-radius:8px;padding:8px 10px;line-height:1.3}
+.cms-povjerenje li:only-child,.cms-povjerenje li:last-child:nth-child(odd){grid-column:1/-1}
+
+/* koristi sa slikom */
+.cms-koristi-col{max-width:760px}
+.cms-koristi-grid{display:grid;gap:14px;text-align:left}
+.cms-korist{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;
+  background:#fafaf8;border:1px solid #eee;border-radius:14px;padding:12px}
+.cms-korist:not(:has(img)){grid-template-columns:1fr}
+.cms-korist img{width:96px;height:96px;object-fit:cover;border-radius:10px}
+.cms-korist h3{font-size:1.02rem;font-weight:800;margin:0 0 4px;line-height:1.3}
+.cms-korist p{font-size:.93rem;color:#444;line-height:1.55;margin:0}
+@media(min-width:960px){
+  .cms-koristi-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .cms-korist{grid-template-columns:1fr;align-items:start}
+  .cms-korist img{width:100%;height:auto;aspect-ratio:1/1}
+}
+
+/* FAQ */
+.cms-faq-list{text-align:left;border-top:1px solid #eee}
+.cms-faq-list details{border-bottom:1px solid #eee}
+.cms-faq-list summary{cursor:pointer;list-style:none;font-weight:800;font-size:1rem;
+  padding:16px 28px 16px 0;position:relative;line-height:1.35}
+.cms-faq-list summary::-webkit-details-marker{display:none}
+.cms-faq-list summary::after{content:"+";position:absolute;right:4px;top:13px;
+  font-size:1.3rem;font-weight:700;color:var(--orange)}
+.cms-faq-list details[open] summary::after{content:"−"}
+.cms-faq-list details p{padding:0 0 16px;color:#444;font-size:.95rem;line-height:1.6}
+
+/* liste/koristi unutar uvodne kolone (stranice iz šablona) */
+.dawn-page .dawn-intro-right > section{padding:0 0 44px;background:none}
+.dawn-intro-right > section .dawn-col{padding:0;max-width:none}
+.dawn-intro-right > section:last-child{padding-bottom:0}
+.dawn-intro-right > .dawn-story-block + section{margin-top:-8px}
+@media(min-width:960px){
+  .dawn-intro-right > section .dawn-col{text-align:left}
+  .dawn-intro-right .dawn-step-list,.dawn-intro-right .dawn-includes ul{display:flex}
+  .dawn-intro-right .cms-koristi-grid{grid-template-columns:1fr}
+  .dawn-intro-right .cms-korist{grid-template-columns:96px 1fr;align-items:center}
+  .dawn-intro-right .cms-korist:not(:has(img)){grid-template-columns:1fr}
+  .dawn-intro-right .cms-korist img{width:96px;height:96px}
+}
+.dawn-intro:has(.dawn-intro-right > section:last-child){padding-bottom:44px}

@@ -9,10 +9,11 @@ import { CmsBlocks, IntroDescription, splitIntroSections } from "./CmsBlocks";
 import CmsCheckout from "./CmsCheckout";
 import CmsPixel from "./CmsPixel";
 import type { Block, Hero, Review } from "@/lib/cms/types";
+import { getSettings } from "@/lib/cms/repo";
 
 // Renderer stranice proizvoda: uzme HERO + NIZ SEKCIJA i prođe kroz njih
 // po redoslijedu. Nema hardkodirane stranice po proizvodu.
-export default function CmsProductPage({
+export default async function CmsProductPage({
   naziv,
   hero,
   sections,
@@ -35,6 +36,10 @@ export default function CmsProductPage({
   preview?: boolean;
 }) {
   const { lead, rest } = splitIntroSections(sections);
+  const settings = hero.prikaziPovjerenje ? await getSettings() : null;
+  const povjerenje = settings
+    ? [settings.dostavaTekst, settings.placanjeTekst, settings.garancijaTekst].filter(Boolean)
+    : [];
   return (
     <div className="dawn-page">
       <DawnQtyProvider>
@@ -47,6 +52,7 @@ export default function CmsProductPage({
                 cijena={cijena}
                 staraCijena={staraCijena}
                 badge={badge}
+                povjerenje={povjerenje}
               />
             </div>
             <IntroDescription blocks={lead} />

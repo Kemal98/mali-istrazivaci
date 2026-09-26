@@ -19,7 +19,9 @@ export type BlockType =
   | "spacer"
   | "galerija"
   | "recenzije"
-  | "divider";
+  | "divider"
+  | "koristi"
+  | "faq";
 
 export type Align = "left" | "center" | "right";
 export type Velicina = "S" | "M" | "L" | "XL";
@@ -33,6 +35,10 @@ export interface Block {
   type: BlockType;
   hidden?: boolean;
   data: BlockData;
+  /** Uputstvo iz šablona (šta ovdje staviti) — vidi se samo u editoru. */
+  uputa?: string;
+  /** Uloga iz šablona ("problem", "koristi"…) — po njoj "Popuni stranicu" zna gdje ide koji tekst. */
+  uloga?: string;
 }
 
 export interface Hero {
@@ -50,6 +56,8 @@ export interface Hero {
   prikaziCtaPodtekst: boolean;
   ctaPodtekst?: string;
   alt?: string;
+  /** Traka ispod dugmeta: dostava, pouzeće, povrat (tekst iz Postavki). */
+  prikaziPovjerenje?: boolean;
 }
 
 export interface Seo {
@@ -215,6 +223,17 @@ export function defaultBlockData(type: BlockType): BlockData {
       };
     case "divider":
       return {};
+    case "koristi":
+      return {
+        naslov: "",
+        items: [
+          { url: "", alt: "", naslov: "", tekst: "" },
+          { url: "", alt: "", naslov: "", tekst: "" },
+          { url: "", alt: "", naslov: "", tekst: "" },
+        ],
+      };
+    case "faq":
+      return { naslov: "Česta pitanja", items: [{ pitanje: "", odgovor: "" }] };
     default:
       return {};
   }
@@ -238,4 +257,6 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   galerija: "Galerija",
   recenzije: "Recenzije",
   divider: "Linija",
+  koristi: "Koristi sa slikom",
+  faq: "Česta pitanja (FAQ)",
 };

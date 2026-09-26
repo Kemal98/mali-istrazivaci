@@ -107,6 +107,7 @@ export function sanitizeHero(v: unknown): Hero {
     prikaziCtaPodtekst: bool(raw.prikaziCtaPodtekst),
     ctaPodtekst: str(raw.ctaPodtekst),
     alt: str(raw.alt),
+    prikaziPovjerenje: bool(raw.prikaziPovjerenje),
   };
 }
 
@@ -134,6 +135,8 @@ export function sanitizeSections(v: unknown): Block[] {
       type,
       hidden: bool(raw.hidden),
       data: sanitizeBlockData(type, raw.data),
+      ...(raw.uputa ? { uputa: str(raw.uputa, 400) } : {}),
+      ...(raw.uloga ? { uloga: str(raw.uloga, 40) } : {}),
     });
   }
   return out;
@@ -243,6 +246,31 @@ function sanitizeBlockData(type: BlockType, v: unknown): Record<string, unknown>
       };
     case "divider":
       return {};
+    case "koristi":
+      return {
+        naslov: str(r.naslov),
+        items: Array.isArray(r.items)
+          ? r.items.slice(0, 8).map((g) => {
+              const o = (g ?? {}) as Record<string, unknown>;
+              return {
+                url: mediaUrl(o.url),
+                alt: str(o.alt),
+                naslov: str(o.naslov, 120),
+                tekst: longStr(o.tekst).slice(0, 600),
+              };
+            })
+          : [],
+      };
+    case "faq":
+      return {
+        naslov: str(r.naslov),
+        items: Array.isArray(r.items)
+          ? r.items.slice(0, 15).map((g) => {
+              const o = (g ?? {}) as Record<string, unknown>;
+              return { pitanje: str(o.pitanje, 200), odgovor: longStr(o.odgovor).slice(0, 1500) };
+            })
+          : [],
+      };
     default:
       return {};
   }

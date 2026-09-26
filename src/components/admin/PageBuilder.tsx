@@ -40,9 +40,11 @@ const ADD_ORDER: BlockType[] = [
   "video",
   "slika_tekst",
   "social_proof",
+  "koristi",
   "benefiti",
   "koraci",
   "u_kutiji",
+  "faq",
   "trust",
   "cta",
   "galerija",
@@ -190,6 +192,7 @@ function SortableBlock({
 
       {open ? (
         <div className="adm-block-body">
+          {block.uputa ? <div className="adm-block-uputa">💡 {block.uputa}</div> : null}
           <BlockFields block={block} onChange={onChange} />
         </div>
       ) : null}

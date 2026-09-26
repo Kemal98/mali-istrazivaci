@@ -21,7 +21,12 @@ export default function NewProductButton({
   const [naziv, setNaziv] = useState("");
   const [slug, setSlug] = useState("");
   const [slugRucno, setSlugRucno] = useState(false);
-  const defaultTpl = templates.find((t) => t.isDefault) ?? templates[0] ?? null;
+  // Šabloni po vrsti proizvoda (tpl_sablon_*) idu prvi i prvi je izabran.
+  const sorted = [...templates].sort(
+    (a, b) =>
+      Number(b.id.startsWith("tpl_sablon_")) - Number(a.id.startsWith("tpl_sablon_"))
+  );
+  const defaultTpl = sorted[0] ?? null;
   const [osnova, setOsnova] = useState<Osnova>(defaultTpl ? "template" : "blank");
   const [templateId, setTemplateId] = useState(defaultTpl?.id ?? "");
   const [copyFromId, setCopyFromId] = useState(products[0]?.id ?? "");
@@ -127,17 +132,18 @@ export default function NewProductButton({
                 {!templates.length ? " (nema još ni jedan šablon)" : ""}
               </label>
               {osnova === "template" && templates.length > 0 ? (
-                <select
-                  value={templateId}
-                  onChange={(e) => setTemplateId(e.target.value)}
-                >
-                  {templates.map((t) => (
-                    <option key={t.id} value={t.id}>
+                <div className="adm-tpl-pick">
+                  {sorted.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      data-active={templateId === t.id}
+                      onClick={() => setTemplateId(t.id)}
+                    >
                       {t.naziv}
-                      {t.isDefault ? " (podrazumijevani)" : ""}
-                    </option>
+                    </button>
                   ))}
-                </select>
+                </div>
               ) : null}
 
               <label className="adm-check">

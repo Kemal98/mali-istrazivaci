@@ -10,7 +10,9 @@ export default function CmsHero({
   cijena,
   staraCijena,
   badge,
+  povjerenje = [],
 }: {
+  povjerenje?: string[];
   hero: Hero;
   cijena: number | null;
   staraCijena: number | null;
@@ -79,6 +81,14 @@ export default function CmsHero({
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           {hero.ctaTekst || "PORUČI SADA"}
         </BookOrderTrigger>
+
+        {povjerenje.length ? (
+          <ul className="cms-povjerenje">
+            {povjerenje.map((t) => (
+              <li key={t}>{t}</li>
+            ))}
+          </ul>
+        ) : null}
 
         {hero.prikaziCtaPodtekst && hero.ctaPodtekst ? (
           <p className="dawn-pay-line dawn-pay-line-below">{hero.ctaPodtekst}</p>

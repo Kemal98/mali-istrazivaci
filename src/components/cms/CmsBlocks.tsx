@@ -443,7 +443,9 @@ function SoloBlock({ block, reviews }: { block: Block; reviews: Review[] }) {
     }
 
     case "recenzije": {
-      if (!reviews.length && !s("naslov")) return null;
+      // Bez ijedne recenzije blok se ne prikazuje ("na osnovu 0 recenzija"
+      // bi odbilo kupca više nego da sekcije nema).
+      if (!reviews.length) return null;
       return (
         <section className="dawn-reviews" id="recenzije">
           <div className="dawn-col">
@@ -496,6 +498,66 @@ function SoloBlock({ block, reviews }: { block: Block; reviews: Review[] }) {
       );
     }
 
+    case "koristi": {
+      const list = (Array.isArray(d.items) ? d.items : []) as {
+        url?: string;
+        alt?: string;
+        naslov?: string;
+        tekst?: string;
+      }[];
+      return (
+        <section className="cms-koristi">
+          <div className="dawn-col cms-koristi-col">
+            {s("naslov") ? <h2 className="dawn-h2">{s("naslov")}</h2> : null}
+            <div className="cms-koristi-grid">
+              {list.map((k, i) => (
+                <div className="cms-korist" key={i}>
+                  {k.url ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={k.url} alt={k.alt ?? ""} loading="lazy" decoding="async" />
+                  ) : null}
+                  <div>
+                    {k.naslov ? <h3>{k.naslov}</h3> : null}
+                    {k.tekst ? (
+                      <p>
+                        <RichText text={k.tekst} />
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    case "faq": {
+      const list = (Array.isArray(d.items) ? d.items : []) as {
+        pitanje?: string;
+        odgovor?: string;
+      }[];
+      return (
+        <section className="cms-faq" id="pitanja">
+          <div className="dawn-col">
+            {s("naslov") ? <h2 className="dawn-h2">{s("naslov")}</h2> : null}
+            <div className="cms-faq-list">
+              {list.map((q, i) => (
+                <details key={i} open={i === 0}>
+                  <summary>{q.pitanje}</summary>
+                  {q.odgovor ? (
+                    <p>
+                      <RichText text={q.odgovor} />
+                    </p>
+                  ) : null}
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     case "divider":
       return (
         <div className="dawn-col">
@@ -508,6 +570,61 @@ function SoloBlock({ block, reviews }: { block: Block; reviews: Review[] }) {
   }
 }
 
+/* Prazni blokovi (npr. iz šablona, još nepopunjeni) se kupcu ne prikazuju,
+ * a prazne stavke u listama se izbacuju — tako nedovršen šablon ne ostavlja
+ * prazne rupe na stranici. */
+function cleanBlock(b: Block): Block | null {
+  const d = b.data as D;
+  const t = (k: string) => (typeof d[k] === "string" ? (d[k] as string).trim() : "");
+  const list = (k: string): unknown[] => (Array.isArray(d[k]) ? (d[k] as unknown[]) : []);
+  switch (b.type) {
+    case "naslov":
+    case "tekst":
+      return t("tekst") ? b : null;
+    case "naslov_tekst":
+      return t("naslov") || t("tekst") ? b : null;
+    case "slika":
+    case "gif":
+    case "video":
+      return t("url") ? b : null;
+    case "slika_tekst":
+      return t("url") || t("naslov") || t("tekst") ? b : null;
+    case "benefiti":
+    case "koraci":
+    case "u_kutiji":
+    case "trust": {
+      const items = list("items").filter((x) => typeof x === "string" && x.trim());
+      if (!items.length && b.type !== "trust") return null;
+      return { ...b, data: { ...d, items } };
+    }
+    case "koristi": {
+      const items = list("items").filter((x) => {
+        const o = (x ?? {}) as D;
+        return Boolean(o.naslov || o.tekst || o.url);
+      });
+      return items.length ? { ...b, data: { ...d, items } } : null;
+    }
+    case "faq": {
+      const items = list("items").filter((x) => Boolean(((x ?? {}) as D).pitanje));
+      return items.length ? { ...b, data: { ...d, items } } : null;
+    }
+    case "galerija":
+      return list("items").length ? b : null;
+    default:
+      return b;
+  }
+}
+
+function visibleBlocks(sections: Block[]): Block[] {
+  const out: Block[] = [];
+  for (const b of sections) {
+    if (b.hidden) continue;
+    const c = cleanBlock(b);
+    if (c) out.push(c);
+  }
+  return out;
+}
+
 /* Prvi neprekinuti niz "story" blokova (odmah nakon hero-a) ide u
  * desktop sticky uvod (vidi CmsProductPage) — ostatak se renderuje kao
  * i dosad. Sakriveni blokovi (hidden) se preskaču pri odlučivanju gdje
@@ -516,10 +633,18 @@ export function splitIntroSections(sections: Block[]): {
   lead: Block[];
   rest: Block[];
 } {
-  const visible = sections.filter((s) => !s.hidden);
+  const visible = visibleBlocks(sections);
+  // Stranice iz novih šablona (blokovi imaju `uloga`) u desnu kolonu pored
+  // fiksne slike puštaju i liste/koristi/kutiju, ne samo tekst i slike —
+  // inače bi desna kolona ostala skoro prazna. Stari proizvodi ostaju kako
+  // su bili (dogovor: postojeći se ne diraju).
+  const izSablona = sections.some((b) => b.uloga);
+  const uUvod = (b: Block) =>
+    isStoryBlock(b) ||
+    (izSablona && INTRO_SOLO.includes(b.type));
   const lead: Block[] = [];
   for (const b of visible) {
-    if (!isStoryBlock(b)) break;
+    if (!uUvod(b)) break;
     lead.push(b);
   }
   const leadIds = new Set(lead.map((b) => b.id));
@@ -528,15 +653,21 @@ export function splitIntroSections(sections: Block[]): {
 
 /** Uvodni opis — jednostavna jedna kolona (bez naizmjeničnog rasporeda),
  * jer na desktopu sjedi pored fiksne hero slike u .dawn-intro-right. */
+const INTRO_SOLO: Block["type"][] = ["koraci", "koristi", "benefiti", "u_kutiji", "faq"];
+
 export function IntroDescription({ blocks }: { blocks: Block[] }) {
   if (!blocks.length) return null;
   return (
     <div className="dawn-intro-right">
-      {blocks.map((b) => (
-        <div className="dawn-story-block" key={b.id}>
-          <StoryInner block={b} />
-        </div>
-      ))}
+      {blocks.map((b) =>
+        isStoryBlock(b) ? (
+          <div className="dawn-story-block" key={b.id}>
+            <StoryInner block={b} />
+          </div>
+        ) : (
+          <SoloBlock key={b.id} block={b} reviews={[]} />
+        )
+      )}
     </div>
   );
 }
@@ -568,7 +699,7 @@ export function CmsBlocks({
   sections: Block[];
   reviews: Review[];
 }) {
-  const groups = groupBlocks(sections.filter((s) => !s.hidden));
+  const groups = groupBlocks(visibleBlocks(sections));
 
   return (
     <>

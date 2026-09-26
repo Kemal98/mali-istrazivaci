@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ConfirmModal from "./ConfirmModal";
 import MediaField from "./MediaField";
 import PageBuilder from "./PageBuilder";
+import PopuniIzClaudea from "./PopuniIzClaudea";
 import ReviewsPanel from "./ReviewsPanel";
 import { NumberField, TextArea, TextField, Toggle } from "./fields";
 import { slugify } from "@/lib/cms/slug";
@@ -655,6 +656,11 @@ export default function ProductEditor({
             hint={`Globalno podrazumijevano: „${settings.defaultCtaTekst}".`}
           />
           <Toggle
+            label="Traka povjerenja ispod dugmeta (dostava, pouzeće, povrat iz Postavki)"
+            value={Boolean(draft.hero.prikaziPovjerenje)}
+            onChange={(v) => patchHero({ prikaziPovjerenje: v })}
+          />
+          <Toggle
             label="Prikaži tekst ispod dugmeta"
             value={draft.hero.prikaziCtaPodtekst}
             onChange={(v) => patchHero({ prikaziCtaPodtekst: v })}
@@ -677,6 +683,11 @@ export default function ProductEditor({
             Redoslijed ovdje je tačan redoslijed na stranici. Hero i forma za
             narudžbu su fiksni — oni nisu blokovi.
           </div>
+          <PopuniIzClaudea
+            hero={draft.hero}
+            sections={draft.sections}
+            onApply={(hero, sections) => patch({ hero, sections })}
+          />
           <PageBuilder
             sections={draft.sections}
             onChange={(sections) => patch({ sections })}
