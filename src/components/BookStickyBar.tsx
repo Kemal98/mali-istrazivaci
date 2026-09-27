@@ -8,7 +8,7 @@ import BookOrderTrigger from "./BookOrderTrigger";
 // a nestaje ako se vrati na vrh. Isti pristup kao postojeći StickyBar.tsx
 // na glavnoj stranici za CSS (display:none iznad 900px), plus
 // IntersectionObserver ovdje za samo pojavljivanje-na-skrol.
-export default function BookStickyBar() {
+export default function BookStickyBar({ text = "Poruči sada" }: { text?: string }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -24,8 +24,8 @@ export default function BookStickyBar() {
   if (!visible) return null;
 
   return (
-    <BookOrderTrigger className="dawn-sticky-bar" aria-label="Poruči sada">
-      Poruči sada
+    <BookOrderTrigger className="dawn-sticky-bar" aria-label={text}>
+      {text}
     </BookOrderTrigger>
   );
 }

@@ -58,6 +58,8 @@ export interface Hero {
   alt?: string;
   /** Traka ispod dugmeta: dostava, pouzeće, povrat (tekst iz Postavki). */
   prikaziPovjerenje?: boolean;
+  /** Tekst na fiksnom dugmetu koje se pojavi pri dnu ekrana dok se skrola (mobitel). Prazno = "Poruči sada". */
+  stickyCtaTekst?: string;
 }
 
 export interface Seo {

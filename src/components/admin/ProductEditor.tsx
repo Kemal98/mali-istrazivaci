@@ -664,6 +664,13 @@ export default function ProductEditor({
             value={Boolean(draft.hero.prikaziPovjerenje)}
             onChange={(v) => patchHero({ prikaziPovjerenje: v })}
           />
+          <TextField
+            label="Tekst na fiksnom dugmetu pri dnu ekrana (dok se skrola)"
+            value={draft.hero.stickyCtaTekst ?? ""}
+            onChange={(v) => patchHero({ stickyCtaTekst: v })}
+            placeholder="Poruči sada"
+            hint='Prazno = "Poruči sada" (podrazumijevano). Vidi se samo na mobitelu, pojavi se kad kupac skrola pored glavnog dugmeta.'
+          />
           <Toggle
             label="Prikaži tekst ispod dugmeta"
             value={draft.hero.prikaziCtaPodtekst}

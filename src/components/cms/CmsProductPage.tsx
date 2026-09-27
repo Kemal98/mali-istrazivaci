@@ -70,7 +70,7 @@ export default async function CmsProductPage({
             />
           ) : null}
           <DawnFooter />
-          <BookStickyBar />
+          <BookStickyBar text={hero.stickyCtaTekst || undefined} />
           {!preview ? <CmsPixel naziv={naziv} vrijednost={cijena} /> : null}
         </BookCheckoutModalProvider>
       </DawnQtyProvider>

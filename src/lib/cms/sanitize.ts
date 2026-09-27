@@ -108,6 +108,7 @@ export function sanitizeHero(v: unknown): Hero {
     ctaPodtekst: str(raw.ctaPodtekst),
     alt: str(raw.alt),
     prikaziPovjerenje: bool(raw.prikaziPovjerenje),
+    stickyCtaTekst: str(raw.stickyCtaTekst, 40),
   };
 }
 
