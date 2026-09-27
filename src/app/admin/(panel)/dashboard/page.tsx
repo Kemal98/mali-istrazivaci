@@ -20,6 +20,7 @@ import {
 } from "@/lib/orders/stats";
 import { STATUS_CLASS, STATUS_LABEL, type OrderStatus } from "@/lib/orders/types";
 import DashboardPeriod from "@/components/admin/DashboardPeriod";
+import DanPicker from "@/components/admin/DanPicker";
 import OrdersChart from "@/components/admin/OrdersChart";
 
 export const dynamic = "force-dynamic";
@@ -92,7 +93,7 @@ const km = (v: number) => `${v.toLocaleString("bs-BA")} KM`;
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ period?: string; from?: string; to?: string }>;
+  searchParams: Promise<{ period?: string; from?: string; to?: string; dan?: string }>;
 }) {
   const sp = await searchParams;
   if (metaConfigured() && Date.now() - lastMetaRefresh > 10 * 60_000) {
@@ -124,6 +125,18 @@ export default async function DashboardPage({
   const todayStr = sarajevoDateOnly(now);
   const profitToday = await profitAsIfSold(todayRange, todayStr, todayStr);
   const byDay = await profitByDay(sarajevoDateOnly(new Date(now.getTime() - 13 * 864e5)), todayStr);
+  const izabraniDan = /^\d{4}-\d{2}-\d{2}$/.test(sp.dan ?? "") ? sp.dan! : "";
+  const izDanRange = byDay.find((d) => d.day === izabraniDan);
+  const danProfit = izabraniDan
+    ? izDanRange ?? (await profitByDay(izabraniDan, izabraniDan))[0] ?? {
+        day: izabraniDan,
+        orders: 0,
+        revenue: 0,
+        cost: 0,
+        adSpend: 0,
+        profit: 0,
+      }
+    : null;
   const week = await kpi(d7);
   const month = await kpi(d30);
   const all = await kpi({});
@@ -246,9 +259,42 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      <div className="adm-card-title" style={{ marginTop: 18 }}>
-        Zarada po danima (zadnjih 14 dana)
+      <div className="adm-card-title" id="zarada-po-danima" style={{ marginTop: 18, scrollMarginTop: 110 }}>
+        Zarada po danima
       </div>
+      <div style={{ marginBottom: 12 }}>
+        <DanPicker today={todayStr} />
+      </div>
+
+      {danProfit ? (
+        <div className="adm-kpi-grid" style={{ marginBottom: 16 }}>
+          <div className="adm-kpi">
+            <span>{izabraniDan} — narudžbi</span>
+            <b>{danProfit.orders}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>Prihod</span>
+            <b>{km(danProfit.revenue)}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>Nabavna + reklame</span>
+            <b>−{km(danProfit.cost + danProfit.adSpend)}</b>
+          </div>
+          <div className="adm-kpi">
+            <span>ZARADA TOG DANA</span>
+            <b style={{ color: danProfit.profit >= 0 ? "#148a4b" : "#b3261e" }}>
+              {km(danProfit.profit)}
+            </b>
+            <small>
+              {danProfit.revenue > 0
+                ? `marža ${Math.round((danProfit.profit / danProfit.revenue) * 1000) / 10}%`
+                : ""}
+            </small>
+          </div>
+        </div>
+      ) : null}
+
+      <p className="adm-hint" style={{ marginBottom: 8 }}>Zadnjih 14 dana:</p>
       <div className="adm-table-wrap" style={{ border: "none" }}>
         <table className="adm-table" style={{ minWidth: 560 }}>
           <thead>
