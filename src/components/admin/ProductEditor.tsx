@@ -7,7 +7,7 @@ import MediaField from "./MediaField";
 import PageBuilder from "./PageBuilder";
 import PopuniIzClaudea from "./PopuniIzClaudea";
 import ReviewsPanel from "./ReviewsPanel";
-import { NumberField, TextArea, TextField, Toggle } from "./fields";
+import { NumberField, RichTextArea, TextArea, TextField, Toggle } from "./fields";
 import { slugify } from "@/lib/cms/slug";
 import type { Block, GlobalSettings, Hero, Product, Review, Seo } from "@/lib/cms/types";
 
@@ -595,15 +595,19 @@ export default function ProductEditor({
             </button>
           </div>
 
-          <TextField
+          <RichTextArea
             label="Naslov — prva linija"
             value={draft.hero.naslovLinija1}
             onChange={(v) => patchHero({ naslovLinija1: v })}
+            rows={2}
+            hint="Selektuj riječi pa klikni B / I / A+ / A− da promijeniš veličinu ili podebljanje dijela naslova."
           />
-          <TextField
+          <RichTextArea
             label="Naslov — druga linija (opcionalno)"
             value={draft.hero.naslovLinija2 ?? ""}
             onChange={(v) => patchHero({ naslovLinija2: v })}
+            rows={2}
+            hint="Prazno = nema druge linije, naslov ostaje samo prva."
           />
 
           <hr style={{ border: "none", borderTop: "1px solid #e3e5e9", margin: "14px 0" }} />

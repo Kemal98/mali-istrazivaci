@@ -1,5 +1,6 @@
 import BookOrderTrigger from "@/components/BookOrderTrigger";
 import HeroGallery from "./HeroGallery";
+import RichText from "./RichText";
 import type { Hero } from "@/lib/cms/types";
 import { ocjene } from "@/lib/cms/plural";
 
@@ -30,11 +31,11 @@ export default function CmsHero({
         ) : null}
 
         <h1 className="dawn-h1 dawn-h1-lg">
-          {hero.naslovLinija1}
+          <RichText text={hero.naslovLinija1} />
           {hero.naslovLinija2 ? (
             <>
               <br />
-              {hero.naslovLinija2}
+              <RichText text={hero.naslovLinija2} />
             </>
           ) : null}
         </h1>
