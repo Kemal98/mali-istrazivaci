@@ -5,7 +5,7 @@ import { metaConfigured } from "@/lib/ads/meta";
 import { syncMetaSpend } from "@/lib/ads/sync";
 import { datum, sarajevoDateOnly } from "@/lib/cms/datum";
 import { META_USD_TO_KM } from "@/lib/ads/currency";
-import { profitAsIfSold } from "@/lib/orders/profit";
+import { profitAsIfSold, profitByDay } from "@/lib/orders/profit";
 import { countUnsynced, listOrders } from "@/lib/orders/repo";
 import { shopStats } from "@/lib/orders/dashboard";
 import {
@@ -121,6 +121,9 @@ export default async function DashboardPage({
 
   // Sve sekvencijalno — vidi komentar u stats.ts o poolu konekcija.
   const today = await kpi(todayRange);
+  const todayStr = sarajevoDateOnly(now);
+  const profitToday = await profitAsIfSold(todayRange, todayStr, todayStr);
+  const byDay = await profitByDay(sarajevoDateOnly(new Date(now.getTime() - 13 * 864e5)), todayStr);
   const week = await kpi(d7);
   const month = await kpi(d30);
   const all = await kpi({});
@@ -206,6 +209,83 @@ export default async function DashboardPage({
           <span>Otkazane</span>
           <b>{today.cancelled}</b>
         </div>
+      </div>
+
+      <div className="adm-card-title" style={{ marginTop: 18 }}>
+        Zarada danas
+      </div>
+      <p className="adm-hint" style={{ marginBottom: 10 }}>
+        Isti račun kao dolje u „Zarada“, samo za današnji dan — sve
+        današnje narudžbe kao da su prodane, minus nabavna cijena i
+        minus reklame potrošene danas.
+      </p>
+      <div className="adm-kpi-grid">
+        <div className="adm-kpi">
+          <span>Prihod danas</span>
+          <b>{km(profitToday.revenue)}</b>
+          <small>{profitToday.orders} narudžbi</small>
+        </div>
+        <div className="adm-kpi">
+          <span>Nabavna cijena</span>
+          <b>−{km(profitToday.cost)}</b>
+        </div>
+        <div className="adm-kpi">
+          <span>Reklame danas</span>
+          <b>−{km(profitToday.adSpend)}</b>
+        </div>
+        <div className="adm-kpi">
+          <span>ČISTA ZARADA DANAS</span>
+          <b style={{ color: profitToday.profit >= 0 ? "#148a4b" : "#b3261e" }}>
+            {km(profitToday.profit)}
+          </b>
+          <small>
+            {profitToday.revenue > 0
+              ? `marža ${Math.round((profitToday.profit / profitToday.revenue) * 1000) / 10}%`
+              : ""}
+          </small>
+        </div>
+      </div>
+
+      <div className="adm-card-title" style={{ marginTop: 18 }}>
+        Zarada po danima (zadnjih 14 dana)
+      </div>
+      <div className="adm-table-wrap" style={{ border: "none" }}>
+        <table className="adm-table" style={{ minWidth: 560 }}>
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Narudž.</th>
+              <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Prihod</th>
+              <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Nabavna</th>
+              <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Reklame</th>
+              <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Zarada</th>
+              <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Marža</th>
+            </tr>
+          </thead>
+          <tbody>
+            {byDay.map((d) => (
+              <tr key={d.day}>
+                <td style={{ whiteSpace: "nowrap" }}>
+                  {d.day === todayStr ? <b>{d.day} · danas</b> : d.day}
+                </td>
+                <td style={{ textAlign: "right" }}>{d.orders || "—"}</td>
+                <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>{km(d.revenue)}</td>
+                <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
+                  {d.cost > 0 ? `−${km(d.cost)}` : "—"}
+                </td>
+                <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
+                  {d.adSpend > 0 ? `−${km(d.adSpend)}` : "—"}
+                </td>
+                <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                  <b style={{ color: d.profit >= 0 ? "#148a4b" : "#b3261e" }}>{km(d.profit)}</b>
+                </td>
+                <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
+                  {d.revenue > 0 ? `${Math.round((d.profit / d.revenue) * 1000) / 10}%` : "—"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* ---------- 7 / 30 DANA ---------- */}

@@ -183,3 +183,90 @@ export async function profitAsIfSold(
     purchasedCost: r2(purchasedCost),
   };
 }
+
+/* ------------------------------ zarada po danima ------------------------------ */
+
+export interface DayProfit {
+  day: string; // YYYY-MM-DD (Europe/Sarajevo)
+  orders: number;
+  revenue: number;
+  cost: number;
+  adSpend: number;
+  profit: number;
+}
+
+/**
+ * Isti račun kao profitAsIfSold, ali razbijen po danu — da admin može
+ * provjeriti "danas" ili bilo koji pojedinačni dan, ne samo zbir perioda.
+ * Trošak po komadu je isti kao gore: stvarna prosječna nabavna cijena
+ * (Nabavka robe) ako postoji, inače cijena iz proizvoda.
+ */
+export async function profitByDay(fromDate: string, toDate: string): Promise<DayProfit[]> {
+  const db = sql();
+
+  const purchaseRows = await db<Row[]>`
+    SELECT product_name, SUM(quantity) AS qty, SUM(total_cost) AS cost
+      FROM stock_purchases GROUP BY 1`;
+  const avgCost = new Map<string, number>();
+  for (const r of purchaseRows) {
+    const qty = n(r.qty);
+    if (qty > 0) avgCost.set(norm(String(r.product_name)), n(r.cost) / qty);
+  }
+
+  const orderRows = await db<Row[]>`
+    SELECT to_char((o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo', 'YYYY-MM-DD') AS day,
+           COALESCE(pr.naziv, o.product_name) AS name,
+           COUNT(*) AS orders,
+           COALESCE(SUM(o.quantity), 0) AS qty,
+           COALESCE(SUM(o.subtotal), 0) AS revenue,
+           COALESCE(SUM(o.quantity * pr.nabavna_cijena), 0) AS cost_default
+      FROM orders o
+      LEFT JOIN products pr
+        ON pr.deleted_at IS NULL
+       AND (pr.id = o.product_id
+            OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
+     WHERE o.deleted_at IS NULL AND o.product_name <> ''
+       AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' >= ${fromDate}::date
+       AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' < (${toDate}::date + 1)
+     GROUP BY 1, 2`;
+
+  const spendRows = await db<Row[]>`
+    SELECT date,
+           COALESCE(SUM(CASE WHEN source = 'meta' THEN amount * ${META_USD_TO_KM} ELSE amount END), 0) AS total
+      FROM ad_spend WHERE date >= ${fromDate} AND date <= ${toDate}
+     GROUP BY 1`;
+
+  const map = new Map<string, DayProfit>();
+  const get = (day: string) => {
+    let row = map.get(day);
+    if (!row) {
+      row = { day, orders: 0, revenue: 0, cost: 0, adSpend: 0, profit: 0 };
+      map.set(day, row);
+    }
+    return row;
+  };
+
+  for (const r of orderRows) {
+    const day = String(r.day);
+    const qty = n(r.qty);
+    const perUnit = avgCost.get(norm(String(r.name)));
+    const cost = perUnit !== undefined ? perUnit * qty : n(r.cost_default);
+    const row = get(day);
+    row.orders += n(r.orders);
+    row.revenue += n(r.revenue);
+    row.cost += cost;
+  }
+  for (const r of spendRows) {
+    get(String(r.date)).adSpend += n(r.total);
+  }
+
+  const rows = [...map.values()].map((r) => ({
+    ...r,
+    revenue: r2(r.revenue),
+    cost: r2(r.cost),
+    adSpend: r2(r.adSpend),
+    profit: r2(r.revenue - r.cost - r.adSpend),
+  }));
+  rows.sort((a, b) => b.day.localeCompare(a.day));
+  return rows;
+}
