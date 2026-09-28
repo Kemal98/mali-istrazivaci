@@ -125,3 +125,20 @@ CREATE INDEX IF NOT EXISTS idx_order_events_order
 -- neko dobije anon ključ.
 ALTER TABLE orders       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE order_events ENABLE ROW LEVEL SECURITY;
+
+-- Ručni brojač prodaje bez podataka o kupcu (npr. Messenger dogovor gdje
+-- se dostava rješava van sistema). NIKAD ne postaje prava narudžba — ne
+-- ide u packing listu ni A2B izvoz, samo dopunjuje "prodano" u Zaradi.
+CREATE TABLE IF NOT EXISTS manual_sales (
+  id            text PRIMARY KEY,
+  date          text NOT NULL,       -- YYYY-MM-DD, kalendarski dan (Europe/Sarajevo)
+  product_name  text NOT NULL,
+  quantity      integer NOT NULL,
+  note          text NOT NULL DEFAULT '',
+  created_at    text NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_manual_sales_product ON manual_sales (product_name);
+CREATE INDEX IF NOT EXISTS idx_manual_sales_date    ON manual_sales (date DESC);
+
+ALTER TABLE manual_sales ENABLE ROW LEVEL SECURITY;

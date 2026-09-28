@@ -581,3 +581,49 @@ export async function recentOrderCount(
     : ([{ c: 0 }] as Row[]);
   return { byPhone: n(p[0]?.c), byIp: n(i[0]?.c) };
 }
+
+/* --------------------------- ručni brojač prodaje --------------------------- */
+
+export interface ManualSale {
+  id: string;
+  date: string;
+  productName: string;
+  quantity: number;
+  note: string;
+  createdAt: string;
+}
+
+function rowToManualSale(r: Row): ManualSale {
+  return {
+    id: s(r.id),
+    date: s(r.date),
+    productName: s(r.product_name),
+    quantity: Math.round(n(r.quantity)),
+    note: s(r.note),
+    createdAt: s(r.created_at),
+  };
+}
+
+export async function insertManualSale(input: {
+  date: string;
+  productName: string;
+  quantity: number;
+  note?: string;
+}): Promise<ManualSale> {
+  const rows = await sql()<Row[]>`
+    INSERT INTO manual_sales (id, date, product_name, quantity, note, created_at)
+    VALUES (${newId("msl")}, ${input.date}, ${input.productName}, ${input.quantity},
+            ${input.note ?? ""}, ${nowIso()})
+    RETURNING *`;
+  return rowToManualSale(rows[0]);
+}
+
+export async function deleteManualSale(id: string): Promise<void> {
+  await sql()`DELETE FROM manual_sales WHERE id = ${id}`;
+}
+
+export async function listManualSales(limit = 200): Promise<ManualSale[]> {
+  const rows = await sql()<Row[]>`
+    SELECT * FROM manual_sales ORDER BY date DESC, created_at DESC LIMIT ${limit}`;
+  return rows.map(rowToManualSale);
+}

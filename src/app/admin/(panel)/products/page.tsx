@@ -55,6 +55,9 @@ export default async function ProductsPage() {
                       {p.missingCost ? (
                         <span className="adm-hint"> · fali nabavna cijena</span>
                       ) : null}
+                      {p.manualQty > 0 ? (
+                        <span className="adm-hint"> · uklj. {p.manualQty} ručno</span>
+                      ) : null}
                     </td>
                     <td style={{ textAlign: "right" }}>{p.orders || "—"}</td>
                     <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">

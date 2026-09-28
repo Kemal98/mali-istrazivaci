@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   countUnsynced,
   listFilterOptions,
+  listManualSales,
   listOrders,
   type OrderSort,
 } from "@/lib/orders/repo";
@@ -11,6 +12,7 @@ import { isOrderStatus } from "@/lib/orders/types";
 import OrderFilters from "@/components/admin/OrderFilters";
 import OrdersTable from "@/components/admin/OrdersTable";
 import AddOrderButton from "@/components/admin/AddOrderButton";
+import QuickSaleManager from "@/components/admin/QuickSaleManager";
 
 export const dynamic = "force-dynamic";
 
@@ -64,6 +66,7 @@ export default async function OrdersPage({
   const orderableProducts = cmsProducts
     .filter((p) => p.status === "published" && p.cijena !== null)
     .map((p) => ({ id: p.id, naziv: p.naziv, cijena: p.cijena }));
+  const manualSales = await listManualSales();
 
   return (
     <>
@@ -82,6 +85,11 @@ export default async function OrdersPage({
           </Link>
         </div>
       </div>
+
+      <QuickSaleManager
+        initial={manualSales}
+        products={orderableProducts.map((p) => p.naziv)}
+      />
 
       <Suspense fallback={<div className="adm-hint">Učitavam filtere…</div>}>
         <OrderFilters

@@ -22,6 +22,8 @@ export interface ProfitRow {
   profit: number;
   missingCost: boolean;
   unmapped: boolean;
+  /** Od `quantity`/`revenue` gore — koliko je iz ručnog brojača (Messenger i sl.), bez prave narudžbe. */
+  manualQty: number;
   /** Kupljeno komada (sve vrijeme) i koliko je to koštalo — iz "Nabavka robe". */
   purchasedQty: number;
   purchasedCost: number;
@@ -105,6 +107,7 @@ export async function profitAsIfSold(
     profit: 0,
     missingCost: false,
     unmapped,
+    manualQty: 0,
     purchasedQty: 0,
     purchasedCost: 0,
     stock: null,
@@ -115,6 +118,32 @@ export async function profitAsIfSold(
     const row = map.get(norm(name)) ?? blank(name);
     row.orders += n(r.orders);
     row.quantity += n(r.qty);
+    row.revenue += n(r.revenue);
+    row.cost += n(r.cost);
+    row.missingCost = row.missingCost || Boolean(r.missing);
+    map.set(norm(name), row);
+  }
+
+  // Ručni brojač prodaje (Messenger i sl., bez prave narudžbe) — ide u
+  // isti period kao reklame (fromDate/toDate, kalendarski dani), ne u ISO
+  // raspon narudžbi (manual_sales.date je goli YYYY-MM-DD koji admin bira).
+  const manualRows = await db<Row[]>`
+    SELECT COALESCE(pr.naziv, ms.product_name) AS name,
+           COALESCE(SUM(ms.quantity), 0) AS qty,
+           COALESCE(SUM(ms.quantity * pr.cijena), 0) AS revenue,
+           COALESCE(SUM(ms.quantity * pr.nabavna_cijena), 0) AS cost,
+           BOOL_OR(pr.nabavna_cijena IS NULL) AS missing
+      FROM manual_sales ms
+      LEFT JOIN products pr
+        ON pr.deleted_at IS NULL AND lower(trim(pr.naziv)) = lower(trim(ms.product_name))
+     WHERE ms.date >= ${fromDate} AND ms.date <= ${toDate}
+     GROUP BY 1`;
+  for (const r of manualRows) {
+    const name = String(r.name);
+    const row = map.get(norm(name)) ?? blank(name);
+    const qty = n(r.qty);
+    row.quantity += qty;
+    row.manualQty += qty;
     row.revenue += n(r.revenue);
     row.cost += n(r.cost);
     row.missingCost = row.missingCost || Boolean(r.missing);
@@ -236,6 +265,17 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
       FROM ad_spend WHERE date >= ${fromDate} AND date <= ${toDate}
      GROUP BY 1`;
 
+  const manualRows = await db<Row[]>`
+    SELECT ms.date, COALESCE(pr.naziv, ms.product_name) AS name,
+           COALESCE(SUM(ms.quantity), 0) AS qty,
+           COALESCE(SUM(ms.quantity * pr.cijena), 0) AS revenue,
+           COALESCE(SUM(ms.quantity * pr.nabavna_cijena), 0) AS cost
+      FROM manual_sales ms
+      LEFT JOIN products pr
+        ON pr.deleted_at IS NULL AND lower(trim(pr.naziv)) = lower(trim(ms.product_name))
+     WHERE ms.date >= ${fromDate} AND ms.date <= ${toDate}
+     GROUP BY 1, 2`;
+
   const map = new Map<string, DayProfit>();
   const get = (day: string) => {
     let row = map.get(day);
@@ -255,6 +295,11 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
     row.orders += n(r.orders);
     row.revenue += n(r.revenue);
     row.cost += cost;
+  }
+  for (const r of manualRows) {
+    const row = get(String(r.date));
+    row.revenue += n(r.revenue);
+    row.cost += n(r.cost);
   }
   for (const r of spendRows) {
     get(String(r.date)).adSpend += n(r.total);
