@@ -142,6 +142,11 @@ export async function profitAsIfSold(
     const name = String(r.name);
     const row = map.get(norm(name)) ?? blank(name);
     const qty = n(r.qty);
+    // Ubraja se i u "orders" (ne samo quantity) — admin ovaj broj čita
+    // kao "koliko je naručeno" bez obzira da li je prava narudžba ili
+    // ručni unos, pa oba moraju biti u istom broju da se poklopi sa
+    // onim što je stvarno poslano kuriru.
+    row.orders += qty;
     row.quantity += qty;
     row.manualQty += qty;
     row.revenue += n(r.revenue);
@@ -298,6 +303,7 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
   }
   for (const r of manualRows) {
     const row = get(String(r.date));
+    row.orders += n(r.qty);
     row.revenue += n(r.revenue);
     row.cost += n(r.cost);
   }
