@@ -1,6 +1,6 @@
 import { listOrdersForExport, setStatusBulk } from "@/lib/orders/repo";
 import { buildA2bWorkbook } from "@/lib/orders/a2bExport";
-import { isOrderStatus } from "@/lib/orders/types";
+import { isOrderStatus, type OrderStatus } from "@/lib/orders/types";
 import { sarajevoStartOfDay } from "@/lib/cms/datum";
 
 /**
@@ -15,9 +15,15 @@ import { sarajevoStartOfDay } from "@/lib/cms/datum";
  * POST (ne GET): izvoz ima nuspojavu — izvezene narudžbe prelaze u status
  * "Potvrđena", da se isti dan slučajno ne izvezu dvaput u A2B.
  */
+// Podrazumijevano uzima i "Nova" i "Potvrđena" — narudžbe se često
+// ručno potvrde u adminu (ili kroz "Narudžba van sajta") prije nego što
+// stvarno odu kuriru, pa strogo samo "Nova" ostavlja te narudžbe da se
+// nikad ne izvezu.
+const DEFAULT_STATUSES: OrderStatus[] = ["NEW", "CONFIRMED"];
+
 export async function POST(request: Request) {
   const p = new URL(request.url).searchParams;
-  const statusRaw = p.get("status") ?? "NEW";
+  const statusRaw = p.get("status") ?? "";
   const dateStr = p.get("date") ?? "";
 
   let from: string | undefined;
@@ -34,6 +40,7 @@ export async function POST(request: Request) {
   const orders = await listOrdersForExport({
     search: p.get("q") ?? undefined,
     status: isOrderStatus(statusRaw) ? statusRaw : "ALL",
+    statusIn: isOrderStatus(statusRaw) ? undefined : DEFAULT_STATUSES,
     from,
     to,
     product: p.get("product") ?? undefined,

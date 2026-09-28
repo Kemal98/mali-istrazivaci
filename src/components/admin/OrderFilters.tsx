@@ -79,7 +79,9 @@ export default function OrderFilters({
   async function exportA2b() {
     setA2bBusy(true);
     try {
-      const qs = new URLSearchParams({ status: "NEW" });
+      // Bez status parametra: server sam uzima i "Nova" i "Potvrđena"
+      // (vidi DEFAULT_STATUSES u export-a2b/route.ts).
+      const qs = new URLSearchParams();
       // Šalje se GOLI datum (YYYY-MM-DD) — server računa granice dana po
       // Sarajevu (sarajevoStartOfDay), da izbjegnemo isti UTC-vs-Sarajevo
       // problem kao ranije na dashboardu ako bismo to računali ovdje.
@@ -340,7 +342,9 @@ export default function OrderFilters({
 
       <div className="adm-filters" style={{ marginTop: 10 }}>
         <div className="adm-filter-group">
-          <label htmlFor="f-a2b-date">Izvoz za A2B — datum (prazno = sve neizvezene)</label>
+          <label htmlFor="f-a2b-date">
+            Izvoz za A2B — datum (prazno = sve neizvezene, status Nova ili Potvrđena)
+          </label>
           <input
             id="f-a2b-date"
             type="date"

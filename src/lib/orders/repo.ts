@@ -254,6 +254,8 @@ export type OrderSort = "newest" | "oldest" | "highest" | "lowest";
 export interface OrderFilters {
   search?: string;
   status?: OrderStatus | "ALL";
+  /** Više statusa odjednom (npr. A2B izvoz: Nova + Potvrđena) — ako je zadano, ima prednost nad `status`. */
+  statusIn?: OrderStatus[];
   from?: string;
   to?: string;
   product?: string;
@@ -272,7 +274,8 @@ function buildWhere(f: OrderFilters) {
   const db = sql();
   const parts = [db`deleted_at IS NULL`];
 
-  if (f.status && f.status !== "ALL") parts.push(db`status = ${f.status}`);
+  if (f.statusIn && f.statusIn.length) parts.push(db`status IN ${db(f.statusIn)}`);
+  else if (f.status && f.status !== "ALL") parts.push(db`status = ${f.status}`);
   if (f.from) parts.push(db`created_at >= ${f.from}`);
   if (f.to) parts.push(db`created_at <= ${f.to}`);
   if (f.product) parts.push(db`product_name = ${f.product}`);
