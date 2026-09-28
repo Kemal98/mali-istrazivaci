@@ -489,7 +489,7 @@ function SoloBlock({ block, reviews }: { block: Block; reviews: Review[] }) {
                       ) : null}
                     </div>
                   </div>
-                  <p>&ldquo;{r.tekst}&rdquo;</p>
+                  <p>{r.tekst}</p>
                 </div>
               ))}
             </div>

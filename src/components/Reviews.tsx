@@ -65,7 +65,7 @@ export default function Reviews({
           {reviews.map((r) => (
             <div className="rev-card" key={r.name}>
               <div className="rev-stars">★★★★★</div>
-              <p className="rev-text">&ldquo;{r.text}&rdquo;</p>
+              <p className="rev-text">{r.text}</p>
               <div className="rev-who">
                 <div className={`rev-av ${r.av}`}>{r.initial}</div>
                 <div>

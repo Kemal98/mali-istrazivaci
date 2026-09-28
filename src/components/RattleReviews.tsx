@@ -115,7 +115,7 @@ export default function RattleReviews() {
                   <span className="dawn-rev-verified">Verifikovano</span>
                 </div>
               </div>
-              <p>&ldquo;{r.text}&rdquo;</p>
+              <p>{r.text}</p>
             </div>
           ))}
         </div>

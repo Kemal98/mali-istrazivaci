@@ -48,7 +48,7 @@ export default function BookReviewsDawn() {
                   <span className="dawn-rev-verified">Verifikovano</span>
                 </div>
               </div>
-              <p>&ldquo;{r.text}&rdquo;</p>
+              <p>{r.text}</p>
             </div>
           ))}
         </div>
