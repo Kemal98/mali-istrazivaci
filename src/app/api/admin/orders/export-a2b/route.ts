@@ -1,11 +1,16 @@
 import { listOrdersForExport, setStatusBulk } from "@/lib/orders/repo";
 import { buildA2bWorkbook } from "@/lib/orders/a2bExport";
 import { isOrderStatus } from "@/lib/orders/types";
+import { sarajevoStartOfDay } from "@/lib/cms/datum";
 
 /**
- * Fajl za A2B "Masovni import" — isti filteri kao lista narudžbi (status,
- * datum, grad, proizvod, pretraga), pa "Danas" + status "Nova" izveze baš
- * dnevne rezervacije, a bez filtera izveze SVE nove bez obzira na datum.
+ * Fajl za A2B "Masovni import". Datum se bira POSEBNO od filtera na
+ * listi (query param `date`, YYYY-MM-DD) — prazno znači sve narudžbe sa
+ * statusom "Nova", bez obzira kad su primljene.
+ *
+ * Granica dana se računa po Sarajevu (sarajevoStartOfDay), ne po
+ * vremenskoj zoni servera (Vercel je u UTC-u) — ista greška je ranije
+ * pravila problem na dashboardu, vidi sarajevoStartOfDay komentar.
  *
  * POST (ne GET): izvoz ima nuspojavu — izvezene narudžbe prelaze u status
  * "Potvrđena", da se isti dan slučajno ne izvezu dvaput u A2B.
@@ -13,12 +18,24 @@ import { isOrderStatus } from "@/lib/orders/types";
 export async function POST(request: Request) {
   const p = new URL(request.url).searchParams;
   const statusRaw = p.get("status") ?? "NEW";
+  const dateStr = p.get("date") ?? "";
+
+  let from: string | undefined;
+  let to: string | undefined;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    // Podne kao sidro (ne ponoć) da se izbjegnu rubni slučajevi oko same
+    // granice dana pri računanju offseta u sarajevoStartOfDay.
+    const anchor = new Date(`${dateStr}T12:00:00.000Z`);
+    const nextAnchor = new Date(anchor.getTime() + 24 * 3600 * 1000);
+    from = sarajevoStartOfDay(anchor).toISOString();
+    to = new Date(sarajevoStartOfDay(nextAnchor).getTime() - 1).toISOString();
+  }
 
   const orders = await listOrdersForExport({
     search: p.get("q") ?? undefined,
     status: isOrderStatus(statusRaw) ? statusRaw : "ALL",
-    from: p.get("from") ?? undefined,
-    to: p.get("to") ?? undefined,
+    from,
+    to,
     product: p.get("product") ?? undefined,
     city: p.get("city") ?? undefined,
     unsyncedOnly: p.get("unsynced") === "1",

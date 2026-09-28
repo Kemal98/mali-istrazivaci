@@ -68,6 +68,10 @@ export default function OrderFilters({
   const [q, setQ] = useState(params.get("q") ?? "");
   const [custom, setCustom] = useState(false);
   const [a2bBusy, setA2bBusy] = useState(false);
+  // Datum za A2B izvoz je NAMJERNO odvojen od filtera tabele iznad —
+  // bira se ovdje, u trenutku izvoza, bez obzira šta je trenutno
+  // prikazano na ekranu. Prazno = sve neizvezene narudžbe (bilo kad).
+  const [exportDate, setExportDate] = useState("");
 
   // POST, ne obični <a href>: izvoz prebacuje izvezene narudžbe u status
   // "Potvrđena" (da se isti dan ne izveze dvaput), pa mora ići kroz fetch
@@ -75,7 +79,12 @@ export default function OrderFilters({
   async function exportA2b() {
     setA2bBusy(true);
     try {
-      const res = await fetch(`/api/admin/orders/export-a2b?${params.toString()}`, {
+      const qs = new URLSearchParams({ status: "NEW" });
+      // Šalje se GOLI datum (YYYY-MM-DD) — server računa granice dana po
+      // Sarajevu (sarajevoStartOfDay), da izbjegnemo isti UTC-vs-Sarajevo
+      // problem kao ranije na dashboardu ako bismo to računali ovdje.
+      if (exportDate) qs.set("date", exportDate);
+      const res = await fetch(`/api/admin/orders/export-a2b?${qs.toString()}`, {
         method: "POST",
       });
       if (!res.ok) {
@@ -327,7 +336,18 @@ export default function OrderFilters({
         >
           ⤓ EXPORT CSV
         </a>
+      </div>
 
+      <div className="adm-filters" style={{ marginTop: 10 }}>
+        <div className="adm-filter-group">
+          <label htmlFor="f-a2b-date">Izvoz za A2B — datum (prazno = sve neizvezene)</label>
+          <input
+            id="f-a2b-date"
+            type="date"
+            value={exportDate}
+            onChange={(e) => setExportDate(e.target.value)}
+          />
+        </div>
         <button
           type="button"
           className="adm-btn adm-btn-primary"
@@ -336,6 +356,11 @@ export default function OrderFilters({
         >
           {a2bBusy ? "Izvozim…" : "⤓ IZVEZI ZA A2B"}
         </button>
+        {exportDate ? (
+          <button type="button" className="adm-btn adm-btn-sm" onClick={() => setExportDate("")}>
+            OČISTI DATUM
+          </button>
+        ) : null}
       </div>
     </>
   );
