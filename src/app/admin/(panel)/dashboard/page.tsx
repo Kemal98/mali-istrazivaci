@@ -3,7 +3,7 @@ import Link from "next/link";
 import { after } from "next/server";
 import { metaConfigured } from "@/lib/ads/meta";
 import { syncMetaSpend } from "@/lib/ads/sync";
-import { datum, sarajevoDateOnly } from "@/lib/cms/datum";
+import { datum, sarajevoDateOnly, sarajevoStartOfDay } from "@/lib/cms/datum";
 import { META_USD_TO_KM } from "@/lib/ads/currency";
 import { profitAsIfSold, profitByDay } from "@/lib/orders/profit";
 import { countUnsynced, listOrders } from "@/lib/orders/repo";
@@ -27,12 +27,6 @@ export const dynamic = "force-dynamic";
 
 /* ---------- pomoćno: rasponi datuma ---------- */
 
-const startOfDay = (d: Date) => {
-  const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x;
-};
-
 function resolvePeriod(
   period: string | undefined,
   from?: string,
@@ -41,7 +35,7 @@ function resolvePeriod(
   const now = new Date();
 
   if (from || to) {
-    const f = from ? new Date(from) : startOfDay(new Date(now.getTime() - 29 * 864e5));
+    const f = from ? new Date(from) : sarajevoStartOfDay(new Date(now.getTime() - 29 * 864e5));
     const t = to ? new Date(to) : now;
     return {
       range: { from: f.toISOString(), to: t.toISOString() },
@@ -53,11 +47,11 @@ function resolvePeriod(
 
   switch (period) {
     case "7d": {
-      const f = startOfDay(new Date(now.getTime() - 6 * 864e5));
+      const f = sarajevoStartOfDay(new Date(now.getTime() - 6 * 864e5));
       return { range: { from: f.toISOString() }, fromDate: f, toDate: now, label: "7 dana" };
     }
     case "90d": {
-      const f = startOfDay(new Date(now.getTime() - 89 * 864e5));
+      const f = sarajevoStartOfDay(new Date(now.getTime() - 89 * 864e5));
       return { range: { from: f.toISOString() }, fromDate: f, toDate: now, label: "90 dana" };
     }
     case "month": {
@@ -75,7 +69,7 @@ function resolvePeriod(
       };
     }
     default: {
-      const f = startOfDay(new Date(now.getTime() - 29 * 864e5));
+      const f = sarajevoStartOfDay(new Date(now.getTime() - 29 * 864e5));
       return { range: { from: f.toISOString() }, fromDate: f, toDate: now, label: "30 dana" };
     }
   }
@@ -112,12 +106,12 @@ export default async function DashboardPage({
   const { range, fromDate, toDate, label } = resolvePeriod(sp.period, sp.from, sp.to);
 
   const now = new Date();
-  const todayRange: Period = { from: startOfDay(now).toISOString() };
+  const todayRange: Period = { from: sarajevoStartOfDay(now).toISOString() };
   const d7: Period = {
-    from: startOfDay(new Date(now.getTime() - 6 * 864e5)).toISOString(),
+    from: sarajevoStartOfDay(new Date(now.getTime() - 6 * 864e5)).toISOString(),
   };
   const d30: Period = {
-    from: startOfDay(new Date(now.getTime() - 29 * 864e5)).toISOString(),
+    from: sarajevoStartOfDay(new Date(now.getTime() - 29 * 864e5)).toISOString(),
   };
 
   // Sve sekvencijalno — vidi komentar u stats.ts o poolu konekcija.

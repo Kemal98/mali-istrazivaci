@@ -45,3 +45,33 @@ export function sarajevoDateOnly(d: Date = new Date()): string {
     parts.find((p) => p.type === t)?.value ?? "";
   return `${g("year")}-${g("month")}-${g("day")}`;
 }
+
+/**
+ * Ponoć u Sarajevu (kao UTC trenutak) za dan koji sadrži `d` — NE
+ * `d.setHours(0,0,0,0)`, jer to koristi vremensku zonu procesa (na
+ * Vercelu UTC), ista greška kao gore. Koristi se za granice perioda
+ * (dashboard "Danas", 7/30 dana) da se poklapa sa SQL upitima koji
+ * eksplicitno konvertuju u Europe/Sarajevo (npr. dailySeries, profitByDay).
+ */
+export function sarajevoStartOfDay(d: Date = new Date()): Date {
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Sarajevo",
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  const parts = fmt.formatToParts(d);
+  const g = (t: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((p) => p.type === t)?.value ?? 0);
+  // "Koliko je sati u Sarajevu" pretvoreno nazad u UTC millis daje offset.
+  const asUtc = Date.UTC(g("year"), g("month") - 1, g("day"), g("hour"), g("minute"), g("second"));
+  const offsetMs = asUtc - d.getTime();
+  const localMs = d.getTime() + offsetMs;
+  const local = new Date(localMs);
+  local.setUTCHours(0, 0, 0, 0);
+  return new Date(local.getTime() - offsetMs);
+}
