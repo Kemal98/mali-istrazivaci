@@ -67,6 +67,36 @@ export default function OrderFilters({
   const params = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
   const [custom, setCustom] = useState(false);
+  const [a2bBusy, setA2bBusy] = useState(false);
+
+  // POST, ne obični <a href>: izvoz prebacuje izvezene narudžbe u status
+  // "Potvrđena" (da se isti dan ne izveze dvaput), pa mora ići kroz fetch
+  // + blob download umjesto plain linka.
+  async function exportA2b() {
+    setA2bBusy(true);
+    try {
+      const res = await fetch(`/api/admin/orders/export-a2b?${params.toString()}`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data?.error || "Izvoz nije uspio.");
+        return;
+      }
+      const blob = await res.blob();
+      const disposition = res.headers.get("Content-Disposition") ?? "";
+      const m = disposition.match(/filename="([^"]+)"/);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = m?.[1] ?? "a2b-masovni-import.xlsx";
+      a.click();
+      URL.revokeObjectURL(url);
+      router.refresh();
+    } finally {
+      setA2bBusy(false);
+    }
+  }
 
   /** Promijeni jedan ili više parametara i vrati se na prvu stranicu. */
   function set(patch: Record<string, string | undefined>) {
@@ -297,6 +327,15 @@ export default function OrderFilters({
         >
           ⤓ EXPORT CSV
         </a>
+
+        <button
+          type="button"
+          className="adm-btn adm-btn-primary"
+          disabled={a2bBusy}
+          onClick={exportA2b}
+        >
+          {a2bBusy ? "Izvozim…" : "⤓ IZVEZI ZA A2B"}
+        </button>
       </div>
     </>
   );
