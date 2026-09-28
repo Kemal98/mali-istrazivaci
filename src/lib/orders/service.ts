@@ -174,6 +174,105 @@ export async function createOrder(
 }
 
 /**
+ * Ručni unos narudžbe u adminu — kupac je naručio preko Messengera,
+ * Vibera ili telefona, ne kroz sajt. Isti upis kao createOrder() (baza,
+ * fotografija nabavne cijene, ide u Google Sheet za kurira), ali bez
+ * kupčevih zaštita koje ovdje nemaju smisla: nema honeypot bota, a rate
+ * limit po IP-u bi admina blokirao već kod desetog ručnog unosa u istoj
+ * sesiji (upravo ovakav slučaj — više zaostalih Messenger narudžbi
+ * odjednom). Idempotency ključ se generiše ovdje, admin ga ne šalje.
+ */
+export interface CreateManualOrderInput {
+  customerName: string;
+  phone: string;
+  address: string;
+  city: string;
+  productId?: string | null;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  shippingPrice: number;
+  note?: string;
+  /** npr. "messenger", "viber", "telefon" — ide u utm_source, pa se vidi kao poseban kanal u statistici. */
+  channel?: string;
+}
+
+export async function createManualOrder(
+  raw: CreateManualOrderInput
+): Promise<CreateOrderResult> {
+  const customerName = clean(raw.customerName, 120);
+  const phone = clean(raw.phone, 40);
+  const address = clean(raw.address);
+  const city = clean(raw.city, 120);
+  const productName = clean(raw.productName, 200);
+
+  if (customerName.length < 2)
+    return { ok: false, status: 400, error: "Upišite ime i prezime." };
+  if (!looksLikeBHPhone(phone))
+    return { ok: false, status: 400, error: "Upišite ispravan broj telefona." };
+  if (address.length < 2)
+    return { ok: false, status: 400, error: "Upišite adresu." };
+  if (city.length < 2)
+    return { ok: false, status: 400, error: "Upišite grad." };
+  if (!productName)
+    return { ok: false, status: 400, error: "Nedostaje proizvod." };
+
+  const quantity = Math.min(50, Math.max(1, Math.trunc(Number(raw.quantity) || 1)));
+  const unitPrice = Math.max(0, Number(raw.unitPrice) || 0);
+  const shippingPrice = Math.max(0, Number(raw.shippingPrice) || 0);
+  if (!Number.isFinite(unitPrice) || !Number.isFinite(shippingPrice))
+    return { ok: false, status: 400, error: "Neispravna cijena." };
+
+  const subtotal = Math.round(unitPrice * quantity * 100) / 100;
+  const totalPrice = Math.round((subtotal + shippingPrice) * 100) / 100;
+
+  const productId = raw.productId ? clean(raw.productId, 64) : null;
+
+  let costPrice = 0;
+  if (productId) {
+    try {
+      costPrice = (await getProductCostPrice(productId)) ?? 0;
+    } catch (e) {
+      console.error("[orders] lookup nabavne cijene pao:", e);
+    }
+  }
+  const costTotal = Math.round(costPrice * quantity * 100) / 100;
+
+  const channel = clean(raw.channel, 40) || "messenger";
+  const order = await insertOrder({
+    customerName,
+    phone,
+    email: "",
+    city,
+    address,
+    postalCode: "",
+    note: clean(raw.note, MAX_NOTE),
+    productId,
+    productName,
+    quantity,
+    unitPrice,
+    subtotal,
+    shippingPrice,
+    totalPrice,
+    costPrice,
+    costTotal,
+    utmSource: channel,
+    utmMedium: "",
+    utmCampaign: "",
+    utmContent: "",
+    utmTerm: "",
+    fbclid: "",
+    landingPage: "",
+    referrer: "",
+    idempotencyKey: `admin_${globalThis.crypto.randomUUID()}`,
+    clientIp: "",
+    source: "manual",
+  });
+
+  return { ok: true, order, duplicate: false, sheetSynced: false };
+}
+
+/**
  * Upis u Google Sheet. Zove se iz after() — dakle POSLIJE nego što je
  * kupac dobio potvrdu, pa ga čekanje na Apps Script ne odgađa.
  */

@@ -6,9 +6,11 @@ import {
   listOrders,
   type OrderSort,
 } from "@/lib/orders/repo";
+import { listProducts } from "@/lib/cms/repo";
 import { isOrderStatus } from "@/lib/orders/types";
 import OrderFilters from "@/components/admin/OrderFilters";
 import OrdersTable from "@/components/admin/OrdersTable";
+import AddOrderButton from "@/components/admin/AddOrderButton";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +60,10 @@ export default async function OrdersPage({
   });
   const options = await listFilterOptions();
   const unsynced = await countUnsynced();
+  const cmsProducts = await listProducts();
+  const orderableProducts = cmsProducts
+    .filter((p) => p.status === "published" && p.cijena !== null)
+    .map((p) => ({ id: p.id, naziv: p.naziv, cijena: p.cijena }));
 
   return (
     <>
@@ -70,6 +76,7 @@ export default async function OrdersPage({
           </p>
         </div>
         <div className="adm-head-actions">
+          <AddOrderButton products={orderableProducts} />
           <Link className="adm-btn" href="/admin/orders/import">
             ⤒ UVEZI IZ GOOGLE SHEETA
           </Link>

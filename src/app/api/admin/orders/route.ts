@@ -1,32 +1,36 @@
-import { NextResponse } from "next/server";
-import { countUnsynced, listOrders, type OrderSort } from "@/lib/orders/repo";
-import { isOrderStatus } from "@/lib/orders/types";
+import { NextResponse, after } from "next/server";
+import { createManualOrder, syncOrderToSheet } from "@/lib/orders/service";
 
-// Zaštićeno preko proxy.ts (matcher /api/admin/:path*) — bez validne
-// admin sesije se ovdje ne stiže.
+/** Ručni unos narudžbe u adminu (Messenger, Viber, telefon…). */
+export async function POST(request: Request) {
+  const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
 
-export async function GET(request: Request) {
-  const p = new URL(request.url).searchParams;
-
-  const statusRaw = p.get("status") ?? "ALL";
-  const sortRaw = p.get("sort") ?? "newest";
-
-  const res = await listOrders({
-    search: p.get("q") ?? undefined,
-    status: isOrderStatus(statusRaw) ? statusRaw : "ALL",
-    from: p.get("from") ?? undefined,
-    to: p.get("to") ?? undefined,
-    product: p.get("product") ?? undefined,
-    city: p.get("city") ?? undefined,
-    unsyncedOnly: p.get("unsynced") === "1",
-    sort: (["newest", "oldest", "highest", "lowest"] as OrderSort[]).includes(
-      sortRaw as OrderSort
-    )
-      ? (sortRaw as OrderSort)
-      : "newest",
-    page: Number(p.get("page") ?? 1),
-    perPage: Number(p.get("perPage") ?? 25),
+  const res = await createManualOrder({
+    customerName: String(body.customerName ?? ""),
+    phone: String(body.phone ?? ""),
+    address: String(body.address ?? ""),
+    city: String(body.city ?? ""),
+    productId: body.productId ? String(body.productId) : null,
+    productName: String(body.productName ?? ""),
+    quantity: Number(body.quantity ?? 1),
+    unitPrice: Number(body.unitPrice ?? 0),
+    shippingPrice: Number(body.shippingPrice ?? 0),
+    note: body.note ? String(body.note) : "",
+    channel: body.channel ? String(body.channel) : "messenger",
   });
 
-  return NextResponse.json({ ...res, unsynced: await countUnsynced() });
+  if (!res.ok) {
+    return NextResponse.json({ error: res.error }, { status: res.status });
+  }
+
+  const { order } = res;
+  after(async () => {
+    try {
+      await syncOrderToSheet(order);
+    } catch (e) {
+      console.error("[admin orders] Sheet sync pao:", e);
+    }
+  });
+
+  return NextResponse.json({ order });
 }
