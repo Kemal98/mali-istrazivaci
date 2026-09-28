@@ -5,9 +5,10 @@ import { postalCodeFor } from "./postalCodes";
 
 /**
  * Fajl za A2B "Masovni import" — kolone i redoslijed su tačno prepisani
- * iz njihovog šablona (A2B Masovni import primjer.xlsx). Polja O–T su
- * fiksna za sve pošiljke (dogovor sa A2B, ne po narudžbi): pošiljalac
- * plaća, virman, i nijedna od dodatnih usluga (subota, osiguranje…).
+ * iz njihovog šablona (A2B Masovni import primjer.xlsx). Polja O–T
+ * (plaća, način plaćanja, povrat otpremnice, subota, osiguranje…) se
+ * NAMJERNO ostavljaju prazna — admin ih ne popunjava, valjda su to
+ * podešavanja na A2B nalogu, ne po pošiljci.
  */
 const HEADERS = [
   "ID Broj Posiljke",
@@ -61,12 +62,12 @@ export function buildA2bWorkbook(orders: Order[]): Buffer {
       o.orderNumber, // Interna referenca — da se nazad prepozna narudžba
       "", // Dodatna referenca
       "", // Parent Package ID
-      "Posiljalac",
-      "Virman",
-      "NE",
-      "NE",
-      "NE",
-      "NE",
+      "", // Placa
+      "", // Nacin placanja
+      "", // Povrat otpremnice
+      "", // Dostava Subotom
+      "", // Dodatno osiguranje
+      "", // Povrat otkupnine u sigurnosnoj vrecici
     ]),
   ];
 
