@@ -33,6 +33,33 @@ export function TextField({
   );
 }
 
+/** Pravi kalendar (native date picker) — GGGG-MM-DD, bira se klikom, ne kuca ručno. */
+export function DateField({
+  label,
+  value,
+  onChange,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  hint?: string;
+}) {
+  const id = useId();
+  return (
+    <div className="adm-field">
+      <label htmlFor={id}>{label}</label>
+      <input
+        id={id}
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {hint ? <span className="adm-hint">{hint}</span> : null}
+    </div>
+  );
+}
+
 export function NumberField({
   label,
   value,

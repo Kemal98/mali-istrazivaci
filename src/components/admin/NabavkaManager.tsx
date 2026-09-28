@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { datum, sarajevoDateOnly } from "@/lib/cms/datum";
-import { NumberField, SelectField, TextField } from "./fields";
+import { NumberField, SelectField, TextField, DateField } from "./fields";
 import type { StockPurchase } from "@/lib/ads/types";
 
 export default function NabavkaManager({
@@ -64,7 +64,7 @@ export default function NabavkaManager({
         <div className="adm-card-title">Dodaj nabavku</div>
         <form onSubmit={submit}>
           <div className="adm-row-3 adm-row">
-            <TextField label="Datum" value={date} onChange={setDate} placeholder="GGGG-MM-DD" />
+            <DateField label="Datum" value={date} onChange={setDate} />
             <SelectField
               label="Proizvod"
               value={product}

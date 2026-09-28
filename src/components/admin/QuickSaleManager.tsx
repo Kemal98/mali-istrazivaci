@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { sarajevoDateOnly } from "@/lib/cms/datum";
-import { SelectField, TextField, NumberField } from "./fields";
+import { SelectField, TextField, NumberField, DateField } from "./fields";
 import type { ManualSale } from "@/lib/orders/repo";
 
 /**
@@ -85,7 +85,7 @@ export default function QuickSaleManager({
 
           <form onSubmit={submit}>
             <div className="adm-row-3 adm-row">
-              <TextField label="Datum" value={date} onChange={setDate} placeholder="GGGG-MM-DD" />
+              <DateField label="Datum" value={date} onChange={setDate} />
               <SelectField
                 label="Proizvod"
                 value={product}

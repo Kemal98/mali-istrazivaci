@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { datum, sarajevoDateOnly } from "@/lib/cms/datum";
-import { NumberField, SelectField, TextField } from "./fields";
+import { NumberField, SelectField, TextField, DateField } from "./fields";
 import type { AdSpend } from "@/lib/ads/types";
 
 export default function AdSpendManager({
@@ -60,13 +60,7 @@ export default function AdSpendManager({
         <div className="adm-card-title">Dodaj trošak reklame</div>
         <form onSubmit={submit}>
           <div className="adm-row-3 adm-row">
-            <TextField
-              label="Datum"
-              type="text"
-              value={date}
-              onChange={setDate}
-              placeholder="GGGG-MM-DD"
-            />
+            <DateField label="Datum" value={date} onChange={setDate} />
             <SelectField
               label="Proizvod"
               value={product}
