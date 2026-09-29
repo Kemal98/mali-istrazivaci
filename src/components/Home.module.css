@@ -780,3 +780,50 @@
     padding-bottom: 68px;
   }
 }
+
+/* filter dugmad iznad liste proizvoda (Sve / Za bebe / ...) */
+.catFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 4px 0 30px;
+}
+.catFilterBtn {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: var(--h-r-pill);
+  border: 1.5px solid var(--h-line);
+  background: #fff;
+  color: var(--h-ink);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.catFilterBtn:hover {
+  border-color: var(--h-orange);
+}
+.catFilterBtnActive {
+  background: var(--h-orange);
+  border-color: var(--h-orange);
+  color: #fff;
+}
+.showMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+.showMoreBtn {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: var(--h-r-pill);
+  border: 1.5px solid var(--h-ink);
+  background: transparent;
+  color: var(--h-ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.showMoreBtn:hover {
+  background: var(--h-ink);
+  color: #fff;
+}

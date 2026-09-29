@@ -22,9 +22,9 @@ export const metadata: Metadata = {
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ kategorija?: string }>;
+  searchParams: Promise<{ kategorija?: string; sve?: string }>;
 }) {
-  const { kategorija } = await searchParams;
+  const { kategorija, sve } = await searchParams;
 
   return (
     <div className={`${styles.root} home-page-root`}>
@@ -32,7 +32,7 @@ export default async function HomePage({
       <HomeHero />
       <HomeShopCategories />
       <HomeMarquee />
-      <HomeProductGrid kategorija={kategorija} />
+      <HomeProductGrid kategorija={kategorija} sve={sve === "1"} />
       <HomeWhyUs />
       <HomeOurStory />
       <HomeUgcStrip />

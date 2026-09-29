@@ -4,11 +4,14 @@ import { listProducts, listPublishedReviews } from "@/lib/cms/repo";
 import ProductCard from "./ProductCard";
 import styles from "./Home.module.css";
 
-const KATEGORIJA_LABEL: Record<string, string> = {
-  bebe: "za bebe",
-  djevojcice: "za djevojčice",
-  edukativno: "edukativne",
-};
+const CATEGORY_FILTERS = [
+  { kategorija: "", label: "Sve" },
+  { kategorija: "bebe", label: "Za bebe" },
+  { kategorija: "djevojcice", label: "Za djevojčice" },
+  { kategorija: "edukativno", label: "Edukativne" },
+];
+
+const PAGE_SIZE = 6;
 
 // Početna prikazuje DVIJE grupe proizvoda, spojene u jednu listu:
 //  1) "statični" proizvodi iz src/data/products.json — SAT MIRA i ostali
@@ -61,31 +64,59 @@ async function cmsProducts(existingLinks: Set<string>): Promise<Product[]> {
   );
 }
 
-export default async function HomeProductGrid({ kategorija }: { kategorija?: string }) {
+export default async function HomeProductGrid({
+  kategorija,
+  sve,
+}: {
+  kategorija?: string;
+  sve?: boolean;
+}) {
   const existingLinks = new Set(PRODUCTS.map((p) => p.link));
   const fromCms = await cmsProducts(existingLinks).catch(() => []);
   const all = [...PRODUCTS, ...fromCms];
 
   const items = kategorija ? all.filter((p) => p.kategorije.includes(kategorija)) : all;
+  const visible = sve ? items : items.slice(0, PAGE_SIZE);
+  const katParam = (k: string) => (k ? `?kategorija=${k}` : "");
 
   return (
     <section id="proizvodi">
       <div className={styles.wrap}>
-        <h2 className={styles.sectionTitle}>Najprodavanije igračke</h2>
-        {kategorija && (
-          <p className={styles.sectionSub}>
-            Prikazano {KATEGORIJA_LABEL[kategorija] ?? kategorija} ·{" "}
-            <Link href="/#proizvodi" style={{ textDecoration: "underline" }}>
-              Prikaži sve
-            </Link>
-          </p>
-        )}
+        <h2 className={styles.sectionTitle}>Igračke za svakog</h2>
+
+        <div className={styles.catFilters}>
+          {CATEGORY_FILTERS.map((c) => {
+            const active = (kategorija ?? "") === c.kategorija;
+            return (
+              <Link
+                key={c.kategorija || "sve"}
+                href={`/${katParam(c.kategorija)}#proizvodi`}
+                className={`${styles.catFilterBtn} ${active ? styles.catFilterBtnActive : ""}`}
+              >
+                {c.label}
+              </Link>
+            );
+          })}
+        </div>
+
         {items.length > 0 ? (
-          <div className={styles.grid}>
-            {items.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          <>
+            <div className={styles.grid}>
+              {visible.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+            {!sve && items.length > PAGE_SIZE ? (
+              <div className={styles.showMoreWrap}>
+                <Link
+                  href={`/${katParam(kategorija ?? "")}${kategorija ? "&" : "?"}sve=1#proizvodi`}
+                  className={styles.showMoreBtn}
+                >
+                  Pogledaj više ({items.length - PAGE_SIZE})
+                </Link>
+              </div>
+            ) : null}
+          </>
         ) : (
           <p className={styles.sectionSub}>
             Još nemamo proizvod u ovoj kategoriji, javi nam se ako tražiš
