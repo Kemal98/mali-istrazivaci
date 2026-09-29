@@ -79,6 +79,8 @@ export interface Product {
   slug: string;
   sku: string;
   kategorija: string;
+  /** Za "Kupuj po kategoriji" na početnoj — "" = ne prikazuje se ni u jednoj kategoriji. */
+  shopKategorija: "" | "bebe" | "djevojcice" | "edukativno";
   status: ProductStatus;
   cijena: number | null;
   staraCijena: number | null;

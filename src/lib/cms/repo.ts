@@ -28,6 +28,11 @@ function rowToProduct(r: Row): Product {
     slug: String(r.slug ?? ""),
     sku: String(r.sku ?? ""),
     kategorija: String(r.kategorija ?? ""),
+    shopKategorija: (["bebe", "djevojcice", "edukativno"] as const).includes(
+      r.shop_kategorija as never
+    )
+      ? (r.shop_kategorija as "bebe" | "djevojcice" | "edukativno")
+      : "",
     status: (String(r.status) === "published" ? "published" : "draft") as ProductStatus,
     cijena: r.cijena === null || r.cijena === undefined ? null : Number(r.cijena),
     staraCijena:
@@ -196,9 +201,9 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
 
   await sql()`
     INSERT INTO products
-      (id, naziv, slug, sku, kategorija, status, cijena, stara_cijena,
+      (id, naziv, slug, sku, kategorija, shop_kategorija, status, cijena, stara_cijena,
        nabavna_cijena, badge, hero, seo, sections, created_at, updated_at)
-    VALUES (${id}, ${input.naziv}, ${slug}, '', '', 'draft', ${cijena},
+    VALUES (${id}, ${input.naziv}, ${slug}, '', '', '', 'draft', ${cijena},
             ${staraCijena}, ${nabavnaCijena}, ${badge}, ${JSON.stringify(hero)}, ${"{}"},
             ${JSON.stringify(sections)}, ${ts}, ${ts})`;
 
@@ -214,6 +219,7 @@ export interface UpdateProductInput {
   slug?: string;
   sku?: string;
   kategorija?: string;
+  shopKategorija?: "" | "bebe" | "djevojcice" | "edukativno";
   cijena?: number | null;
   staraCijena?: number | null;
   nabavnaCijena?: number | null;
@@ -242,6 +248,7 @@ export async function updateProduct(
     slug,
     sku: patch.sku ?? cur.sku,
     kategorija: patch.kategorija ?? cur.kategorija,
+    shopKategorija: patch.shopKategorija ?? cur.shopKategorija,
     cijena: patch.cijena !== undefined ? patch.cijena : cur.cijena,
     staraCijena:
       patch.staraCijena !== undefined ? patch.staraCijena : cur.staraCijena,
@@ -259,6 +266,7 @@ export async function updateProduct(
       slug = ${next.slug},
       sku = ${next.sku},
       kategorija = ${next.kategorija},
+      shop_kategorija = ${next.shopKategorija},
       cijena = ${next.cijena},
       stara_cijena = ${next.staraCijena},
       nabavna_cijena = ${next.nabavnaCijena},
@@ -336,6 +344,7 @@ export async function duplicateProduct(id: string): Promise<Product | null> {
   await updateProduct(copy.id, {
     sku: src.sku,
     kategorija: src.kategorija,
+    shopKategorija: src.shopKategorija,
     seo: { ...src.seo, canonical: "" },
   });
   // kopiraj recenzije

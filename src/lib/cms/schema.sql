@@ -44,6 +44,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_products_slug_live
 -- trenutku prodaje (orders.cost_price), pa promjena ovdje ne mijenja
 -- retroaktivno stare izvještaje.
 ALTER TABLE products ADD COLUMN IF NOT EXISTS nabavna_cijena double precision;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS shop_kategorija text NOT NULL DEFAULT '';
 
 CREATE INDEX IF NOT EXISTS idx_products_updated
   ON products (updated_at DESC);

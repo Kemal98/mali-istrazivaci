@@ -4,6 +4,12 @@ import { listProducts, listPublishedReviews } from "@/lib/cms/repo";
 import ProductCard from "./ProductCard";
 import styles from "./Home.module.css";
 
+const KATEGORIJA_LABEL: Record<string, string> = {
+  bebe: "za bebe",
+  djevojcice: "za djevojčice",
+  edukativno: "edukativne",
+};
+
 // Početna prikazuje DVIJE grupe proizvoda, spojene u jednu listu:
 //  1) "statični" proizvodi iz src/data/products.json — SAT MIRA i ostali
 //     koji imaju svoju ručno pisanu stranicu (nisu u CMS bazi).
@@ -13,10 +19,10 @@ import styles from "./Home.module.css";
 // linkom (npr. Sparkling Diamond je i dalje u products.json — ne
 // duplira se kartica).
 //
-// NAPOMENA/ograničenje: CMS proizvodi trenutno nemaju polje "uzrast"
-// (admin editor ga ne postavlja), pa se prikazuju u SVIM uzrastima da
-// se ne izgube iz filtera. Ako ovo zasmeta, dodati "uzrast" polje u
-// admin editor proizvoda.
+// Kategorija (shopKategorija) se čita direktno sa proizvoda, ne iz
+// published snapshota — to je samo admin oznaka za navigaciju na
+// početnoj, ne javni sadržaj, pa ne treba isto "zamrzavanje" do objave
+// kao cijena/tekst.
 async function cmsProducts(existingLinks: Set<string>): Promise<Product[]> {
   const published = (await listProducts()).filter(
     (p) =>
@@ -44,7 +50,7 @@ async function cmsProducts(existingLinks: Set<string>): Promise<Product[]> {
         valuta: "KM",
         badge: p.publishedData!.badge || null,
         uzrast: ["2-3", "4-6"],
-        kategorije: ["igracke"],
+        kategorije: p.shopKategorija ? [p.shopKategorija] : [],
         slike: [p.publishedHero!.slika],
         ocjena: avg,
         brojRecenzija: reviews.length,
@@ -55,20 +61,20 @@ async function cmsProducts(existingLinks: Set<string>): Promise<Product[]> {
   );
 }
 
-export default async function HomeProductGrid({ uzrast }: { uzrast?: string }) {
+export default async function HomeProductGrid({ kategorija }: { kategorija?: string }) {
   const existingLinks = new Set(PRODUCTS.map((p) => p.link));
   const fromCms = await cmsProducts(existingLinks).catch(() => []);
   const all = [...PRODUCTS, ...fromCms];
 
-  const items = uzrast ? all.filter((p) => p.uzrast.includes(uzrast)) : all;
+  const items = kategorija ? all.filter((p) => p.kategorije.includes(kategorija)) : all;
 
   return (
     <section id="proizvodi">
       <div className={styles.wrap}>
         <h2 className={styles.sectionTitle}>Najprodavanije igračke</h2>
-        {uzrast && (
+        {kategorija && (
           <p className={styles.sectionSub}>
-            Prikazano za uzrast {uzrast} godine ·{" "}
+            Prikazano {KATEGORIJA_LABEL[kategorija] ?? kategorija} ·{" "}
             <Link href="/#proizvodi" style={{ textDecoration: "underline" }}>
               Prikaži sve
             </Link>
@@ -82,7 +88,7 @@ export default async function HomeProductGrid({ uzrast }: { uzrast?: string }) {
           </div>
         ) : (
           <p className={styles.sectionSub}>
-            Još nemamo proizvod za ovaj uzrast, javi nam se ako tražiš
+            Još nemamo proizvod u ovoj kategoriji, javi nam se ako tražiš
             nešto konkretno.
           </p>
         )}

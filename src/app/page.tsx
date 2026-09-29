@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import HomeHeader from "@/components/HomeHeader";
 import HomeHero from "@/components/HomeHero";
+import HomeShopCategories from "@/components/HomeShopCategories";
 import HomeMarquee from "@/components/HomeMarquee";
 import HomeProductGrid from "@/components/HomeProductGrid";
-import HomeShopByAge from "@/components/HomeShopByAge";
 import HomeWhyUs from "@/components/HomeWhyUs";
 import HomeOurStory from "@/components/HomeOurStory";
 import HomeUgcStrip from "@/components/HomeUgcStrip";
@@ -22,17 +22,17 @@ export const metadata: Metadata = {
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ uzrast?: string }>;
+  searchParams: Promise<{ kategorija?: string }>;
 }) {
-  const { uzrast } = await searchParams;
+  const { kategorija } = await searchParams;
 
   return (
     <div className={`${styles.root} home-page-root`}>
       <HomeHeader />
       <HomeHero />
+      <HomeShopCategories />
       <HomeMarquee />
-      <HomeProductGrid uzrast={uzrast} />
-      <HomeShopByAge />
+      <HomeProductGrid kategorija={kategorija} />
       <HomeWhyUs />
       <HomeOurStory />
       <HomeUgcStrip />

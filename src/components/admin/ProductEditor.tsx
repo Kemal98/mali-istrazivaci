@@ -7,7 +7,7 @@ import MediaField from "./MediaField";
 import PageBuilder from "./PageBuilder";
 import PopuniIzClaudea from "./PopuniIzClaudea";
 import ReviewsPanel from "./ReviewsPanel";
-import { NumberField, RichTextArea, TextArea, TextField, Toggle } from "./fields";
+import { NumberField, RichTextArea, SelectField, TextArea, TextField, Toggle } from "./fields";
 import { slugify } from "@/lib/cms/slug";
 import type { Block, GlobalSettings, Hero, Product, Review, Seo } from "@/lib/cms/types";
 
@@ -26,6 +26,7 @@ interface Draft {
   slug: string;
   sku: string;
   kategorija: string;
+  shopKategorija: "" | "bebe" | "djevojcice" | "edukativno";
   cijena: number | null;
   staraCijena: number | null;
   nabavnaCijena: number | null;
@@ -41,6 +42,7 @@ function toDraft(p: Product): Draft {
     slug: p.slug,
     sku: p.sku,
     kategorija: p.kategorija,
+    shopKategorija: p.shopKategorija,
     cijena: p.cijena,
     staraCijena: p.staraCijena,
     nabavnaCijena: p.nabavnaCijena,
@@ -412,6 +414,19 @@ export default function ProductEditor({
                 onChange={(v) => patch({ kategorija: v })}
               />
             </div>
+            <SelectField
+              label="Kupuj po kategoriji (početna stranica)"
+              value={draft.shopKategorija}
+              onChange={(v) =>
+                patch({ shopKategorija: v as Draft["shopKategorija"] })
+              }
+              options={[
+                { value: "", label: "— ne prikazuj ni u jednoj kategoriji —" },
+                { value: "bebe", label: "Za bebe" },
+                { value: "djevojcice", label: "Za djevojčice" },
+                { value: "edukativno", label: "Edukativne" },
+              ]}
+            />
           </div>
 
           <div className="adm-card">

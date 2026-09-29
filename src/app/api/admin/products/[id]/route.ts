@@ -35,6 +35,10 @@ export async function PATCH(request: Request, { params }: Ctx) {
   if (body.slug !== undefined) patch.slug = str(body.slug, 120);
   if (body.sku !== undefined) patch.sku = str(body.sku, 60);
   if (body.kategorija !== undefined) patch.kategorija = str(body.kategorija, 60);
+  if (body.shopKategorija !== undefined) {
+    const v = str(body.shopKategorija, 20);
+    patch.shopKategorija = v === "bebe" || v === "djevojcice" || v === "edukativno" ? v : "";
+  }
   if (body.cijena !== undefined) patch.cijena = num(body.cijena);
   if (body.staraCijena !== undefined) patch.staraCijena = num(body.staraCijena);
   if (body.nabavnaCijena !== undefined) patch.nabavnaCijena = num(body.nabavnaCijena);

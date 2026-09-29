@@ -6,7 +6,7 @@ import styles from "./Home.module.css";
 
 const LINKS = [
   { href: "#proizvodi", label: "Proizvodi" },
-  { href: "#uzrast", label: "Po uzrastu" },
+  { href: "#kategorije", label: "Kategorije" },
   { href: "#nasa-prica", label: "O nama" },
   { href: "#kontakt", label: "Kontakt" },
 ];
