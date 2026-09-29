@@ -5,7 +5,7 @@ import { metaConfigured } from "@/lib/ads/meta";
 import { syncMetaSpend } from "@/lib/ads/sync";
 import { datum, sarajevoDateOnly, sarajevoStartOfDay } from "@/lib/cms/datum";
 import { META_USD_TO_KM } from "@/lib/ads/currency";
-import { profitAsIfSold, profitByDay } from "@/lib/orders/profit";
+import { profitAsIfSold, profitByDay, productAlerts } from "@/lib/orders/profit";
 import { countUnsynced, listOrders } from "@/lib/orders/repo";
 import { shopStats } from "@/lib/orders/dashboard";
 import {
@@ -119,6 +119,7 @@ export default async function DashboardPage({
   const todayStr = sarajevoDateOnly(now);
   const profitToday = await profitAsIfSold(todayRange, todayStr, todayStr);
   const byDay = await profitByDay(sarajevoDateOnly(new Date(now.getTime() - 13 * 864e5)), todayStr);
+  const alerts = await productAlerts(2);
   const izabraniDan = /^\d{4}-\d{2}-\d{2}$/.test(sp.dan ?? "") ? sp.dan! : "";
   const izDanRange = byDay.find((d) => d.day === izabraniDan);
   const danProfit = izabraniDan
@@ -166,6 +167,30 @@ export default async function DashboardPage({
           </Link>
         </div>
       </div>
+
+      {alerts.length > 0 ? (
+        <div className="adm-note adm-note-err" style={{ marginBottom: 12 }}>
+          <b>⚠️ Provjeri reklame:</b>
+          <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
+            {alerts.map((a, i) => (
+              <li key={i}>
+                {a.kind === "no_sale" ? (
+                  <>
+                    <b>{a.productName}</b> — potrošeno {km(a.spend)} zadnja{" "}
+                    {a.days === 1 ? "1 dan" : `${a.days} dana`}, nema nijedne
+                    prodaje.
+                  </>
+                ) : (
+                  <>
+                    <b>{a.productName}</b> je u minusu ({km(a.profit ?? 0)},
+                    sve vrijeme) — nabavna i reklame pojedu više od prihoda.
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {unsynced > 0 ? (
         <div className="adm-note adm-note-err">

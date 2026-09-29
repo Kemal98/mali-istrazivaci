@@ -321,3 +321,82 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
   rows.sort((a, b) => b.day.localeCompare(a.day));
   return rows;
 }
+
+/* ------------------------------ upozorenja ------------------------------ */
+
+export interface ProductAlert {
+  productName: string;
+  /** "no_sale" = trošak na reklame bez ijedne prodaje zadnjih N dana; "loss" = proizvod u minusu (sve vrijeme). */
+  kind: "no_sale" | "loss";
+  spend: number;
+  days?: number;
+  profit?: number;
+}
+
+/**
+ * Upozorenja po proizvodu — da admin zna kad da ugasi reklamu prije nego
+ * izgubi novac, ne tek kad slučajno primijeti u tabeli:
+ *  1. Potrošeno na reklame zadnja 1-2 dana, a nema NIJEDNE prodaje
+ *     (prave narudžbe ili ručnog unosa) u tom istom periodu.
+ *  2. Proizvod je sve vrijeme u minusu (prihod − nabavna − reklame < 0).
+ */
+export async function productAlerts(noSaleDays = 2): Promise<ProductAlert[]> {
+  const db = sql();
+  const alerts: ProductAlert[] = [];
+
+  const from = new Date();
+  from.setUTCDate(from.getUTCDate() - (noSaleDays - 1));
+  const fromDate = from.toISOString().slice(0, 10);
+  // "Danas" po Sarajevu — dovoljno da uzme malo širi UTC raspon ovdje,
+  // ad_spend.date je već kalendarski dan koji admin/Meta sync upisuje.
+  const toDate = new Date().toISOString().slice(0, 10);
+
+  const spendRows = await db<Row[]>`
+    SELECT product_name,
+           COALESCE(SUM(CASE WHEN source = 'meta' THEN amount * ${META_USD_TO_KM} ELSE amount END), 0) AS total
+      FROM ad_spend
+     WHERE date >= ${fromDate} AND date <= ${toDate}
+       AND product_name NOT LIKE 'Nemapirano:%' AND product_name <> ''
+     GROUP BY 1
+    HAVING COALESCE(SUM(CASE WHEN source = 'meta' THEN amount * ${META_USD_TO_KM} ELSE amount END), 0) > 0`;
+
+  if (spendRows.length) {
+    const orderRows = await db<Row[]>`
+      SELECT COALESCE(pr.naziv, o.product_name) AS name, COUNT(*) AS n
+        FROM orders o
+        LEFT JOIN products pr
+          ON pr.deleted_at IS NULL
+         AND (pr.id = o.product_id
+              OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
+       WHERE o.deleted_at IS NULL AND o.product_name <> ''
+         AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' >= ${fromDate}::date
+       GROUP BY 1`;
+    const manualRows = await db<Row[]>`
+      SELECT COALESCE(pr.naziv, ms.product_name) AS name, COALESCE(SUM(ms.quantity), 0) AS n
+        FROM manual_sales ms
+        LEFT JOIN products pr
+          ON pr.deleted_at IS NULL AND lower(trim(pr.naziv)) = lower(trim(ms.product_name))
+       WHERE ms.date >= ${fromDate}
+       GROUP BY 1`;
+    const soldSince = new Set<string>();
+    for (const r of orderRows) if (n(r.n) > 0) soldSince.add(norm(String(r.name)));
+    for (const r of manualRows) if (n(r.n) > 0) soldSince.add(norm(String(r.name)));
+
+    for (const r of spendRows) {
+      const name = String(r.product_name);
+      if (!soldSince.has(norm(name))) {
+        alerts.push({ productName: name, kind: "no_sale", spend: r2(n(r.total)), days: noSaleDays });
+      }
+    }
+  }
+
+  const all = await profitAsIfSold({}, "2000-01-01", "2100-01-01");
+  for (const row of all.rows) {
+    if (row.unmapped) continue; // "Reklame bez proizvoda…" nije pravi proizvod
+    if (row.profit < 0 && (row.adSpend > 0 || row.orders > 0)) {
+      alerts.push({ productName: row.productName, kind: "loss", spend: row.adSpend, profit: row.profit });
+    }
+  }
+
+  return alerts;
+}
