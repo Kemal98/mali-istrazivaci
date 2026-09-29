@@ -536,14 +536,25 @@ export interface PackingItem {
   createdAt: string;
 }
 
-export async function listPackingQueue(): Promise<PackingItem[]> {
-  const rows = await sql()<
+/**
+ * `fromDate` (YYYY-MM-DD, Sarajevo kalendarski dan) je opciono — bira ga
+ * onaj ko otvori link (obično admin, za sebe ili prije nego pošalje link
+ * mami), da stara/već obrađena zaostala pošiljka ne zatrpava listu.
+ * Izvor narudžbe (web, Messenger/"Narudžba van sajta"…) se NE filtrira —
+ * sve što ima status za pakovanje ide na listu, bez obzira odakle stiglo.
+ */
+export async function listPackingQueue(fromDate?: string): Promise<PackingItem[]> {
+  const db = sql();
+  let where = db`deleted_at IS NULL AND status IN ('NEW', 'CONFIRMED', 'PACKING')`;
+  if (fromDate) {
+    where = db`${where} AND (created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' >= ${fromDate}::date`;
+  }
+  const rows = await db<
     { order_number: string; customer_name: string; product_name: string; quantity: number; created_at: string }[]
   >`
     SELECT order_number, customer_name, product_name, quantity, created_at
       FROM orders
-     WHERE deleted_at IS NULL
-       AND status IN ('NEW', 'CONFIRMED', 'PACKING')
+     WHERE ${where}
      ORDER BY created_at ASC`;
   return rows.map((r) => ({
     orderNumber: r.order_number,
