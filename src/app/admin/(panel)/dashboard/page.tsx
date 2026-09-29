@@ -118,6 +118,7 @@ export default async function DashboardPage({
   const today = await kpi(todayRange);
   const todayStr = sarajevoDateOnly(now);
   const profitToday = await profitAsIfSold(todayRange, todayStr, todayStr);
+  const todayManualQty = profitToday.rows.reduce((s, r) => s + r.manualQty, 0);
   const byDay = await profitByDay(sarajevoDateOnly(new Date(now.getTime() - 13 * 864e5)), todayStr);
   const alerts = await productAlerts(2);
   const izabraniDan = /^\d{4}-\d{2}-\d{2}$/.test(sp.dan ?? "") ? sp.dan! : "";
@@ -217,16 +218,25 @@ export default async function DashboardPage({
       <div className="adm-kpi-grid">
         <div className="adm-kpi">
           <span>Narudžbi</span>
-          <b>{today.orders}</b>
+          <b>{profitToday.orders}</b>
+          {todayManualQty > 0 ? (
+            <small>uklj. {todayManualQty} ručno (brzi brojač)</small>
+          ) : null}
         </div>
         <div className="adm-kpi">
           <span>Vrijednost proizvoda</span>
-          <b>{km(today.revenue)}</b>
+          <b>{km(profitToday.revenue)}</b>
           <small>kurir naplati {km(today.collected)} (sa dostavom)</small>
         </div>
         <div className="adm-kpi">
           <span>Prosječna narudžba</span>
-          <b>{km(today.avg)}</b>
+          <b>
+            {km(
+              profitToday.orders > 0
+                ? Math.round((profitToday.revenue / profitToday.orders) * 100) / 100
+                : 0
+            )}
+          </b>
         </div>
         <div className="adm-kpi adm-kpi-accent">
           <span>Dostavljene</span>
