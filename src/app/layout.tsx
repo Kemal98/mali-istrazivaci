@@ -18,8 +18,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // suppressHydrationWarning SAMO na <html> (ne dublje) — neke browser
+  // ekstenzije (npr. Scribe) ubace svoj data-* atribut u <html> prije
+  // nego se React učita, pa React vidi "razliku" iako je bezopasno. Ovo
+  // ne gasi hidracijska upozorenja za bilo šta unutar <body>.
   return (
-    <html lang="bs">
+    <html lang="bs" suppressHydrationWarning>
       <head>
         <meta
           name="facebook-domain-verification"
