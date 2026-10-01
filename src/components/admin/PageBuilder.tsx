@@ -22,6 +22,7 @@ import BlockFields, { blockPreview } from "./BlockFields";
 import ConfirmModal from "./ConfirmModal";
 import {
   BLOCK_LABELS,
+  RAZMAK_LABELS,
   defaultBlockData,
   type Block,
   type BlockData,
@@ -65,6 +66,7 @@ function SortableBlock({
   open,
   onToggleOpen,
   onChange,
+  onSetRazmak,
   onDuplicate,
   onHide,
   onDelete,
@@ -78,6 +80,7 @@ function SortableBlock({
   open: boolean;
   onToggleOpen: () => void;
   onChange: (data: BlockData) => void;
+  onSetRazmak: (v: Block["razmakIspod"]) => void;
   onDuplicate: () => void;
   onHide: () => void;
   onDelete: () => void;
@@ -195,6 +198,20 @@ function SortableBlock({
         <div className="adm-block-body">
           {block.uputa ? <div className="adm-block-uputa">💡 {block.uputa}</div> : null}
           <BlockFields block={block} onChange={onChange} />
+          <div className="adm-field" style={{ marginTop: 10 }}>
+            <label htmlFor={`razmak-${block.id}`}>Razmak ispod ovog bloka</label>
+            <select
+              id={`razmak-${block.id}`}
+              value={block.razmakIspod || "m"}
+              onChange={(e) => onSetRazmak(e.target.value as Block["razmakIspod"])}
+            >
+              {(Object.keys(RAZMAK_LABELS) as (keyof typeof RAZMAK_LABELS)[]).map((k) => (
+                <option key={k} value={k}>
+                  {RAZMAK_LABELS[k]}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       ) : null}
     </div>
@@ -237,6 +254,10 @@ export default function PageBuilder({
 
   function update(id: string, data: BlockData) {
     onChange(sections.map((s) => (s.id === id ? { ...s, data } : s)));
+  }
+
+  function setRazmak(id: string, razmakIspod: Block["razmakIspod"]) {
+    onChange(sections.map((s) => (s.id === id ? { ...s, razmakIspod } : s)));
   }
 
   function duplicate(id: string) {
@@ -307,6 +328,7 @@ export default function PageBuilder({
                   )
                 }
                 onChange={(data) => update(s.id, data)}
+                onSetRazmak={(v) => setRazmak(s.id, v)}
                 onDuplicate={() => duplicate(s.id)}
                 onHide={() =>
                   onChange(

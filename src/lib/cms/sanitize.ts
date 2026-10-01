@@ -138,6 +138,9 @@ export function sanitizeSections(v: unknown): Block[] {
       data: sanitizeBlockData(type, raw.data),
       ...(raw.uputa ? { uputa: str(raw.uputa, 400) } : {}),
       ...(raw.uloga ? { uloga: str(raw.uloga, 40) } : {}),
+      ...(["none", "s", "m", "l"].includes(raw.razmakIspod as string)
+        ? { razmakIspod: raw.razmakIspod as "none" | "s" | "m" | "l" }
+        : {}),
     });
   }
   return out;

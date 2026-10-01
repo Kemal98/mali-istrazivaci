@@ -1,7 +1,30 @@
+import { cloneElement, type ReactElement } from "react";
 import BookOrderTrigger from "@/components/BookOrderTrigger";
 import RichText from "./RichText";
 import type { Block, Review } from "@/lib/cms/types";
 import { recenzije as recenzijeLabel } from "@/lib/cms/plural";
+
+// "Razmak ispod" po bloku (admin ga bira u PageBuilderu) — override-uje
+// SAMO donji razmak tog konkretnog bloka preko inline stila, bez diranja
+// CSS-a za sve ostale. Story-blokovi (naslov/tekst/slika unutar
+// .dawn-story sekcije) razmak rade preko margin-bottom; samostalni
+// blokovi (svaki je svoja <section>) preko padding-bottom (section ima
+// i top i bottom padding, pa "bez razmaka" ovdje smanji POLOVINU
+// ukupnog razmaka do sljedeće sekcije — druga polovina je top padding
+// SLJEDEĆE sekcije, na koji ovaj blok nema uticaja).
+const RAZMAK_PX: Record<string, number> = { none: 0, s: 24, m: 52, l: 96 };
+
+function marginStyle(block: Block): React.CSSProperties | undefined {
+  const v = block.razmakIspod;
+  if (!v || !(v in RAZMAK_PX)) return undefined;
+  return { marginBottom: RAZMAK_PX[v] };
+}
+
+function paddingStyle(block: Block): React.CSSProperties | undefined {
+  const v = block.razmakIspod;
+  if (!v || !(v in RAZMAK_PX)) return undefined;
+  return { paddingBottom: RAZMAK_PX[v] };
+}
 
 // Svi renderi blokova. Namjerno koriste POSTOJEĆE .dawn-* klase iz
 // globals.css, pa svaki novi proizvod automatski izgleda kao ostatak
@@ -262,7 +285,7 @@ function StoryInner({ block }: { block: Block }) {
 
 /* --------------------------- samostalne sekcije --------------------------- */
 
-function SoloBlock({ block, reviews }: { block: Block; reviews: Review[] }) {
+function renderSolo({ block, reviews }: { block: Block; reviews: Review[] }) {
   const d = block.data as D;
   const s = (k: string, fb = "") =>
     d[k] === undefined || d[k] === null ? fb : String(d[k]);
@@ -596,6 +619,19 @@ function SoloBlock({ block, reviews }: { block: Block; reviews: Review[] }) {
   }
 }
 
+/** Svaki slučaj u renderSolo() vraća JEDNU <section> (ili null) — ovdje se
+ * na taj vraćeni element doda "razmak ispod" override, na jednom mjestu za
+ * sve tipove, umjesto da se svaki od ~15 <section> tagova gore pojedinačno
+ * mijenja. */
+function SoloBlock({ block, reviews }: { block: Block; reviews: Review[] }) {
+  const el = renderSolo({ block, reviews }) as ReactElement<{
+    style?: React.CSSProperties;
+  }> | null;
+  const style = paddingStyle(block);
+  if (!el || !style) return el;
+  return cloneElement(el, { style: { ...el.props.style, ...style } });
+}
+
 /* Prazni blokovi (npr. iz šablona, još nepopunjeni) se kupcu ne prikazuju,
  * a prazne stavke u listama se izbacuju — tako nedovršen šablon ne ostavlja
  * prazne rupe na stranici. */
@@ -691,7 +727,7 @@ export function IntroDescription({ blocks }: { blocks: Block[] }) {
     <div className="dawn-intro-right">
       {blocks.map((b) =>
         isStoryBlock(b) ? (
-          <div className="dawn-story-block" key={b.id}>
+          <div className="dawn-story-block" key={b.id} style={marginStyle(b)}>
             <StoryInner block={b} />
           </div>
         ) : (
@@ -743,7 +779,7 @@ export function CmsBlocks({
           >
             <div className="dawn-col">
               {g.blocks.map((b) => (
-                <div className="dawn-story-block" key={b.id}>
+                <div className="dawn-story-block" key={b.id} style={marginStyle(b)}>
                   <StoryInner block={b} />
                 </div>
               ))}

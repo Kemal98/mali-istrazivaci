@@ -40,7 +40,16 @@ export interface Block {
   uputa?: string;
   /** Uloga iz šablona ("problem", "koristi"…) — po njoj "Popuni stranicu" zna gdje ide koji tekst. */
   uloga?: string;
+  /** Razmak ispod OVOG bloka — prazno/"m" = zadano (ne dira se ništa). */
+  razmakIspod?: "" | "none" | "s" | "m" | "l";
 }
+
+export const RAZMAK_LABELS: Record<"none" | "s" | "m" | "l", string> = {
+  none: "Bez razmaka",
+  s: "Malo",
+  m: "Zadano",
+  l: "Veliko",
+};
 
 export interface Hero {
   slika: string;
