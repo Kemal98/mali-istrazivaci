@@ -1276,3 +1276,8 @@
 .adm-tpl-pick button{text-align:left;padding:10px 12px;border:1.5px solid #e1e3e8;
   border-radius:10px;background:#fff;font-weight:700;font-size:.88rem;cursor:pointer}
 .adm-tpl-pick button[data-active="true"]{border-color:var(--orange, #e8712b);background:#fff6ef}
+
+/* oznaka kanala (Messenger/Viber/telefon) uz ime kupca za ručno dodane narudžbe */
+.adm-channel-badge{display:inline-block;margin-left:8px;padding:2px 8px;
+  border-radius:999px;background:#fef3e2;color:#9a5b13;font-size:.72rem;
+  font-weight:700;white-space:nowrap;vertical-align:middle}

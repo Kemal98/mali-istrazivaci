@@ -15,6 +15,29 @@ import {
 } from "@/lib/orders/types";
 
 /**
+ * Narudžbe dodane ručno (Messenger/Viber/telefon preko "Narudžba van
+ * sajta") idu kroz isti sistem kao web narudžbe — Sheet, A2B izvoz,
+ * Zarada — ali se bez ove oznake ne mogu razlikovati pogledom na listu,
+ * pa je lako zaboraviti je li nešto već uneseno ili ne.
+ */
+function channelBadge(o: Order) {
+  if (o.source !== "manual") return null;
+  const label =
+    o.utmSource === "messenger"
+      ? "📩 Messenger"
+      : o.utmSource === "viber"
+        ? "💜 Viber"
+        : o.utmSource === "telefon"
+          ? "☎️ Telefon"
+          : "✍️ Ručno";
+  return (
+    <span className="adm-channel-badge" title="Ručno dodana narudžba (ne sa sajta)">
+      {label}
+    </span>
+  );
+}
+
+/**
  * Promjena statusa direktno iz tabele, bez ulaska u narudžbu. Pozadina i
  * ikonica prate trenutni status (iste boje kao badge u mobilnoj kartici i
  * na detalju narudžbe) — cilj je da se stanje vidi pogledom niz tabelu,
@@ -277,7 +300,10 @@ export default function OrdersTable({
                 <td className="adm-hint" style={{ whiteSpace: "nowrap" }}>
                   {datum(o.createdAt)}
                 </td>
-                <td>{o.customerName || "—"}</td>
+                <td>
+                  {o.customerName || "—"}
+                  {channelBadge(o)}
+                </td>
                 <td style={{ whiteSpace: "nowrap" }}>
                   <a className="adm-tel" href={`tel:${o.phone.replace(/\s/g, "")}`}>
                     {o.phone || "—"}
@@ -345,7 +371,10 @@ export default function OrdersTable({
             </div>
             <div className="adm-order-card-row">
               <span>Kupac</span>
-              <b>{o.customerName || "—"}</b>
+              <b>
+                {o.customerName || "—"}
+                {channelBadge(o)}
+              </b>
             </div>
             <div className="adm-order-card-row">
               <span>Telefon</span>
