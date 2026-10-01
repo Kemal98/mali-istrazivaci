@@ -21,7 +21,8 @@ export type BlockType =
   | "recenzije"
   | "divider"
   | "koristi"
-  | "faq";
+  | "faq"
+  | "isticanja";
 
 export type Align = "left" | "center" | "right";
 export type Velicina = "S" | "M" | "L" | "XL";
@@ -238,6 +239,15 @@ export function defaultBlockData(type: BlockType): BlockData {
       };
     case "faq":
       return { naslov: "Česta pitanja", items: [{ pitanje: "", odgovor: "" }] };
+    case "isticanja":
+      return {
+        naslov: "",
+        items: [
+          { naslov: "", tekst: "" },
+          { naslov: "", tekst: "" },
+          { naslov: "", tekst: "" },
+        ],
+      };
     default:
       return {};
   }
@@ -263,4 +273,5 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   divider: "Linija",
   koristi: "Koristi sa slikom",
   faq: "Česta pitanja (FAQ)",
+  isticanja: "Isticanja (bez slike)",
 };

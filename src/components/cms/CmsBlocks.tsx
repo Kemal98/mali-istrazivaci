@@ -558,6 +558,32 @@ function SoloBlock({ block, reviews }: { block: Block; reviews: Review[] }) {
       );
     }
 
+    case "isticanja": {
+      const list = (Array.isArray(d.items) ? d.items : []) as {
+        naslov?: string;
+        tekst?: string;
+      }[];
+      return (
+        <section className="cms-isticanja">
+          <div className="dawn-col cms-isticanja-col">
+            {s("naslov") ? <h2 className="dawn-h2">{s("naslov")}</h2> : null}
+            <div className="cms-isticanja-list">
+              {list.map((it, i) => (
+                <div className="cms-isticanje" key={i}>
+                  {it.naslov ? <b>{it.naslov}</b> : null}
+                  {it.tekst ? (
+                    <p>
+                      <RichText text={it.tekst} />
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     case "divider":
       return (
         <div className="dawn-col">
@@ -606,6 +632,10 @@ function cleanBlock(b: Block): Block | null {
     }
     case "faq": {
       const items = list("items").filter((x) => Boolean(((x ?? {}) as D).pitanje));
+      return items.length ? { ...b, data: { ...d, items } } : null;
+    }
+    case "isticanja": {
+      const items = list("items").filter((x) => Boolean(((x ?? {}) as D).naslov));
       return items.length ? { ...b, data: { ...d, items } } : null;
     }
     case "galerija":

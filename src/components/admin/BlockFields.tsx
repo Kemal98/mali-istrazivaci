@@ -662,6 +662,62 @@ export default function BlockFields({
       );
     }
 
+    case "isticanja": {
+      type H = { naslov: string; tekst: string };
+      const items = (Array.isArray(d.items) ? d.items : []) as H[];
+      const setItem = (i: number, patch: Partial<H>) =>
+        set({ items: items.map((x, j) => (j === i ? { ...x, ...patch } : x)) });
+      return (
+        <>
+          <TextField
+            label="Naslov sekcije (opcionalno)"
+            value={s("naslov")}
+            onChange={(v) => set({ naslov: v })}
+          />
+          {items.map((it, i) => (
+            <div key={i} className="adm-subcard">
+              <div className="adm-subcard-head">
+                <b>Kartica {i + 1}</b>
+                <button
+                  type="button"
+                  className="adm-btn adm-btn-icon adm-btn-danger"
+                  onClick={() => set({ items: items.filter((_, j) => j !== i) })}
+                >
+                  ✕
+                </button>
+              </div>
+              <TextField
+                label="Podebljan naslov kartice"
+                value={it.naslov}
+                onChange={(v) => setItem(i, { naslov: v })}
+                placeholder="npr. Svaki dan druga staza"
+              />
+              <TextArea
+                label="Kratak tekst ispod (1-2 rečenice)"
+                value={it.tekst}
+                onChange={(v) => setItem(i, { tekst: v })}
+                rows={2}
+              />
+            </div>
+          ))}
+          {items.length < 8 ? (
+            <button
+              type="button"
+              className="adm-btn adm-btn-sm"
+              style={{ alignSelf: "flex-start" }}
+              onClick={() => set({ items: [...items, { naslov: "", tekst: "" }] })}
+            >
+              + DODAJ KARTICU
+            </button>
+          ) : null}
+          <p className="adm-hint">
+            Bez slike, samo podebljan naslov i kratak tekst u sivoj kartici —
+            za kratke, lako čitljive rečenice umjesto dugih pasusa.
+          </p>
+        </>
+      );
+    }
+
     default:
       return null;
   }
@@ -706,7 +762,8 @@ export function blockPreview(block: Block): string {
     case "recenzije":
       return first("naslov");
     case "koristi":
-    case "faq": {
+    case "faq":
+    case "isticanja": {
       const n = (Array.isArray(d.items) ? d.items : []).length;
       return first("naslov") || `${n} stavki`;
     }

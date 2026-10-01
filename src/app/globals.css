@@ -1141,3 +1141,10 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-intro-right .cms-korist img{width:96px;height:96px}
 }
 .dawn-intro:has(.dawn-intro-right > section:last-child){padding-bottom:44px}
+
+/* isticanja — podebljan naslov + kratak tekst u sivoj kartici, bez slike */
+.cms-isticanja-col{max-width:600px}
+.cms-isticanja-list{display:flex;flex-direction:column;gap:14px;text-align:left}
+.cms-isticanje{background:#f4f4f2;border-radius:16px;padding:20px 22px}
+.cms-isticanje b{display:block;font-size:1.05rem;font-weight:800;margin-bottom:6px;line-height:1.3}
+.cms-isticanje p{font-size:.95rem;color:#444;line-height:1.55;margin:0}

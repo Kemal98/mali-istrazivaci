@@ -41,6 +41,7 @@ const ADD_ORDER: BlockType[] = [
   "slika_tekst",
   "social_proof",
   "koristi",
+  "isticanja",
   "benefiti",
   "koraci",
   "u_kutiji",

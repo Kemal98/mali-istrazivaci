@@ -272,6 +272,16 @@ function sanitizeBlockData(type: BlockType, v: unknown): Record<string, unknown>
             })
           : [],
       };
+    case "isticanja":
+      return {
+        naslov: str(r.naslov),
+        items: Array.isArray(r.items)
+          ? r.items.slice(0, 8).map((g) => {
+              const o = (g ?? {}) as Record<string, unknown>;
+              return { naslov: str(o.naslov, 120), tekst: longStr(o.tekst).slice(0, 400) };
+            })
+          : [],
+      };
     default:
       return {};
   }
