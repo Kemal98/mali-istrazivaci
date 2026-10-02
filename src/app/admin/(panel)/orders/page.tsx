@@ -64,7 +64,17 @@ export default async function OrdersPage({
   const unsynced = await countUnsynced();
   const cmsProducts = await listProducts();
   const orderableProducts = cmsProducts
-    .filter((p) => p.status === "published" && p.cijena !== null)
+    // Stari ("prod_static_…") proizvodi imaju svoju ručno kodiranu
+    // stranicu izvan CMS-a (vidi RattleCheckout.tsx i sl.) i zato nikad
+    // ne prolaze kroz "Objavi" — ostaju trajno na statusu "draft" iako
+    // su stvarno u prodaji. Zato ih dropdown ovdje mora propustiti i
+    // bez statusa "published", inače se ne mogu ručno unijeti narudžbe
+    // za njih (npr. zvečke).
+    .filter(
+      (p) =>
+        (p.status === "published" || p.id.startsWith("prod_static_")) &&
+        p.cijena !== null
+    )
     .map((p) => ({ id: p.id, naziv: p.naziv, cijena: p.cijena }));
   const manualSales = await listManualSales();
 
