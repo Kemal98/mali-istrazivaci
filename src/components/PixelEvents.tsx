@@ -25,7 +25,13 @@ const DEFAULT_CONTENT = { content_name: "SAT MIRA set 3u1", value: 29 };
 // /admin, i CMS proizvod-stranice) se preskače — CMS stranice same
 // prijave svoj ViewContent preko CmsPixel.tsx, sa tačnim imenom i
 // cijenom, pa se bez ovoga pucao pogrešan (SAT MIRA) proizvod.
-const DEFAULT_PATHS = ["/sat-mira", "/hvala"];
+//
+// "/hvala" NAMJERNO nije ovdje: to je stranica potvrde narudžbe za SVE
+// proizvode, ne SAT MIRA stranica — ovaj fallback bi tu uvijek prijavio
+// "SAT MIRA set 3u1" kao ViewContent, čak i kad je kupac naručio nešto
+// sasvim drugo (npr. turpiju), pa je Ads Manager pogrešno pokazivao da
+// se gleda SAT MIRA.
+const DEFAULT_PATHS = ["/sat-mira"];
 
 export default function PixelEvents() {
   const fired = useRef(false);
