@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CONTACT_EMAIL } from "@/lib/constants";
+import { consumeHvalaPurchaseAllowed } from "@/lib/orders/submit";
 
 declare global {
   interface Window {
@@ -21,6 +22,10 @@ export default function HvalaContent() {
 
   useEffect(() => {
     if (!window.fbq) return;
+    // Pucaj Purchase SAMO ako je ova stranica stigla iz stvarno uspješne
+    // narudžbe u OVOM browseru (vidi markHvalaPurchaseAllowed) — ne na
+    // osnovu URL parametara, koje bilo ko može otvoriti/pogoditi/refreshati.
+    if (!consumeHvalaPurchaseAllowed()) return;
 
     if (productPrice && qty && eventId) {
       // Nova putanja (glavna SAT MIRA forma): value je samo cijena

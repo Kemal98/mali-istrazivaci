@@ -3,7 +3,7 @@
 import { FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CONTACT_EMAIL } from "@/lib/constants";
-import { newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
+import { markHvalaPurchaseAllowed, newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
 import GuaranteeBadge from "./GuaranteeBadge";
 import ShippingCutoff from "./ShippingCutoff";
 
@@ -101,6 +101,7 @@ export default function Checkout() {
       // Purchase se pali na /hvala (kad se stranica stvarno prebaci), ne
       // ovdje — nosi isti eventId kroz URL. Namjerno bez
       // setSubmitting(false) na uspjehu, da dugme ostane onemogućeno.
+      markHvalaPurchaseAllowed();
       router.push(
         `/hvala?proizvod=${encodeURIComponent(proizvod)}&value=${total}` +
           `&pp=${productPrice}&qty=${brojSetova}&eid=${eventId}`

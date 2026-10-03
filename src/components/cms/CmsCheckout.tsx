@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
+import { markHvalaPurchaseAllowed, newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
 import { useDawnQty } from "@/components/DawnQtyContext";
 import { useBookCheckoutModal } from "@/components/BookCheckoutModalContext";
 
@@ -96,6 +96,7 @@ export default function CmsCheckout({
     if (res.ok) {
       // Namjerno bez setSubmitting(false) na uspjehu — dugme ostaje
       // onemogućeno dok stranica prelazi na /hvala.
+      markHvalaPurchaseAllowed();
       router.push(
         `/hvala?proizvod=${encodeURIComponent(naziv)}&value=${total}`
       );

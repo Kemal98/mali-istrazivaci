@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BOOK_ORDERS_ENABLED } from "@/lib/constants";
-import { newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
+import { markHvalaPurchaseAllowed, newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
 import { useDawnQty } from "./DawnQtyContext";
 import { useBookCheckoutModal } from "./BookCheckoutModalContext";
 
@@ -84,6 +84,7 @@ export default function BookCheckout() {
     if (res.ok) {
       // Namjerno bez setSubmitting(false) na uspjehu — dugme ostaje
       // onemogućeno dok stranica prelazi na /hvala.
+      markHvalaPurchaseAllowed();
       router.push(
         `/hvala?proizvod=${encodeURIComponent(proizvod)}&value=${total}`
       );

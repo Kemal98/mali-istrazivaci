@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RATTLE_ORDERS_ENABLED } from "@/lib/constants";
-import { newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
+import { markHvalaPurchaseAllowed, newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
 import { useDawnQty } from "./DawnQtyContext";
 import { useBookCheckoutModal } from "./BookCheckoutModalContext";
 
@@ -81,6 +81,7 @@ export default function RattleCheckout() {
       // Dugme ostaje onemogućeno do redirecta — namjerno nema
       // setSubmitting(false) na uspjehu, da se ne može kliknuti dvaput
       // dok stranica prelazi na /hvala.
+      markHvalaPurchaseAllowed();
       router.push(
         `/hvala?proizvod=${encodeURIComponent(proizvod)}&value=${total}`
       );

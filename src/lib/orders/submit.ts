@@ -46,6 +46,38 @@ export function newIdempotencyKey(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+const HVALA_FLAG_KEY = "hvala_ok";
+
+/**
+ * Dozvoljava JEDAN naredni Purchase pixel fire na /hvala.
+ *
+ * Zašto: /hvala?proizvod=X&value=Y je dosad palio Meta Purchase event
+ * SAMO na osnovu URL parametara, bez provjere da je narudžba stvarno
+ * uspjela. Bilo ko ko pogodi/otvori taj URL (bot, radoznao posjetitelj,
+ * refresh, povratak na stranicu) upisao je Meta-i lažnu kupovinu — zato
+ * su se u Ads Manageru vidjele konverzije bez odgovarajuće narudžbe.
+ * Zastavica se postavlja TEK nakon što backend potvrdi narudžbu (ok:true)
+ * i odmah se potroši (pročita i obriše) u HvalaContent, pa ni refresh
+ * /hvala stranice ne pali drugi Purchase za istu narudžbu.
+ */
+export function markHvalaPurchaseAllowed() {
+  try {
+    sessionStorage.setItem(HVALA_FLAG_KEY, "1");
+  } catch {
+    // privatni mod i sl. — pixel se tad jednostavno ne pali, bolje nego pucanje
+  }
+}
+
+export function consumeHvalaPurchaseAllowed(): boolean {
+  try {
+    const ok = sessionStorage.getItem(HVALA_FLAG_KEY) === "1";
+    sessionStorage.removeItem(HVALA_FLAG_KEY);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 export async function submitOrder(
   input: SubmitOrderInput
 ): Promise<SubmitOrderResult> {
