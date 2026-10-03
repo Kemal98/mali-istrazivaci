@@ -13,14 +13,6 @@ declare global {
   }
 }
 
-const AGE_OPTIONS = [
-  { value: "2 godine", label: "2" },
-  { value: "3 godine", label: "3" },
-  { value: "4 godine", label: "4" },
-  { value: "5 godina", label: "5" },
-  { value: "6 godina", label: "6" },
-];
-
 function isValidBHPhone(raw: string) {
   const digits = raw.replace(/[\s-]/g, "");
   return /^06\d{7}$/.test(digits) || /^\+3876\d{7}$/.test(digits);
@@ -31,10 +23,6 @@ export default function Checkout() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   const [extraSet, setExtraSet] = useState(false);
-  const [selectedAge, setSelectedAge] = useState("");
-  const [dvoje, setDvoje] = useState(false);
-  const [dvojeGodine, setDvojeGodine] = useState("");
-  const [ageError, setAgeError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
   // Jedan ključ po otvorenoj formi: dupli klik ili retry šalju isti
   // ključ, pa backend vrati postojeću narudžbu umjesto da napravi drugu.
@@ -42,11 +30,6 @@ export default function Checkout() {
   const DELIVERY = 10;
   const productPrice = extraSet ? 49 : 29;
   const total = productPrice + DELIVERY;
-  const uzrastValue = dvoje
-    ? dvojeGodine.trim()
-      ? `Dvoje djece: ${dvojeGodine.trim()}`
-      : ""
-    : selectedAge;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,12 +38,13 @@ export default function Checkout() {
     const form = e.currentTarget;
     const formData = new FormData(form);
     const telValue = String(formData.get("tel") || "");
+    const imeValue = `${formData.get("ime") || ""} ${
+      formData.get("prezime") || ""
+    }`.trim();
 
-    const ageOk = Boolean(uzrastValue);
     const phoneOk = isValidBHPhone(telValue);
-    setAgeError(!ageOk);
     setPhoneError(!phoneOk);
-    if (!ageOk || !phoneOk) return;
+    if (!phoneOk) return;
 
     setSubmitting(true);
 
@@ -80,7 +64,7 @@ export default function Checkout() {
 
     const res = await submitOrder({
       idempotencyKey: orderKeyRef.current,
-      customerName: String(formData.get("ime") || ""),
+      customerName: imeValue,
       phone: telValue,
       address: String(formData.get("adresa") || ""),
       city: String(formData.get("grad") || ""),
@@ -102,7 +86,6 @@ export default function Checkout() {
         eventId,
         purchaseValue: productPrice,
         qty: brojSetova,
-        uzrast: uzrastValue,
       },
     });
 
@@ -158,15 +141,27 @@ export default function Checkout() {
                   <h3>Podaci za dostavu</h3>
                 </div>
                 <div className="card-body">
-                  <div className="field">
-                    <label htmlFor="ime">Ime i prezime *</label>
-                    <input
-                      type="text"
-                      id="ime"
-                      name="ime"
-                      required
-                      placeholder="npr. Amina Hodžić"
-                    />
+                  <div className="field-row">
+                    <div className="field">
+                      <label htmlFor="ime">Ime *</label>
+                      <input
+                        type="text"
+                        id="ime"
+                        name="ime"
+                        required
+                        placeholder="npr. Amina"
+                      />
+                    </div>
+                    <div className="field">
+                      <label htmlFor="prezime">Prezime *</label>
+                      <input
+                        type="text"
+                        id="prezime"
+                        name="prezime"
+                        required
+                        placeholder="npr. Hodžić"
+                      />
+                    </div>
                   </div>
                   <div className="field">
                     <label htmlFor="tel">Broj telefona *</label>
@@ -209,58 +204,6 @@ export default function Checkout() {
                     </div>
                   </div>
                   <div className="field">
-                    <label>Koliko godina ima dijete? *</label>
-                    <div className="age-btns">
-                      {AGE_OPTIONS.map((opt) => (
-                        <button
-                          type="button"
-                          key={opt.value}
-                          className={`age-btn${
-                            !dvoje && selectedAge === opt.value
-                              ? " active"
-                              : ""
-                          }`}
-                          onClick={() => {
-                            setDvoje(false);
-                            setSelectedAge(opt.value);
-                            setAgeError(false);
-                          }}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                      <button
-                        type="button"
-                        className={`age-btn age-btn-multi${
-                          dvoje ? " active" : ""
-                        }`}
-                        onClick={() => {
-                          setDvoje(true);
-                          setSelectedAge("");
-                          setAgeError(false);
-                        }}
-                      >
-                        Dvoje djece
-                      </button>
-                    </div>
-                    {dvoje && (
-                      <input
-                        type="text"
-                        required
-                        value={dvojeGodine}
-                        onChange={(e) => {
-                          setDvojeGodine(e.target.value);
-                          setAgeError(false);
-                        }}
-                        placeholder="Koliko godina imaju? npr. 3 i 5 godina"
-                        style={{ marginTop: "10px" }}
-                      />
-                    )}
-                    {ageError && (
-                      <p className="field-error">Izaberi uzrast djeteta.</p>
-                    )}
-                  </div>
-                  <div className="field">
                     <label htmlFor="napomena">
                       Napomena{" "}
                       <span
@@ -273,7 +216,7 @@ export default function Checkout() {
                       id="napomena"
                       name="napomena"
                       rows={2}
-                      placeholder="npr. trebam 2 seta, ili ostavi prazno"
+                      placeholder="npr. uzrast djeteta, trebam 2 seta, ili ostavi prazno"
                     />
                   </div>
                 </div>
