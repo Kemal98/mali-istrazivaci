@@ -2,10 +2,11 @@ import { sql } from "@/lib/cms/db";
 import { META_USD_TO_KM } from "@/lib/ads/currency";
 import type { Period } from "./stats";
 
-// "Kao da je sve prodano": računaju se SVE narudžbe iz perioda (bez obzira
-// na status), prihod je vrijednost proizvoda bez dostave, a nabavna cijena
-// je TRENUTNA nabavna cijena proizvoda (ne snimak s dana narudžbe), pa
-// stare narudžbe bez snimka također imaju trošak.
+// "Kao da je sve prodano": računaju se SVE narudžbe iz perioda OSIM
+// otkazanih/vraćenih (CANCELLED, RETURNED — te dvije ne postaju nikad
+// stvarna prodaja/isporuka), prihod je vrijednost proizvoda bez dostave,
+// a nabavna cijena je TRENUTNA nabavna cijena proizvoda (ne snimak s dana
+// narudžbe), pa stare narudžbe bez snimka također imaju trošak.
 
 type Row = Record<string, unknown>;
 const n = (v: unknown) => (v === null || v === undefined ? 0 : Number(v));
@@ -50,7 +51,7 @@ export async function profitAsIfSold(
 ): Promise<ProfitSummary> {
   const db = sql();
 
-  let w = db`o.deleted_at IS NULL AND o.product_name <> ''`;
+  let w = db`o.deleted_at IS NULL AND o.product_name <> '' AND o.status NOT IN ('CANCELLED', 'RETURNED')`;
   if (p.from) w = db`${w} AND o.created_at >= ${p.from}`;
   if (p.to) w = db`${w} AND o.created_at <= ${p.to}`;
 
@@ -87,7 +88,7 @@ export async function profitAsIfSold(
         ON pr.deleted_at IS NULL
        AND (pr.id = o.product_id
             OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
-     WHERE o.deleted_at IS NULL AND o.product_name <> ''
+     WHERE o.deleted_at IS NULL AND o.product_name <> '' AND o.status NOT IN ('CANCELLED', 'RETURNED')
      GROUP BY 1`;
   const purchased = new Map<string, { qty: number; cost: number }>();
   for (const r of purchaseRows) {
@@ -259,7 +260,7 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
         ON pr.deleted_at IS NULL
        AND (pr.id = o.product_id
             OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
-     WHERE o.deleted_at IS NULL AND o.product_name <> ''
+     WHERE o.deleted_at IS NULL AND o.product_name <> '' AND o.status NOT IN ('CANCELLED', 'RETURNED')
        AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' >= ${fromDate}::date
        AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' < (${toDate}::date + 1)
      GROUP BY 1, 2`;
@@ -368,7 +369,7 @@ export async function productAlerts(noSaleDays = 2): Promise<ProductAlert[]> {
           ON pr.deleted_at IS NULL
          AND (pr.id = o.product_id
               OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
-       WHERE o.deleted_at IS NULL AND o.product_name <> ''
+       WHERE o.deleted_at IS NULL AND o.product_name <> '' AND o.status NOT IN ('CANCELLED', 'RETURNED')
          AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' >= ${fromDate}::date
        GROUP BY 1`;
     const manualRows = await db<Row[]>`
