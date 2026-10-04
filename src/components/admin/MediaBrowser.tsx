@@ -33,6 +33,9 @@ export default function MediaBrowser({
   const [q, setQ] = useState("");
   const [toDelete, setToDelete] = useState<Media | null>(null);
   const [copied, setCopied] = useState("");
+  const [urlInput, setUrlInput] = useState("");
+  const [urlBusy, setUrlBusy] = useState(false);
+  const [urlMsg, setUrlMsg] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const fetched = useRef(false);
 
@@ -84,6 +87,27 @@ export default function MediaBrowser({
     },
     []
   );
+
+  async function addFromUrl() {
+    const url = urlInput.trim();
+    if (!url) return;
+    setUrlBusy(true);
+    setUrlMsg("");
+    const res = await fetch("/api/admin/media/from-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setUrlBusy(false);
+    if (!res.ok) {
+      setUrlMsg(data?.error || "Greška.");
+      return;
+    }
+    setMedia((m) => [data.media as Media, ...m]);
+    setUrlInput("");
+    setUrlMsg("Dodano.");
+  }
 
   function onDrop(e: React.DragEvent) {
     e.preventDefault();
@@ -164,6 +188,42 @@ export default function MediaBrowser({
             e.target.value = "";
           }}
         />
+      </div>
+
+      {/* Dodaj SAMO kao link — bez uploada na naš storage. Hitno rješenje
+          dok je Supabase Storage blokiran: slika se hostuje negdje drugo
+          (npr. Imgur), ovdje se samo zalijepi gotov link. */}
+      <div className="adm-card" style={{ marginTop: 12 }}>
+        <div className="adm-card-title" style={{ marginBottom: 8 }}>
+          🔗 Ili dodaj preko linka (ako je upload sa računara u kvaru)
+        </div>
+        <p className="adm-hint" style={{ marginBottom: 8 }}>
+          Uploaduj sliku na imgur.com (ili drugi sajt), pa ovdje zalijepi
+          gotov link do slike (mora počinjati sa https://).
+        </p>
+        <div style={{ display: "flex", gap: 8 }}>
+          <input
+            type="text"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="https://i.imgur.com/..."
+            style={{ flex: 1 }}
+            onKeyDown={(e) => e.key === "Enter" && addFromUrl()}
+          />
+          <button
+            type="button"
+            className="adm-btn adm-btn-primary"
+            disabled={urlBusy || !urlInput.trim()}
+            onClick={addFromUrl}
+          >
+            DODAJ
+          </button>
+        </div>
+        {urlMsg ? (
+          <p className="adm-hint" style={{ marginTop: 6 }}>
+            {urlMsg}
+          </p>
+        ) : null}
       </div>
 
       {rows.length > 0 ? (
