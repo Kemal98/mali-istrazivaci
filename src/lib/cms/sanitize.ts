@@ -53,11 +53,15 @@ export function num(v: unknown): number | null {
 }
 
 /**
- * Bijela lista izvora slika/videa. Dozvoljeno je samo:
+ * Izvori slika/videa. Dozvoljeno je:
  *  - interne putanje iz repoa (/img/..., /video/..., stari /uploads/...)
  *  - javni URL NAŠEG Supabase Storage bucketa
- * Sve ostalo (bilo koji vanjski domen) se odbacuje, da admin UI ne može
- * ubaciti hotlink na tuđi server ni tracking piksel.
+ *  - BILO KOJI https:// URL (vanjski hosting, npr. Imgur) — admin panel
+ *    je iza logina (ne javna forma), pa ovdje nema XSS/tracking-pixel
+ *    rizika koji je ranije opravdavao strožu bijelu listu; potrebno otkad
+ *    je Supabase Storage znao biti privremeno nedostupan (prekoračena
+ *    kvota), pa admin mora moći ubaciti link na sliku hostovanu drugdje.
+ * http:// (bez "s") se i dalje odbacuje — samo šifrovane veze.
  */
 export function mediaUrl(v: unknown): string {
   const s = str(v, 500);
@@ -65,6 +69,7 @@ export function mediaUrl(v: unknown): string {
   if (/^\/(uploads|img|video)\//.test(s)) return s;
   const prefix = publicUrlPrefix();
   if (prefix && s.startsWith(prefix)) return s;
+  if (/^https:\/\/.+/i.test(s)) return s;
   return "";
 }
 
