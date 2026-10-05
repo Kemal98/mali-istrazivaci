@@ -82,7 +82,7 @@ export default function HvalaContent() {
               color: "var(--green-d)",
             }}
           >
-            Vaša narudžba je poslana i primljena!
+            Vaša narudžba je primljena!
           </h1>
           <p style={{ fontWeight: 500, color: "var(--ink2s)" }}>
             Hvala Vam! Vašu narudžbu šaljemo u roku od 24h. 🙏
