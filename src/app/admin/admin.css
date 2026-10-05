@@ -411,6 +411,12 @@
 .adm-table tr:last-child td {
   border-bottom: none;
 }
+.adm-row-clickable {
+  cursor: pointer;
+}
+.adm-row-clickable:hover {
+  background: #f8f8f6;
+}
 
 /* Excel-stil: prave vertikalne linije + naizmjenično sjenčani redovi,
    kompaktniji razmak — za tabele koje admin skenira brzo pogledom

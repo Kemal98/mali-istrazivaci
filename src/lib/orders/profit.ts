@@ -323,6 +323,131 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
   return rows;
 }
 
+/* ------------------------------ zarada po proizvodu, po danu ------------------------------ */
+
+/**
+ * Isto kao profitByDay, ali razbijeno PO PROIZVODU — da admin vidi za
+ * svaki proizvod koja je bila potrošnja na reklame i zarada SVAKI dan
+ * (ne samo zbir za period), npr. da provjeri je li neki dan bilo 0, 1,
+ * 2… prodaja. Vraća Mapu: naziv proizvoda -> dani (samo dani s nekom
+ * aktivnošću za taj proizvod — nema praznih redova).
+ */
+export async function profitByProductDay(
+  fromDate: string,
+  toDate: string
+): Promise<Map<string, DayProfit[]>> {
+  const db = sql();
+
+  const purchaseRows = await db<Row[]>`
+    SELECT product_name, SUM(quantity) AS qty, SUM(total_cost) AS cost
+      FROM stock_purchases GROUP BY 1`;
+  const avgCost = new Map<string, number>();
+  for (const r of purchaseRows) {
+    const qty = n(r.qty);
+    if (qty > 0) avgCost.set(norm(String(r.product_name)), n(r.cost) / qty);
+  }
+
+  const orderRows = await db<Row[]>`
+    SELECT to_char((o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo', 'YYYY-MM-DD') AS day,
+           COALESCE(pr.naziv, o.product_name) AS name,
+           COUNT(*) AS orders,
+           COALESCE(SUM(o.quantity), 0) AS qty,
+           COALESCE(SUM(o.subtotal), 0) AS revenue,
+           COALESCE(SUM(o.quantity * pr.nabavna_cijena), 0) AS cost_default
+      FROM orders o
+      LEFT JOIN products pr
+        ON pr.deleted_at IS NULL
+       AND (pr.id = o.product_id
+            OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
+     WHERE o.deleted_at IS NULL AND o.product_name <> '' AND o.status NOT IN ('CANCELLED', 'RETURNED')
+       AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' >= ${fromDate}::date
+       AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' < (${toDate}::date + 1)
+     GROUP BY 1, 2`;
+
+  // Za razliku od profitByDay, ovdje treba potrošnja PO PROIZVODU, pa se
+  // ad_spend grupiše i po danu i po nazivu (ne samo po danu).
+  const spendRows = await db<Row[]>`
+    SELECT date, product_name,
+           COALESCE(SUM(CASE WHEN source = 'meta' THEN amount * ${META_USD_TO_KM} ELSE amount END), 0) AS total
+      FROM ad_spend
+     WHERE date >= ${fromDate} AND date <= ${toDate}
+       AND product_name NOT LIKE 'Nemapirano:%' AND product_name <> ''
+     GROUP BY 1, 2`;
+
+  const manualRows = await db<Row[]>`
+    SELECT ms.date, COALESCE(pr.naziv, ms.product_name) AS name,
+           COALESCE(SUM(ms.quantity), 0) AS qty,
+           COALESCE(SUM(ms.quantity * pr.cijena), 0) AS revenue,
+           COALESCE(SUM(ms.quantity * pr.nabavna_cijena), 0) AS cost
+      FROM manual_sales ms
+      LEFT JOIN products pr
+        ON pr.deleted_at IS NULL AND lower(trim(pr.naziv)) = lower(trim(ms.product_name))
+     WHERE ms.date >= ${fromDate} AND ms.date <= ${toDate}
+     GROUP BY 1, 2`;
+
+  const byProduct = new Map<string, Map<string, DayProfit>>();
+  const get = (productName: string, day: string) => {
+    let days = byProduct.get(norm(productName));
+    if (!days) {
+      days = new Map();
+      byProduct.set(norm(productName), days);
+    }
+    let row = days.get(day);
+    if (!row) {
+      row = { day, orders: 0, revenue: 0, cost: 0, adSpend: 0, profit: 0 };
+      days.set(day, row);
+    }
+    return row;
+  };
+  // Čuva "pravo" ime (normalizovano se koristi samo kao ključ mape).
+  const displayName = new Map<string, string>();
+  const noteName = (name: string) => {
+    const key = norm(name);
+    if (!displayName.has(key)) displayName.set(key, name.trim());
+  };
+
+  for (const r of orderRows) {
+    const name = String(r.name);
+    noteName(name);
+    const day = String(r.day);
+    const qty = n(r.qty);
+    const perUnit = avgCost.get(norm(name));
+    const cost = perUnit !== undefined ? perUnit * qty : n(r.cost_default);
+    const row = get(name, day);
+    row.orders += n(r.orders);
+    row.revenue += n(r.revenue);
+    row.cost += cost;
+  }
+  for (const r of manualRows) {
+    const name = String(r.name);
+    noteName(name);
+    const row = get(name, String(r.date));
+    row.orders += n(r.qty);
+    row.revenue += n(r.revenue);
+    row.cost += n(r.cost);
+  }
+  for (const r of spendRows) {
+    const name = String(r.product_name);
+    noteName(name);
+    get(name, String(r.date)).adSpend += n(r.total);
+  }
+
+  const result = new Map<string, DayProfit[]>();
+  for (const [key, days] of byProduct) {
+    const rows = [...days.values()]
+      .map((r) => ({
+        ...r,
+        revenue: r2(r.revenue),
+        cost: r2(r.cost),
+        adSpend: r2(r.adSpend),
+        profit: r2(r.revenue - r.cost - r.adSpend),
+      }))
+      .sort((a, b) => b.day.localeCompare(a.day));
+    result.set(displayName.get(key) ?? key, rows);
+  }
+  return result;
+}
+
 /* ------------------------------ upozorenja ------------------------------ */
 
 export interface ProductAlert {

@@ -5,7 +5,13 @@ import { metaConfigured } from "@/lib/ads/meta";
 import { syncMetaSpend } from "@/lib/ads/sync";
 import { datum, sarajevoDateOnly, sarajevoStartOfDay } from "@/lib/cms/datum";
 import { META_USD_TO_KM } from "@/lib/ads/currency";
-import { profitAsIfSold, profitByDay, productAlerts } from "@/lib/orders/profit";
+import {
+  profitAsIfSold,
+  profitByDay,
+  profitByProductDay,
+  productAlerts,
+  type DayProfit,
+} from "@/lib/orders/profit";
 import { countUnsynced, listOrders } from "@/lib/orders/repo";
 import { shopStats } from "@/lib/orders/dashboard";
 import {
@@ -22,6 +28,7 @@ import { STATUS_CLASS, STATUS_LABEL, type OrderStatus } from "@/lib/orders/types
 import DashboardPeriod from "@/components/admin/DashboardPeriod";
 import DanPicker from "@/components/admin/DanPicker";
 import OrdersChart from "@/components/admin/OrdersChart";
+import ProductProfitTable from "@/components/admin/ProductProfitTable";
 
 export const dynamic = "force-dynamic";
 
@@ -144,6 +151,11 @@ export default async function DashboardPage({
     sarajevoDateOnly(fromDate),
     sarajevoDateOnly(toDate)
   );
+  const productDaysMap = await profitByProductDay(
+    sarajevoDateOnly(fromDate),
+    sarajevoDateOnly(toDate)
+  );
+  const productDays = [...productDaysMap.entries()] as [string, DayProfit[]][];
   const cities = await topCities(range);
   const sources = await bySource(range);
   const campaigns = await byCampaign(range);
@@ -565,56 +577,13 @@ export default async function DashboardPage({
         </div>
 
         {profit.rows.length > 0 ? (
-          <div className="adm-table-wrap" style={{ border: "none", marginTop: 14 }}>
-            <table className="adm-table" style={{ minWidth: 720 }}>
-              <thead>
-                <tr>
-                  <th>Proizvod</th>
-                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Narudž.</th>
-                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Prihod</th>
-                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Nabavna</th>
-                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Reklame</th>
-                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Zarada</th>
-                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Po narudž.</th>
-                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Na stanju</th>
-                </tr>
-              </thead>
-              <tbody>
-                {profit.rows.map((p) => (
-                  <tr key={p.productName}>
-                    <td>
-                      {p.productName}
-                      {p.missingCost ? (
-                        <span className="adm-hint"> · fali nabavna cijena</span>
-                      ) : null}
-                      {p.manualQty > 0 ? (
-                        <span className="adm-hint"> · uklj. {p.manualQty} ručno</span>
-                      ) : null}
-                    </td>
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>{p.orders || "—"}</td>
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>{km(p.revenue)}</td>
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
-                      {p.cost > 0 ? `−${km(p.cost)}` : "—"}
-                    </td>
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
-                      {p.adSpend > 0 ? `−${km(p.adSpend)}` : "—"}
-                    </td>
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                      <b style={{ color: p.profit >= 0 ? "#148a4b" : "#b3261e" }}>
-                        {km(p.profit)}
-                      </b>
-                    </td>
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
-                      {p.orders ? km(Math.round((p.profit / p.orders) * 100) / 100) : "—"}
-                    </td>
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
-                      {p.stock === null ? "—" : `${p.stock} kom`}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <ProductProfitTable rows={profit.rows} byDay={productDays} />
+            <p className="adm-hint" style={{ marginTop: 8 }}>
+              Klikni na proizvod da vidiš potrošnju/zaradu dan-po-dan za
+              izabrani period.
+            </p>
+          </>
         ) : (
           <p className="adm-hint">Nema narudžbi ni reklama u ovom periodu.</p>
         )}
