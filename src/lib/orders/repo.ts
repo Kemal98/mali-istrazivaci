@@ -492,6 +492,74 @@ export async function deleteOrderBulk(
   return changed;
 }
 
+/**
+ * Spaja više narudžbi ISTOG kupca u JEDNU — za slučaj kad je naručio
+ * nekoliko puta posebno, a treba ići kao jedan paket. Shema ima "jedna
+ * narudžba = jedan proizvod" (vidi schema.sql), pa prava narudžba sa
+ * više stavki nije moguća — umjesto toga, NAJRANIJA od izabranih postaje
+ * glavna (zadržava kupca/adresu/dostavu), njen "Proizvod" postaje spisak
+ * svih stavki (npr. "1x Turpija, 2x Zvečke"), količina i vrijednost
+ * proizvoda (subtotal) se saberu, a DOSTAVA SE NE SABIRA (jedan paket =
+ * jedna dostava, uzima se dostava glavne narudžbe). Ostale narudžbe se
+ * briše (deleteOrder) — nestaju iz liste/Zarade/pakovanja/A2B, uz trag u
+ * audit logu da su spojene u glavnu, ne "otkazane" (da ne kvare stopu
+ * otkazivanja u statistici).
+ *
+ * NAPOMENA: trošak (nabavna cijena) za spojeni red profit.ts računa po
+ * imenu proizvoda — pošto "Proizvod" poslije spajanja više nije pravo
+ * ime iz kataloga, taj jedan red će u Zaradi pokazati trošak 0 (ne
+ * pogrešan, samo nepoznat) dok se ručno ne provjeri.
+ */
+export async function mergeOrders(
+  ids: string[],
+  actor = "admin"
+): Promise<Order | null> {
+  if (ids.length < 2) return null;
+  const found = await Promise.all(ids.map((id) => getOrder(id)));
+  const orders = found.filter((o): o is Order => o !== null);
+  if (orders.length < 2) return null;
+
+  orders.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const [primary, ...rest] = orders;
+
+  const r2 = (v: number) => Math.round(v * 100) / 100;
+  const items = orders.map((o) => `${o.quantity}x ${o.productName}`).join(", ");
+  const subtotal = r2(orders.reduce((s, o) => s + o.subtotal, 0));
+  const quantity = orders.reduce((s, o) => s + o.quantity, 0);
+  const totalPrice = r2(subtotal + primary.shippingPrice);
+  const mergedNote = [primary.note, `Spojeno u jedan paket: ${items}`]
+    .filter(Boolean)
+    .join(" — ");
+
+  const ts = nowIso();
+  await sql()`
+    UPDATE orders SET
+      product_name = ${items},
+      quantity = ${quantity},
+      subtotal = ${subtotal},
+      total_price = ${totalPrice},
+      note = ${mergedNote},
+      updated_at = ${ts}
+     WHERE id = ${primary.id}`;
+
+  await addEvent(primary.id, {
+    kind: "merged",
+    note: `Spojene narudžbe: ${rest.map((o) => o.orderNumber).join(", ")}`,
+    actor,
+  });
+
+  for (const o of rest) {
+    await deleteOrder(o.id, actor);
+    await addEvent(o.id, {
+      kind: "merged_into",
+      note: `Spojeno u ${primary.orderNumber}`,
+      actor,
+    });
+  }
+
+  return getOrder(primary.id);
+}
+
 /** Kurir / tracking broj — svaka izmjena ide u audit log. */
 export async function setShipping(
   id: string,

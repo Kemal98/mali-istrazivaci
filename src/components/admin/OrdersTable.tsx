@@ -172,6 +172,41 @@ export default function OrdersTable({
     router.refresh();
   }
 
+  /**
+   * Spaja označene narudžbe u jednu (isti kupac naručio nekoliko puta
+   * posebno, treba ići kao jedan paket). Najranija postaje glavna i
+   * dobije sve stavke, ostale se brišu (vidi mergeOrders u repo.ts).
+   */
+  async function bulkMerge() {
+    const phones = new Set(rows.filter((r) => selected.includes(r.id)).map((r) => r.phoneNormalized));
+    const warn =
+      phones.size > 1
+        ? "Pažnja: označene narudžbe NEMAJU isti broj telefona — sigurno su od istog kupca? "
+        : "";
+    if (
+      !window.confirm(
+        `${warn}Spojiti ${selected.length} narudžbi u JEDNU (najranija postaje glavna, ostale se brišu)? Jedna dostava se naplaćuje, ne tri.`
+      )
+    )
+      return;
+    setBusy(true);
+    setMsg("");
+    const res = await fetch("/api/admin/orders/bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "merge", ids: selected }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    setSelected([]);
+    setMsg(
+      res.ok
+        ? `Spojeno u narudžbu ${data.order?.orderNumber ?? ""}.`
+        : data?.error || "Greška."
+    );
+    router.refresh();
+  }
+
   async function deleteOne(o: Order) {
     if (
       !window.confirm(
@@ -313,6 +348,16 @@ export default function OrdersTable({
           >
             📦 A2B TABELA ({selected.length})
           </button>
+          {selected.length >= 2 ? (
+            <button
+              type="button"
+              className="adm-btn adm-btn-sm"
+              disabled={busy}
+              onClick={bulkMerge}
+            >
+              🔗 SPOJI U JEDAN PAKET
+            </button>
+          ) : null}
           <button
             type="button"
             className="adm-btn adm-btn-sm adm-btn-danger"

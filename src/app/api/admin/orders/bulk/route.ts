@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { deleteOrderBulk, getOrder, setStatusBulk } from "@/lib/orders/repo";
+import { deleteOrderBulk, getOrder, mergeOrders, setStatusBulk } from "@/lib/orders/repo";
 import { retrySheetSync } from "@/lib/orders/service";
 import { isOrderStatus } from "@/lib/orders/types";
 import { str } from "@/lib/cms/sanitize";
@@ -29,6 +29,18 @@ export async function POST(request: Request) {
   if (action === "delete") {
     const changed = await deleteOrderBulk(ids);
     return NextResponse.json({ ok: true, changed });
+  }
+
+  if (action === "merge") {
+    if (ids.length < 2)
+      return NextResponse.json(
+        { error: "Označi bar dvije narudžbe za spajanje." },
+        { status: 400 }
+      );
+    const order = await mergeOrders(ids);
+    if (!order)
+      return NextResponse.json({ error: "Spajanje nije uspjelo." }, { status: 400 });
+    return NextResponse.json({ ok: true, order });
   }
 
   if (action === "retry-sheet") {
