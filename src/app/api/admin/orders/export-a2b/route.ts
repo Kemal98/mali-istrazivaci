@@ -6,8 +6,9 @@ import { sarajevoStartOfDay } from "@/lib/cms/datum";
 
 /**
  * Fajl za A2B "Masovni import". Datum se bira POSEBNO od filtera na
- * listi (query param `date`, YYYY-MM-DD) — prazno znači sve narudžbe sa
- * statusom "Nova", bez obzira kad su primljene.
+ * listi — query param `date` (jedan dan) ili `from`/`to` (raspon dana,
+ * oba uključena), YYYY-MM-DD. Prazno znači sve narudžbe sa statusom
+ * "Nova" ili "Potvrđena", bez obzira kad su primljene.
  *
  * Granica dana se računa po Sarajevu (sarajevoStartOfDay), ne po
  * vremenskoj zoni servera (Vercel je u UTC-u) — ista greška je ranije
@@ -17,6 +18,16 @@ import { sarajevoStartOfDay } from "@/lib/cms/datum";
  * admin to eksplicitno ne želi, sam bira koje narudžbe izvozi preko
  * checkboxa, pa automatska promjena statusa samo smeta).
  */
+function sarajevoDayStart(dateStr: string): string {
+  // Podne kao sidro (ne ponoć) da se izbjegnu rubni slučajevi oko same
+  // granice dana pri računanju offseta u sarajevoStartOfDay.
+  return sarajevoStartOfDay(new Date(`${dateStr}T12:00:00.000Z`)).toISOString();
+}
+function sarajevoDayEnd(dateStr: string): string {
+  const next = new Date(`${dateStr}T12:00:00.000Z`);
+  next.setUTCDate(next.getUTCDate() + 1);
+  return new Date(sarajevoStartOfDay(next).getTime() - 1).toISOString();
+}
 // Podrazumijevano uzima i "Nova" i "Potvrđena" — narudžbe se često
 // ručno potvrde u adminu (ili kroz "Narudžba van sajta") prije nego što
 // stvarno odu kuriru, pa strogo samo "Nova" ostavlja te narudžbe da se
@@ -40,16 +51,17 @@ export async function POST(request: Request) {
   } else {
     const statusRaw = p.get("status") ?? "";
     const dateStr = p.get("date") ?? "";
+    const fromStr = p.get("from") ?? "";
+    const toStr = p.get("to") ?? "";
 
     let from: string | undefined;
     let to: string | undefined;
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-      // Podne kao sidro (ne ponoć) da se izbjegnu rubni slučajevi oko same
-      // granice dana pri računanju offseta u sarajevoStartOfDay.
-      const anchor = new Date(`${dateStr}T12:00:00.000Z`);
-      const nextAnchor = new Date(anchor.getTime() + 24 * 3600 * 1000);
-      from = sarajevoStartOfDay(anchor).toISOString();
-      to = new Date(sarajevoStartOfDay(nextAnchor).getTime() - 1).toISOString();
+      from = sarajevoDayStart(dateStr);
+      to = sarajevoDayEnd(dateStr);
+    } else {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(fromStr)) from = sarajevoDayStart(fromStr);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(toStr)) to = sarajevoDayEnd(toStr);
     }
 
     orders = await listOrdersForExport({

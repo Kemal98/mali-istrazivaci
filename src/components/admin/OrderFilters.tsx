@@ -68,10 +68,12 @@ export default function OrderFilters({
   const [q, setQ] = useState(params.get("q") ?? "");
   const [custom, setCustom] = useState(false);
   const [a2bBusy, setA2bBusy] = useState(false);
-  // Datum za A2B izvoz je NAMJERNO odvojen od filtera tabele iznad —
-  // bira se ovdje, u trenutku izvoza, bez obzira šta je trenutno
+  // Raspon datuma za A2B izvoz je NAMJERNO odvojen od filtera tabele
+  // iznad — bira se ovdje, u trenutku izvoza, bez obzira šta je trenutno
   // prikazano na ekranu. Prazno = sve neizvezene narudžbe (bilo kad).
-  const [exportDate, setExportDate] = useState("");
+  // Oba datuma uključena (od ponoći "od" do kraja dana "do").
+  const [exportFrom, setExportFrom] = useState("");
+  const [exportTo, setExportTo] = useState("");
 
   // POST, ne obični <a href>: treba fetch + blob download da bi se mogao
   // pročitati Content-Disposition (ime fajla) i prikazati greška ako
@@ -82,10 +84,11 @@ export default function OrderFilters({
       // Bez status parametra: server sam uzima i "Nova" i "Potvrđena"
       // (vidi DEFAULT_STATUSES u export-a2b/route.ts).
       const qs = new URLSearchParams();
-      // Šalje se GOLI datum (YYYY-MM-DD) — server računa granice dana po
+      // Šalju se GOLI datumi (YYYY-MM-DD) — server računa granice dana po
       // Sarajevu (sarajevoStartOfDay), da izbjegnemo isti UTC-vs-Sarajevo
       // problem kao ranije na dashboardu ako bismo to računali ovdje.
-      if (exportDate) qs.set("date", exportDate);
+      if (exportFrom) qs.set("from", exportFrom);
+      if (exportTo) qs.set("to", exportTo);
       const res = await fetch(`/api/admin/orders/export-a2b?${qs.toString()}`, {
         method: "POST",
       });
@@ -342,14 +345,25 @@ export default function OrderFilters({
 
       <div className="adm-filters" style={{ marginTop: 10 }}>
         <div className="adm-filter-group">
-          <label htmlFor="f-a2b-date">
-            Izvoz za A2B — datum (prazno = sve neizvezene, status Nova ili Potvrđena)
+          <label htmlFor="f-a2b-from">
+            Izvoz za A2B — od datuma (prazno = bez donje granice)
           </label>
           <input
-            id="f-a2b-date"
+            id="f-a2b-from"
             type="date"
-            value={exportDate}
-            onChange={(e) => setExportDate(e.target.value)}
+            value={exportFrom}
+            onChange={(e) => setExportFrom(e.target.value)}
+          />
+        </div>
+        <div className="adm-filter-group">
+          <label htmlFor="f-a2b-to">
+            do datuma (prazno = bez gornje granice, status Nova ili Potvrđena)
+          </label>
+          <input
+            id="f-a2b-to"
+            type="date"
+            value={exportTo}
+            onChange={(e) => setExportTo(e.target.value)}
           />
         </div>
         <button
@@ -360,9 +374,16 @@ export default function OrderFilters({
         >
           {a2bBusy ? "Izvozim…" : "⤓ IZVEZI ZA A2B"}
         </button>
-        {exportDate ? (
-          <button type="button" className="adm-btn adm-btn-sm" onClick={() => setExportDate("")}>
-            OČISTI DATUM
+        {exportFrom || exportTo ? (
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm"
+            onClick={() => {
+              setExportFrom("");
+              setExportTo("");
+            }}
+          >
+            OČISTI DATUME
           </button>
         ) : null}
       </div>
