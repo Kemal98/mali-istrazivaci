@@ -352,7 +352,12 @@ export async function listOrders(
   };
 }
 
-/** Sve narudžbe koje odgovaraju filteru — za CSV export (bez paginacije). */
+/**
+ * Sve narudžbe koje odgovaraju filteru — za CSV/A2B export (bez
+ * paginacije). Redom kako su naručene (najstarija prva) — admin kod A2B
+ * izvoza ide redom odozgo prema dolje (briše/kombinuje po potrebi), pa
+ * mora biti hronološki, ne najnovije prvo kao na listi u adminu.
+ */
 export async function listOrdersForExport(
   f: OrderFilters,
   limit = 10000
@@ -360,17 +365,20 @@ export async function listOrdersForExport(
   const db = sql();
   const rows = await db<Row[]>`
     SELECT * FROM orders WHERE ${buildWhere(f)}
-     ORDER BY created_at DESC LIMIT ${limit}`;
+     ORDER BY created_at ASC LIMIT ${limit}`;
   return rows.map(rowToOrder);
 }
 
-/** Tačno izabrane narudžbe (po ID-u) — za ručno označen A2B izvoz. */
+/**
+ * Tačno izabrane narudžbe (po ID-u) — za ručno označen A2B izvoz.
+ * Hronološki (najstarija prva), isto kao listOrdersForExport.
+ */
 export async function listOrdersByIds(ids: string[]): Promise<Order[]> {
   if (!ids.length) return [];
   const db = sql();
   const rows = await db<Row[]>`
     SELECT * FROM orders WHERE deleted_at IS NULL AND id IN ${db(ids)}
-     ORDER BY created_at DESC`;
+     ORDER BY created_at ASC`;
   return rows.map(rowToOrder);
 }
 
