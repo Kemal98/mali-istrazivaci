@@ -34,9 +34,10 @@ const HEADERS = [
 ];
 
 function phoneForA2B(order: Order): string {
-  // phoneNormalized je bez prefiksa (npr. "61123456") — A2B primjer
-  // koristi +387 format.
-  return order.phoneNormalized ? `+387${order.phoneNormalized}` : order.phone;
+  // Broj ostaje TAČNO kakav je upisan — ništa se ne mijenja/dodaje osim
+  // nedostajuće vodeće nule (npr. "63390030" -> "063390030"). Ranije se
+  // ovdje lijepio "+387" prefiks, što je mijenjalo originalan broj.
+  return order.phoneNormalized ? `0${order.phoneNormalized}` : order.phone;
 }
 
 function money(v: number): string {
