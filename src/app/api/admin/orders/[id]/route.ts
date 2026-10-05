@@ -3,6 +3,7 @@ import {
   deleteOrder,
   getOrder,
   listEvents,
+  setCustomerInfo,
   setShipping,
   setStatus,
 } from "@/lib/orders/repo";
@@ -43,6 +44,21 @@ export async function PATCH(request: Request, { params }: Ctx) {
         body.trackingNumber !== undefined
           ? str(body.trackingNumber, 80)
           : undefined,
+    });
+  }
+
+  if (
+    body.customerName !== undefined ||
+    body.phone !== undefined ||
+    body.address !== undefined ||
+    body.city !== undefined
+  ) {
+    order = await setCustomerInfo(id, {
+      customerName:
+        body.customerName !== undefined ? str(body.customerName, 150) : undefined,
+      phone: body.phone !== undefined ? str(body.phone, 40) : undefined,
+      address: body.address !== undefined ? str(body.address, 300) : undefined,
+      city: body.city !== undefined ? str(body.city, 80) : undefined,
     });
   }
 

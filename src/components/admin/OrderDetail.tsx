@@ -24,52 +24,6 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-/**
- * Samo dugme-ikonica za kopiranje jedne vrijednosti u clipboard. Kurirska
- * služba (Brza pošta) ima odvojena polja u svojoj formi — ime, telefon,
- * adresa, grad — pa je kopiranje jedno po jedno brže i bez grešaka nego
- * ručno prepisivanje napamet.
- */
-function CopyIconOnly({ label, value }: { label: string; value: string }) {
-  const [copied, setCopied] = useState(false);
-
-  async function copy() {
-    if (!value) return;
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      // clipboard API odbijena (rijetko) — nema šta, dugme ostaje tiho
-    }
-  }
-
-  return (
-    <button
-      type="button"
-      className={`adm-copy-btn${copied ? " is-copied" : ""}`}
-      onClick={copy}
-      aria-label={`Kopiraj ${label.toLowerCase()}`}
-      title={`Kopiraj ${label.toLowerCase()}`}
-    >
-      {copied ? "✓" : "📋"}
-    </button>
-  );
-}
-
-/** Isto kao Row, ali s CopyIconOnly pored teksta. */
-function CopyRow({ label, value }: { label: string; value: string }) {
-  return (
-    <>
-      <dt>{label}</dt>
-      <dd className="adm-copy-dd">
-        <span>{value || "—"}</span>
-        {value ? <CopyIconOnly label={label} value={value} /> : null}
-      </dd>
-    </>
-  );
-}
-
 /** Ljudski opis jednog zapisa iz audit loga. */
 function eventText(e: OrderEvent): string {
   if (e.kind === "created") return "Narudžba primljena";
@@ -84,11 +38,22 @@ function eventText(e: OrderEvent): string {
       : `Google Sheet nije uspio${e.note ? `: ${e.note}` : ""}`;
   }
   if (e.kind === "field") {
-    const name = e.field === "tracking_number" ? "Tracking broj" : "Kurir";
+    const labels: Record<string, string> = {
+      tracking_number: "Tracking broj",
+      courier: "Kurir",
+      customer_name: "Ime",
+      phone: "Telefon",
+      address: "Adresa",
+      city: "Grad",
+    };
+    const name = labels[e.field] ?? e.field;
     return e.oldValue
       ? `${name}: ${e.oldValue} → ${e.newValue || "(prazno)"}`
       : `${name} dodat: ${e.newValue}`;
   }
+  if (e.kind === "merged") return `Spojene narudžbe u ovu: ${e.note}`;
+  if (e.kind === "merged_into") return `Spojeno u drugu narudžbu: ${e.note}`;
+  if (e.kind === "deleted") return "Narudžba obrisana";
   return e.kind;
 }
 
@@ -103,8 +68,18 @@ export default function OrderDetail({
   const [events, setEvents] = useState(initialEvents);
   const [courier, setCourier] = useState(initialOrder.courier);
   const [tracking, setTracking] = useState(initialOrder.trackingNumber);
+  const [custName, setCustName] = useState(initialOrder.customerName);
+  const [custPhone, setCustPhone] = useState(initialOrder.phone);
+  const [custAddress, setCustAddress] = useState(initialOrder.address);
+  const [custCity, setCustCity] = useState(initialOrder.city);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+
+  const custDirty =
+    custName !== order.customerName ||
+    custPhone !== order.phone ||
+    custAddress !== order.address ||
+    custCity !== order.city;
 
   async function patch(body: Record<string, unknown>, okMsg: string) {
     setBusy(true);
@@ -195,29 +170,77 @@ export default function OrderDetail({
         <div>
           <div className="adm-card">
             <div className="adm-card-title">Kupac</div>
-            <dl className="adm-dl">
-              <CopyRow label="Ime" value={order.customerName} />
-              <dt>Telefon</dt>
-              <dd className="adm-copy-dd">
-                {order.phone ? (
-                  <a
-                    className="adm-tel"
-                    href={`tel:${order.phone.replace(/\s/g, "")}`}
-                  >
-                    {order.phone}
-                  </a>
-                ) : (
-                  <span>—</span>
-                )}
-                {order.phone ? (
-                  <CopyIconOnly label="telefon" value={order.phone} />
-                ) : null}
-              </dd>
-              <CopyRow label="Adresa" value={order.address} />
-              <CopyRow label="Grad" value={order.city} />
-              {order.email ? <Row label="Email" value={order.email} /> : null}
-              {order.note ? <Row label="Napomena" value={order.note} /> : null}
-            </dl>
+            <p className="adm-hint" style={{ marginBottom: 10 }}>
+              Ispravi ako je greška u kucanju (npr. pogrešan broj telefona).
+            </p>
+            <div className="adm-row">
+              <div className="adm-field">
+                <label htmlFor="c-ime">Ime</label>
+                <input
+                  id="c-ime"
+                  type="text"
+                  value={custName}
+                  onChange={(e) => setCustName(e.target.value)}
+                />
+              </div>
+              <div className="adm-field">
+                <label htmlFor="c-tel">Telefon</label>
+                <input
+                  id="c-tel"
+                  type="text"
+                  value={custPhone}
+                  onChange={(e) => setCustPhone(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="adm-row">
+              <div className="adm-field">
+                <label htmlFor="c-adresa">Adresa</label>
+                <input
+                  id="c-adresa"
+                  type="text"
+                  value={custAddress}
+                  onChange={(e) => setCustAddress(e.target.value)}
+                />
+              </div>
+              <div className="adm-field">
+                <label htmlFor="c-grad">Grad</label>
+                <input
+                  id="c-grad"
+                  type="text"
+                  value={custCity}
+                  onChange={(e) => setCustCity(e.target.value)}
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              className="adm-btn adm-btn-primary"
+              disabled={busy || !custDirty}
+              onClick={() =>
+                patch(
+                  {
+                    customerName: custName,
+                    phone: custPhone,
+                    address: custAddress,
+                    city: custCity,
+                  },
+                  "Podaci o kupcu snimljeni."
+                )
+              }
+            >
+              SNIMI KUPCA
+            </button>
+            {order.email ? (
+              <dl className="adm-dl" style={{ marginTop: 14 }}>
+                <Row label="Email" value={order.email} />
+                {order.note ? <Row label="Napomena" value={order.note} /> : null}
+              </dl>
+            ) : order.note ? (
+              <dl className="adm-dl" style={{ marginTop: 14 }}>
+                <Row label="Napomena" value={order.note} />
+              </dl>
+            ) : null}
           </div>
 
           <div className="adm-card">

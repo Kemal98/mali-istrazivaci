@@ -600,6 +600,57 @@ export async function setShipping(
   return getOrder(id);
 }
 
+/**
+ * Podaci o kupcu (ime, telefon, adresa, grad) — za ispravku greške u
+ * kucanju (npr. pogrešan broj telefona otkriven pri spajanju narudžbi).
+ * Telefon se ponovo normalizuje (phone_normalized) da pretraga i
+ * dedup i dalje rade sa ispravljenim brojem. Svaka promjena ide u audit
+ * log, isti obrazac kao setShipping.
+ */
+export async function setCustomerInfo(
+  id: string,
+  patch: {
+    customerName?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+  },
+  actor = "admin"
+): Promise<Order | null> {
+  const cur = await getOrder(id);
+  if (!cur) return null;
+
+  const customerName = patch.customerName ?? cur.customerName;
+  const phone = patch.phone ?? cur.phone;
+  const address = patch.address ?? cur.address;
+  const city = patch.city ?? cur.city;
+  const phoneNormalized = normalizePhone(phone);
+
+  await sql()`
+    UPDATE orders SET
+      customer_name = ${customerName},
+      phone = ${phone},
+      phone_normalized = ${phoneNormalized},
+      address = ${address},
+      city = ${city},
+      updated_at = ${nowIso()}
+     WHERE id = ${id}`;
+
+  const changes: [string, string, string][] = [
+    ["customer_name", cur.customerName, customerName],
+    ["phone", cur.phone, phone],
+    ["address", cur.address, address],
+    ["city", cur.city, city],
+  ];
+  for (const [field, oldValue, newValue] of changes) {
+    if (oldValue !== newValue) {
+      await addEvent(id, { kind: "field", field, oldValue, newValue, actor });
+    }
+  }
+
+  return getOrder(id);
+}
+
 /* ------------------------------ Sheets sync ------------------------------ */
 
 export async function markSheetSynced(id: string) {
