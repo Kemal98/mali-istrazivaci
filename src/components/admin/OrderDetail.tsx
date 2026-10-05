@@ -81,6 +81,11 @@ export default function OrderDetail({
     custAddress !== order.address ||
     custCity !== order.city;
 
+  // Heuristika za "spojena narudžba": mergeOrders u repo.ts piše
+  // "Proizvod" kao "1x A, 2x B" — pravi nazivi proizvoda u ovom shopu
+  // nemaju zarez, pa je ovo dovoljno pouzdano bez posebnog polja u bazi.
+  const isMerged = order.productName.includes(", ");
+
   async function patch(body: Record<string, unknown>, okMsg: string) {
     setBusy(true);
     setMsg("");
@@ -247,8 +252,15 @@ export default function OrderDetail({
             <div className="adm-card-title">Proizvod i naplata</div>
             <dl className="adm-dl" style={{ marginBottom: 14 }}>
               <Row label="Proizvod" value={order.productName} />
-              <Row label="Količina" value={order.quantity} />
-              <Row label="Cijena/kom" value={`${order.unitPrice} KM`} />
+              {/* Spojena narudžba (vidi mergeOrders) već ima "1x A, 2x B"
+                  u "Proizvod" — Količina/Cijena-po-komadu bi tu bili
+                  zbunjujući (odnose se samo na prvobitni, jedan proizvod). */}
+              {!isMerged && (
+                <>
+                  <Row label="Količina" value={order.quantity} />
+                  <Row label="Cijena/kom" value={`${order.unitPrice} KM`} />
+                </>
+              )}
             </dl>
             <div className="adm-money-row">
               <span>Proizvod</span>

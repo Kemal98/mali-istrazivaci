@@ -456,7 +456,9 @@ export default function OrdersTable({
                   >
                     {o.productName}
                   </button>
-                  {o.quantity > 1 ? (
+                  {/* Spojena narudžba (mergeOrders) već ima "1x A, 2x B" u
+                      productName — "× ukupno" bi tu samo zbunio. */}
+                  {o.quantity > 1 && !o.productName.includes(", ") ? (
                     <span className="adm-hint"> × {o.quantity}</span>
                   ) : null}
                 </td>
@@ -536,7 +538,9 @@ export default function OrdersTable({
             <div className="adm-order-card-row">
               <span>Artikal</span>
               <b style={{ textAlign: "right" }}>
-                {o.productName} × {o.quantity}
+                {o.productName.includes(", ")
+                  ? o.productName
+                  : `${o.productName} × ${o.quantity}`}
               </b>
             </div>
             <div className="adm-order-card-row">
