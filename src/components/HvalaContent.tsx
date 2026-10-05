@@ -85,8 +85,7 @@ export default function HvalaContent() {
             Vaša narudžba je poslana i primljena!
           </h1>
           <p style={{ fontWeight: 500, color: "var(--ink2s)" }}>
-            Hvala Vam! Paket šaljemo u roku 24h. Javljamo se na Viber za
-            par sati da potvrdimo dostavu. 🙏
+            Hvala Vam! Vašu narudžbu šaljemo u roku od 24h. 🙏
           </p>
           <p
             style={{
