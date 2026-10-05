@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrder, setStatusBulk } from "@/lib/orders/repo";
+import { deleteOrderBulk, getOrder, setStatusBulk } from "@/lib/orders/repo";
 import { retrySheetSync } from "@/lib/orders/service";
 import { isOrderStatus } from "@/lib/orders/types";
 import { str } from "@/lib/cms/sanitize";
@@ -23,6 +23,11 @@ export async function POST(request: Request) {
     if (!isOrderStatus(body.status))
       return NextResponse.json({ error: "Nepoznat status." }, { status: 400 });
     const changed = await setStatusBulk(ids, body.status);
+    return NextResponse.json({ ok: true, changed });
+  }
+
+  if (action === "delete") {
+    const changed = await deleteOrderBulk(ids);
     return NextResponse.json({ ok: true, changed });
   }
 

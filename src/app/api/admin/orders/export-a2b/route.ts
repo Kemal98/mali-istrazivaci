@@ -1,4 +1,5 @@
-import { listOrdersForExport, setStatusBulk } from "@/lib/orders/repo";
+import { listOrdersByIds, listOrdersForExport, setStatusBulk } from "@/lib/orders/repo";
+import { str } from "@/lib/cms/sanitize";
 import { buildA2bWorkbook } from "@/lib/orders/a2bExport";
 import { isOrderStatus, type OrderStatus } from "@/lib/orders/types";
 import { sarajevoStartOfDay } from "@/lib/cms/datum";
@@ -23,30 +24,44 @@ const DEFAULT_STATUSES: OrderStatus[] = ["NEW", "CONFIRMED"];
 
 export async function POST(request: Request) {
   const p = new URL(request.url).searchParams;
-  const statusRaw = p.get("status") ?? "";
-  const dateStr = p.get("date") ?? "";
 
-  let from: string | undefined;
-  let to: string | undefined;
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-    // Podne kao sidro (ne ponoć) da se izbjegnu rubni slučajevi oko same
-    // granice dana pri računanju offseta u sarajevoStartOfDay.
-    const anchor = new Date(`${dateStr}T12:00:00.000Z`);
-    const nextAnchor = new Date(anchor.getTime() + 24 * 3600 * 1000);
-    from = sarajevoStartOfDay(anchor).toISOString();
-    to = new Date(sarajevoStartOfDay(nextAnchor).getTime() - 1).toISOString();
+  // Ručno označene narudžbe (checkbox u tabeli) idu u body, ne u query —
+  // imaju prednost nad filterima dolje, admin bira TAČNO te, bez obzira
+  // na datum/status koji trenutno piše u listi.
+  const body = await request.json().catch(() => ({}));
+  const ids: string[] = Array.isArray(body?.ids)
+    ? body.ids.slice(0, 500).map((x: unknown) => str(x, 64)).filter(Boolean)
+    : [];
+
+  let orders;
+  if (ids.length) {
+    orders = await listOrdersByIds(ids);
+  } else {
+    const statusRaw = p.get("status") ?? "";
+    const dateStr = p.get("date") ?? "";
+
+    let from: string | undefined;
+    let to: string | undefined;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      // Podne kao sidro (ne ponoć) da se izbjegnu rubni slučajevi oko same
+      // granice dana pri računanju offseta u sarajevoStartOfDay.
+      const anchor = new Date(`${dateStr}T12:00:00.000Z`);
+      const nextAnchor = new Date(anchor.getTime() + 24 * 3600 * 1000);
+      from = sarajevoStartOfDay(anchor).toISOString();
+      to = new Date(sarajevoStartOfDay(nextAnchor).getTime() - 1).toISOString();
+    }
+
+    orders = await listOrdersForExport({
+      search: p.get("q") ?? undefined,
+      status: isOrderStatus(statusRaw) ? statusRaw : "ALL",
+      statusIn: isOrderStatus(statusRaw) ? undefined : DEFAULT_STATUSES,
+      from,
+      to,
+      product: p.get("product") ?? undefined,
+      city: p.get("city") ?? undefined,
+      unsyncedOnly: p.get("unsynced") === "1",
+    });
   }
-
-  const orders = await listOrdersForExport({
-    search: p.get("q") ?? undefined,
-    status: isOrderStatus(statusRaw) ? statusRaw : "ALL",
-    statusIn: isOrderStatus(statusRaw) ? undefined : DEFAULT_STATUSES,
-    from,
-    to,
-    product: p.get("product") ?? undefined,
-    city: p.get("city") ?? undefined,
-    unsyncedOnly: p.get("unsynced") === "1",
-  });
 
   if (!orders.length) {
     return Response.json({ error: "Nema narudžbi po ovim filterima." }, { status: 400 });

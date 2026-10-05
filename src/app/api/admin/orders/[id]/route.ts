@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
-import { getOrder, listEvents, setShipping, setStatus } from "@/lib/orders/repo";
+import {
+  deleteOrder,
+  getOrder,
+  listEvents,
+  setShipping,
+  setStatus,
+} from "@/lib/orders/repo";
 import { retrySheetSync } from "@/lib/orders/service";
 import { isOrderStatus } from "@/lib/orders/types";
 import { str } from "@/lib/cms/sanitize";
@@ -62,4 +68,13 @@ export async function POST(request: Request, { params }: Ctx) {
     error: res.error,
     order: await getOrder(id),
   });
+}
+
+/** Briše narudžbu (npr. greškom upisana) — vidi deleteOrder u repo.ts. */
+export async function DELETE(_req: Request, { params }: Ctx) {
+  const { id } = await params;
+  const deleted = await deleteOrder(id);
+  if (!deleted)
+    return NextResponse.json({ error: "Nema narudžbe." }, { status: 404 });
+  return NextResponse.json({ ok: true });
 }

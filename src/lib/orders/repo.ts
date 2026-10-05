@@ -364,6 +364,16 @@ export async function listOrdersForExport(
   return rows.map(rowToOrder);
 }
 
+/** Tačno izabrane narudžbe (po ID-u) — za ručno označen A2B izvoz. */
+export async function listOrdersByIds(ids: string[]): Promise<Order[]> {
+  if (!ids.length) return [];
+  const db = sql();
+  const rows = await db<Row[]>`
+    SELECT * FROM orders WHERE deleted_at IS NULL AND id IN ${db(ids)}
+     ORDER BY created_at DESC`;
+  return rows.map(rowToOrder);
+}
+
 /** Vrijednosti za dropdown filtere (proizvodi i gradovi koji stvarno postoje). */
 export async function listFilterOptions(): Promise<{
   products: string[];
@@ -439,6 +449,45 @@ export async function setStatusBulk(
   for (const id of ids) {
     const res = await setStatus(id, status, actor);
     if (res && res.status === status) changed++;
+  }
+  return changed;
+}
+
+/**
+ * Briše narudžbu (npr. greškom upisana/duplirana) — SOFT delete, isti
+ * obrazac kao products.deleted_at. Čim je deleted_at postavljen, narudžba
+ * nestaje iz liste, dashboarda, Zarade, liste za pakovanje i A2B izvoza
+ * (svi upiti već filtriraju "deleted_at IS NULL"), ali ostaje u bazi za
+ * slučaj da je greškom obrisana — vraćanje je moguće direktno u bazi.
+ * NE briše red iz Google Sheeta (to je eksterni sistem, nema ovdje
+ * referencu na konkretan red) — to po potrebi treba ručno obrisati tamo.
+ */
+export async function deleteOrder(
+  id: string,
+  actor = "admin"
+): Promise<Order | null> {
+  const cur = await getOrder(id);
+  if (!cur) return null;
+
+  await sql()`
+    UPDATE orders SET deleted_at = ${nowIso()}, updated_at = ${nowIso()}
+     WHERE id = ${id}`;
+
+  await addEvent(id, {
+    kind: "deleted",
+    actor,
+  });
+
+  return cur;
+}
+
+export async function deleteOrderBulk(
+  ids: string[],
+  actor = "admin"
+): Promise<number> {
+  let changed = 0;
+  for (const id of ids) {
+    if (await deleteOrder(id, actor)) changed++;
   }
   return changed;
 }

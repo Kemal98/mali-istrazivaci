@@ -149,6 +149,81 @@ export default function OrdersTable({
     router.push(`/admin/orders?${params.toString()}`);
   }
 
+  async function bulkDelete() {
+    if (
+      !window.confirm(
+        `Obrisati ${selected.length} ${selected.length === 1 ? "narudžbu" : "narudžbi"}? Nestaje iz svih statistika (Zarada, Dashboard, pakovanje, A2B izvoz). Ne može se vratiti kroz admin — samo direktno u bazi.`
+      )
+    )
+      return;
+    setBusy(true);
+    setMsg("");
+    const res = await fetch("/api/admin/orders/bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete", ids: selected }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    setSelected([]);
+    setMsg(
+      res.ok ? `Obrisano ${data.changed ?? 0} narudžbi.` : data?.error || "Greška."
+    );
+    router.refresh();
+  }
+
+  async function deleteOne(o: Order) {
+    if (
+      !window.confirm(
+        `Obrisati narudžbu ${o.orderNumber} (${o.customerName || "bez imena"})? Nestaje iz svih statistika. Ne može se vratiti kroz admin — samo direktno u bazi.`
+      )
+    )
+      return;
+    setBusy(true);
+    setMsg("");
+    const res = await fetch(`/api/admin/orders/${o.id}`, { method: "DELETE" });
+    setBusy(false);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setMsg(data?.error || "Greška pri brisanju.");
+      return;
+    }
+    router.refresh();
+  }
+
+  /**
+   * A2B tabela SAMO za ručno označene narudžbe (checkbox u tabeli), bez
+   * obzira na status/datum filter koji trenutno piše na listi. Isto
+   * ponašanje kao "IZVEZI ZA A2B" u filterima iznad (prebacuje izvezene u
+   * "Potvrđena"), samo tačno biran skup, ne ceo dan.
+   */
+  async function exportSelectedA2b() {
+    setBusy(true);
+    setMsg("");
+    const res = await fetch("/api/admin/orders/export-a2b", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: selected }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setMsg(data?.error || "Izvoz nije uspio.");
+      return;
+    }
+    const blob = await res.blob();
+    const disposition = res.headers.get("Content-Disposition") ?? "";
+    const m = disposition.match(/filename="([^"]+)"/);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = m?.[1] ?? "a2b-masovni-import.xlsx";
+    a.click();
+    URL.revokeObjectURL(url);
+    setSelected([]);
+    router.refresh();
+  }
+
   async function retrySheet(ids: string[]) {
     setBusy(true);
     setMsg("");
@@ -233,6 +308,22 @@ export default function OrdersTable({
           </button>
           <button
             type="button"
+            className="adm-btn adm-btn-sm adm-btn-primary"
+            disabled={busy}
+            onClick={exportSelectedA2b}
+          >
+            📦 A2B TABELA ({selected.length})
+          </button>
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm adm-btn-danger"
+            disabled={busy}
+            onClick={bulkDelete}
+          >
+            🗑 OBRIŠI
+          </button>
+          <button
+            type="button"
             className="adm-btn adm-btn-sm"
             onClick={() => setSelected([])}
           >
@@ -270,6 +361,7 @@ export default function OrdersTable({
               <th style={{ width: 40 }} title="Google Sheets">
                 📋
               </th>
+              <th style={{ width: 40 }} />
             </tr>
           </thead>
           <tbody>
@@ -352,6 +444,17 @@ export default function OrdersTable({
                     </button>
                   )}
                 </td>
+                <td style={{ textAlign: "center" }}>
+                  <button
+                    type="button"
+                    className="adm-sync-retry"
+                    title="Obriši narudžbu"
+                    disabled={busy}
+                    onClick={() => deleteOne(o)}
+                  >
+                    🗑
+                  </button>
+                </td>
               </tr>
               );
             })}
@@ -419,6 +522,14 @@ export default function OrdersTable({
               <Link className="adm-btn adm-btn-sm" href={`/admin/orders/${o.id}`}>
                 DETALJI
               </Link>
+              <button
+                type="button"
+                className="adm-btn adm-btn-sm adm-btn-danger"
+                disabled={busy}
+                onClick={() => deleteOne(o)}
+              >
+                🗑 OBRIŠI
+              </button>
             </div>
           </div>
         ))}
