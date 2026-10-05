@@ -45,8 +45,15 @@ function money(v: number): string {
 }
 
 export function buildA2bWorkbook(orders: Order[]): Buffer {
+  // Prazan red odmah ispod naslova — u A2B primjeru prva ćelija tog reda
+  // piše "Kontrolni red ostaje prazan" (sve ostalo prazno). Ne znamo
+  // sigurno da li je to stvarni zahtjev njihovog parsera ili samo njihova
+  // napomena u šablonu, ali prazan red ne može ništa pokvariti, pa ga
+  // dodajemo za svaki slučaj da tačno pratimo njihov format.
+  const controlRow = HEADERS.map(() => "");
   const rows = [
     HEADERS,
+    controlRow,
     ...orders.map((o) => [
       "", // ID Broj Posiljke — dodjeljuje A2B
       o.customerName,
