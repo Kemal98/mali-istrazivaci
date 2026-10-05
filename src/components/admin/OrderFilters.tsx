@@ -73,9 +73,9 @@ export default function OrderFilters({
   // prikazano na ekranu. Prazno = sve neizvezene narudžbe (bilo kad).
   const [exportDate, setExportDate] = useState("");
 
-  // POST, ne obični <a href>: izvoz prebacuje izvezene narudžbe u status
-  // "Potvrđena" (da se isti dan ne izveze dvaput), pa mora ići kroz fetch
-  // + blob download umjesto plain linka.
+  // POST, ne obični <a href>: treba fetch + blob download da bi se mogao
+  // pročitati Content-Disposition (ime fajla) i prikazati greška ako
+  // nema narudžbi, što plain <a href> ne može.
   async function exportA2b() {
     setA2bBusy(true);
     try {

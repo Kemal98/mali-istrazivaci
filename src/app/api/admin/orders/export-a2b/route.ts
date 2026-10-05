@@ -1,4 +1,4 @@
-import { listOrdersByIds, listOrdersForExport, setStatusBulk } from "@/lib/orders/repo";
+import { listOrdersByIds, listOrdersForExport } from "@/lib/orders/repo";
 import { str } from "@/lib/cms/sanitize";
 import { buildA2bWorkbook } from "@/lib/orders/a2bExport";
 import { isOrderStatus, type OrderStatus } from "@/lib/orders/types";
@@ -13,8 +13,9 @@ import { sarajevoStartOfDay } from "@/lib/cms/datum";
  * vremenskoj zoni servera (Vercel je u UTC-u) — ista greška je ranije
  * pravila problem na dashboardu, vidi sarajevoStartOfDay komentar.
  *
- * POST (ne GET): izvoz ima nuspojavu — izvezene narudžbe prelaze u status
- * "Potvrđena", da se isti dan slučajno ne izvezu dvaput u A2B.
+ * Izvoz NE mijenja status narudžbi (ranije je prebacivao u "Potvrđena" —
+ * admin to eksplicitno ne želi, sam bira koje narudžbe izvozi preko
+ * checkboxa, pa automatska promjena statusa samo smeta).
  */
 // Podrazumijevano uzima i "Nova" i "Potvrđena" — narudžbe se često
 // ručno potvrde u adminu (ili kroz "Narudžba van sajta") prije nego što
@@ -68,7 +69,6 @@ export async function POST(request: Request) {
   }
 
   const buf = buildA2bWorkbook(orders);
-  await setStatusBulk(orders.map((o) => o.id), "CONFIRMED");
 
   const stamp = new Date().toISOString().slice(0, 10);
   // Buffer/BlobPart tipovi se ovdje sudare zbog Node vs DOM lib definicija

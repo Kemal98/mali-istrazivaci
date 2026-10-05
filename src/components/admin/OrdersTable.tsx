@@ -193,9 +193,8 @@ export default function OrdersTable({
 
   /**
    * A2B tabela SAMO za ručno označene narudžbe (checkbox u tabeli), bez
-   * obzira na status/datum filter koji trenutno piše na listi. Isto
-   * ponašanje kao "IZVEZI ZA A2B" u filterima iznad (prebacuje izvezene u
-   * "Potvrđena"), samo tačno biran skup, ne ceo dan.
+   * obzira na status/datum filter koji trenutno piše na listi. Ne mijenja
+   * status narudžbi — samo generiše xlsx za masovni import kod kurira.
    */
   async function exportSelectedA2b() {
     setBusy(true);
