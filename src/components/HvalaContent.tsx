@@ -82,11 +82,11 @@ export default function HvalaContent() {
               color: "var(--green-d)",
             }}
           >
-            Narudžba primljena!
+            Vaša narudžba je poslana i primljena!
           </h1>
           <p style={{ fontWeight: 500, color: "var(--ink2s)" }}>
-            Javljamo se na Viber za par sati da potvrdimo dostavu. Hvala
-            ti! 🙏
+            Hvala Vam! Paket šaljemo u roku 24h. Javljamo se na Viber za
+            par sati da potvrdimo dostavu. 🙏
           </p>
           <p
             style={{
