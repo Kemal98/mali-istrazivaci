@@ -231,10 +231,10 @@ export default function OrdersTable({
    * obzira na status/datum filter koji trenutno piše na listi. Ne mijenja
    * status narudžbi — samo generiše xlsx za masovni import kod kurira.
    */
-  async function exportSelectedA2b() {
+  async function exportSelected(endpoint: string, fallbackName: string) {
     setBusy(true);
     setMsg("");
-    const res = await fetch("/api/admin/orders/export-a2b", {
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ids: selected }),
@@ -251,12 +251,17 @@ export default function OrdersTable({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = m?.[1] ?? "a2b-masovni-import.xlsx";
+    a.download = m?.[1] ?? fallbackName;
     a.click();
     URL.revokeObjectURL(url);
     setSelected([]);
     router.refresh();
   }
+
+  const exportSelectedA2b = () =>
+    exportSelected("/api/admin/orders/export-a2b", "a2b-masovni-import.xlsx");
+  const exportSelectedPacking = () =>
+    exportSelected("/api/admin/orders/export-packing", "za-pakovanje.xlsx");
 
   async function retrySheet(ids: string[]) {
     setBusy(true);
@@ -347,6 +352,14 @@ export default function OrdersTable({
             onClick={exportSelectedA2b}
           >
             📦 A2B TABELA ({selected.length})
+          </button>
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm"
+            disabled={busy}
+            onClick={exportSelectedPacking}
+          >
+            📋 ZA PAKOVANJE ({selected.length})
           </button>
           {selected.length >= 2 ? (
             <button

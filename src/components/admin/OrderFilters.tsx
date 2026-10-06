@@ -78,20 +78,18 @@ export default function OrderFilters({
   // POST, ne obični <a href>: treba fetch + blob download da bi se mogao
   // pročitati Content-Disposition (ime fajla) i prikazati greška ako
   // nema narudžbi, što plain <a href> ne može.
-  async function exportA2b() {
+  async function downloadExport(endpoint: string, fallbackName: string) {
     setA2bBusy(true);
     try {
       // Bez status parametra: server sam uzima i "Nova" i "Potvrđena"
-      // (vidi DEFAULT_STATUSES u export-a2b/route.ts).
+      // (vidi DEFAULT_STATUSES u exportSelection.ts).
       const qs = new URLSearchParams();
       // Šalju se GOLI datumi (YYYY-MM-DD) — server računa granice dana po
       // Sarajevu (sarajevoStartOfDay), da izbjegnemo isti UTC-vs-Sarajevo
       // problem kao ranije na dashboardu ako bismo to računali ovdje.
       if (exportFrom) qs.set("from", exportFrom);
       if (exportTo) qs.set("to", exportTo);
-      const res = await fetch(`/api/admin/orders/export-a2b?${qs.toString()}`, {
-        method: "POST",
-      });
+      const res = await fetch(`${endpoint}?${qs.toString()}`, { method: "POST" });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         alert(data?.error || "Izvoz nije uspio.");
@@ -103,7 +101,7 @@ export default function OrderFilters({
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = m?.[1] ?? "a2b-masovni-import.xlsx";
+      a.download = m?.[1] ?? fallbackName;
       a.click();
       URL.revokeObjectURL(url);
       router.refresh();
@@ -111,6 +109,11 @@ export default function OrderFilters({
       setA2bBusy(false);
     }
   }
+
+  const exportA2b = () =>
+    downloadExport("/api/admin/orders/export-a2b", "a2b-masovni-import.xlsx");
+  const exportPacking = () =>
+    downloadExport("/api/admin/orders/export-packing", "za-pakovanje.xlsx");
 
   /** Promijeni jedan ili više parametara i vrati se na prvu stranicu. */
   function set(patch: Record<string, string | undefined>) {
@@ -373,6 +376,14 @@ export default function OrderFilters({
           onClick={exportA2b}
         >
           {a2bBusy ? "Izvozim…" : "⤓ IZVEZI ZA A2B"}
+        </button>
+        <button
+          type="button"
+          className="adm-btn"
+          disabled={a2bBusy}
+          onClick={exportPacking}
+        >
+          {a2bBusy ? "Izvozim…" : "📋 LISTA ZA PAKOVANJE"}
         </button>
         {exportFrom || exportTo ? (
           <button

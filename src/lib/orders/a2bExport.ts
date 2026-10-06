@@ -84,3 +84,31 @@ export function buildA2bWorkbook(orders: Order[]): Buffer {
   XLSX.utils.book_append_sheet(wb, sheet, "Masovni import");
   return XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
 }
+
+/**
+ * Fajl za OSOBE KOJE PAKUJU — isti skup narudžbi kao A2B izvoz (ista
+ * selekcija: checkbox ili datum), ali druga svrha: A2B tabela nema
+ * nikakav podatak o proizvodu (kurira ne zanima šta je u paketu), a
+ * pakeru treba TAČNO to, ne adresa/telefon/cijena. Zato poseban,
+ * jednostavniji fajl, ne dodatne kolone u A2B tabeli.
+ */
+const PACKING_HEADERS = ["Narudžba", "Ime i prezime", "Proizvod", "Količina", "Grad", "Napomena"];
+
+export function buildPackingWorkbook(orders: Order[]): Buffer {
+  const rows = [
+    PACKING_HEADERS,
+    ...orders.map((o) => [
+      o.orderNumber,
+      o.customerName,
+      o.productName,
+      o.quantity,
+      o.city,
+      o.note,
+    ]),
+  ];
+
+  const sheet = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, sheet, "Za pakovanje");
+  return XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
+}
