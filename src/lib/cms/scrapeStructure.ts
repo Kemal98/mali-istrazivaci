@@ -54,8 +54,45 @@ function isGifUrl(url: string): boolean {
 }
 
 function pushText(out: ContentItem[], text: string) {
-  const t = text.replace(/\s+/g, " ").trim();
+  // \s+ bi pojeo i \n (ubačen za <br>, vidi inlineMarkdown) — ovdje se
+  // čuva prelom reda, samo se čisti razmaci/tabovi UNUTAR jednog reda.
+  const t = text
+    .split("\n")
+    .map((line) => line.replace(/[^\S\n]+/g, " ").trim())
+    .join("\n")
+    .trim();
   if (t.length > 1) out.push({ kind: "text", text: t.slice(0, MAX_TEXT) });
+}
+
+/**
+ * Tekst paragrafa SA formatiranjem, ne .text() (koji briše sve tagove).
+ * <b>/<strong> -> **bold**, <i>/<em> -> __italic__ — isti markeri koje
+ * RichText.tsx (naš prikaz) zna pretvoriti nazad u pravo podebljano/
+ * ukošeno slovo. Bez ovoga bi se izgubilo "boldovano je boldovano, nije
+ * nije" sa izvorne stranice, sav uvezeni tekst bi ispao isti (obično).
+ */
+function inlineMarkdown($node: cheerio.Cheerio<AnyNode>, $: cheerio.CheerioAPI): string {
+  let out = "";
+  $node.contents().each((_, child) => {
+    if (child.type === "text") {
+      out += (child as unknown as { data?: string }).data ?? "";
+      return;
+    }
+    if (child.type !== "tag") return;
+    const el = child as Element;
+    const tag = el.tagName?.toLowerCase();
+    if (tag === "br") {
+      out += "\n";
+      return;
+    }
+    if (SKIP_TAGS.has(tag)) return;
+    const inner = inlineMarkdown($(el), $);
+    if (!inner.trim()) return;
+    if (tag === "b" || tag === "strong") out += `**${inner}**`;
+    else if (tag === "i" || tag === "em") out += `__${inner}__`;
+    else out += inner;
+  });
+  return out;
 }
 
 function walk(
@@ -104,9 +141,10 @@ function walk(
   }
 
   if (tag === "p" || tag === "li" || tag === "span") {
-    // ne silazi dublje u p/li/span — uzmi sav tekst odjednom (izbjegava
-    // sjeckanje jedne rečenice u pet mikro-blokova zbog <b>/<i> tagova)
-    pushText(out, $(el).text());
+    // ne silazi dublje kao zaseban "walk" po djeci (izbjegava sjeckanje
+    // jedne rečenice u mikro-blokove) — ali SE čita <b>/<strong>/<i>/<em>
+    // unutar, pretvoreno u **bold**/__italic__ (vidi inlineMarkdown).
+    pushText(out, inlineMarkdown($(el), $));
     return;
   }
 
