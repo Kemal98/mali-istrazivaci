@@ -19,16 +19,21 @@ export async function POST(request: Request) {
     return Response.json({ error: "Nema narudžbi po ovim filterima." }, { status: 400 });
   }
 
-  const buf = buildA2bWorkbook(orders);
+  const { buffer, missingPostal } = await buildA2bWorkbook(orders);
 
   const stamp = new Date().toISOString().slice(0, 10);
   // Buffer/BlobPart tipovi se ovdje sudare zbog Node vs DOM lib definicija
   // (ista funkcija radi ispravno u runtime-u) — cast je namjeran.
-  return new Response(new Blob([buf as unknown as BlobPart]), {
+  return new Response(new Blob([buffer as unknown as BlobPart]), {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="a2b-masovni-import-${stamp}.xlsx"`,
+      "Content-Disposition": `attachment; filename="A2B_Masovni_import_${stamp}.xlsx"`,
       "Cache-Control": "no-store",
+      // Narudžbe bez poštanskog broja — admin ih dopisuje ručno prije
+      // uploada u A2B. Čitaju ga OrderFilters.tsx/OrdersTable.tsx poslije
+      // uspješnog download-a i prikazuju kao upozorenje.
+      "X-Missing-Postal-Orders": missingPostal.join(","),
+      "Access-Control-Expose-Headers": "X-Missing-Postal-Orders, Content-Disposition",
     },
   });
 }

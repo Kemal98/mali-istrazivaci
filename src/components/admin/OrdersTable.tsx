@@ -108,6 +108,9 @@ export default function OrdersTable({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  // Narudžbe bez poštanskog broja nakon zadnjeg A2B izvoza — admin ih
+  // ručno dopiše prije uploada u A2B (vidi X-Missing-Postal-Orders).
+  const [missingPostal, setMissingPostal] = useState<string[]>([]);
 
   const rows = initial.map((o) => patched[o.id] ?? o);
 
@@ -234,6 +237,7 @@ export default function OrdersTable({
   async function exportSelected(endpoint: string, fallbackName: string) {
     setBusy(true);
     setMsg("");
+    setMissingPostal([]);
     const res = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -248,6 +252,8 @@ export default function OrdersTable({
     const blob = await res.blob();
     const disposition = res.headers.get("Content-Disposition") ?? "";
     const m = disposition.match(/filename="([^"]+)"/);
+    const missing = res.headers.get("X-Missing-Postal-Orders") ?? "";
+    setMissingPostal(missing ? missing.split(",") : []);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -293,6 +299,13 @@ export default function OrdersTable({
   return (
     <>
       {msg ? <div className="adm-note adm-note-ok">{msg}</div> : null}
+      {missingPostal.length > 0 ? (
+        <div className="adm-note adm-note-err">
+          <b>Fali poštanski broj</b> za {missingPostal.length}{" "}
+          {missingPostal.length === 1 ? "narudžbu" : "narudžbi"} u izvezenom fajlu — dopiši
+          ručno prije uploada u A2B: {missingPostal.join(", ")}
+        </div>
+      ) : null}
 
       {selected.length > 0 ? (
         <div className="adm-bulk">

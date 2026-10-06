@@ -1,14 +1,20 @@
 import "server-only";
+import ExcelJS from "exceljs";
 import * as XLSX from "xlsx";
 import type { Order } from "./types";
-import { postalCodeFor } from "./postalCodes";
+import { splitAddress, phoneForA2B, extractPostalCode, formatWeight, formatMoney } from "./a2bFormat";
 
 /**
- * Fajl za A2B "Masovni import" — kolone i redoslijed su tačno prepisani
- * iz njihovog šablona (A2B Masovni import primjer.xlsx). Polja O–T
- * (plaća, način plaćanja, povrat otpremnice, subota, osiguranje…) se
- * NAMJERNO ostavljaju prazna — admin ih ne popunjava, valjda su to
- * podešavanja na A2B nalogu, ne po pošiljci.
+ * Fajl za A2B "Masovni import" — kolone, redoslijed i format tačno po
+ * A2B specifikaciji (20 kolona, list "Report", kontrolni red odmah
+ * ispod naslova). Logika pretvaranja podataka (adresa, telefon,
+ * poštanski broj, težina) je u a2bFormat.ts, testirana u
+ * a2bFormat.test.ts — ovdje se samo poziva i upisuje u exceljs.
+ *
+ * Plaća / Način plaćanja / Povrat otpremnice / Dostava Subotom /
+ * Dodatno osiguranje / Povrat otkupnine u sigurnosnoj vrecici ostaju
+ * NAMJERNO prazne (eksplicitna admin odluka) — nisu po pošiljci, nego
+ * podešavanja na A2B nalogu.
  */
 const HEADERS = [
   "ID Broj Posiljke",
@@ -33,40 +39,40 @@ const HEADERS = [
   "Povrat otkupnine u sigurnosnoj vrecici",
 ];
 
-function phoneForA2B(order: Order): string {
-  // Broj ostaje TAČNO kakav je upisan — ništa se ne mijenja/dodaje osim
-  // nedostajuće vodeće nule (npr. "63390030" -> "063390030"). Ranije se
-  // ovdje lijepio "+387" prefiks, što je mijenjalo originalan broj.
-  return order.phoneNormalized ? `0${order.phoneNormalized}` : order.phone;
+export interface A2bExportResult {
+  buffer: Buffer;
+  /** Brojevi narudžbi (Interna referenca) kojima poštanski broj nije poznat. */
+  missingPostal: string[];
 }
 
-function money(v: number): string {
-  // Isti zapis kao u A2B primjeru (zarez umjesto tačke): "79,99"
-  return v.toFixed(2).replace(".", ",");
-}
+export async function buildA2bWorkbook(orders: Order[]): Promise<A2bExportResult> {
+  const wb = new ExcelJS.Workbook();
+  const sheet = wb.addWorksheet("Report");
 
-export function buildA2bWorkbook(orders: Order[]): Buffer {
-  // Prazan red odmah ispod naslova — u A2B primjeru prva ćelija tog reda
-  // piše "Kontrolni red ostaje prazan" (sve ostalo prazno). Ne znamo
-  // sigurno da li je to stvarni zahtjev njihovog parsera ili samo njihova
-  // napomena u šablonu, ali prazan red ne može ništa pokvariti, pa ga
-  // dodajemo za svaki slučaj da tačno pratimo njihov format.
-  const controlRow = HEADERS.map(() => "");
-  const rows = [
-    HEADERS,
-    controlRow,
-    ...orders.map((o) => [
+  sheet.addRow(HEADERS);
+  // Kontrolni red — u pravom A2B šablonu prva ćelija ovog reda doslovno
+  // piše ovaj tekst, ostatak reda prazan.
+  sheet.addRow(["Kontrolni red ostaje prazan"]);
+
+  const missingPostal: string[] = [];
+
+  for (const o of orders) {
+    const { ulica, broj } = splitAddress(o.address);
+    const { city, postalCode } = extractPostalCode(o.city, o.postalCode);
+    if (!postalCode) missingPostal.push(o.orderNumber);
+
+    const row = sheet.addRow([
       "", // ID Broj Posiljke — dodjeljuje A2B
       o.customerName,
-      "", // Kompanija
-      o.address, // cijela adresa — "Ulica"/"Broj" nisu odvojeni kod nas
-      "", // Broj
-      postalCodeFor(o.city),
-      o.city,
-      phoneForA2B(o),
+      "", // Kompanija — ne postoji polje u narudžbi
+      ulica,
+      broj,
+      postalCode ? Number(postalCode) : "",
+      city,
+      phoneForA2B(o.phone),
       1, // Broj koleta
-      "1", // Tezina (kg) — fiksno za sve pošiljke
-      money(o.totalPrice), // Otkupnina = proizvod + dostava (plaća kupac kuriru)
+      formatWeight(undefined), // težina nije poznata ni za jedan proizvod -> uvijek "1,000"
+      formatMoney(o.totalPrice), // Otkupnina = proizvod + dostava (plaća kupac kuriru)
       o.orderNumber, // Interna referenca — da se nazad prepozna narudžba
       "", // Dodatna referenca
       "", // Parent Package ID
@@ -76,13 +82,17 @@ export function buildA2bWorkbook(orders: Order[]): Buffer {
       "", // Dostava Subotom
       "", // Dodatno osiguranje
       "", // Povrat otkupnine u sigurnosnoj vrecici
-    ]),
-  ];
+    ]);
 
-  const sheet = XLSX.utils.aoa_to_sheet(rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, sheet, "Masovni import");
-  return XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
+    // Telefon i težina MORAJU ostati tekst (ne broj) — inače Excel može
+    // pojesti vodeću nulu na telefonu ili zarez u težini.
+    row.getCell(8).numFmt = "@";
+    row.getCell(10).numFmt = "@";
+    row.getCell(11).numFmt = "@";
+  }
+
+  const arrayBuffer = await wb.xlsx.writeBuffer();
+  return { buffer: Buffer.from(arrayBuffer), missingPostal };
 }
 
 /**

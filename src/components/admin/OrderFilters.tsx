@@ -74,12 +74,16 @@ export default function OrderFilters({
   // Oba datuma uključena (od ponoći "od" do kraja dana "do").
   const [exportFrom, setExportFrom] = useState("");
   const [exportTo, setExportTo] = useState("");
+  // Narudžbe bez poštanskog broja nakon zadnjeg A2B izvoza — admin ih
+  // ručno dopiše prije uploada u A2B (vidi X-Missing-Postal-Orders).
+  const [missingPostal, setMissingPostal] = useState<string[]>([]);
 
   // POST, ne obični <a href>: treba fetch + blob download da bi se mogao
   // pročitati Content-Disposition (ime fajla) i prikazati greška ako
   // nema narudžbi, što plain <a href> ne može.
   async function downloadExport(endpoint: string, fallbackName: string) {
     setA2bBusy(true);
+    setMissingPostal([]);
     try {
       // Bez status parametra: server sam uzima i "Nova" i "Potvrđena"
       // (vidi DEFAULT_STATUSES u exportSelection.ts).
@@ -98,6 +102,8 @@ export default function OrderFilters({
       const blob = await res.blob();
       const disposition = res.headers.get("Content-Disposition") ?? "";
       const m = disposition.match(/filename="([^"]+)"/);
+      const missing = res.headers.get("X-Missing-Postal-Orders") ?? "";
+      setMissingPostal(missing ? missing.split(",") : []);
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -398,6 +404,14 @@ export default function OrderFilters({
           </button>
         ) : null}
       </div>
+
+      {missingPostal.length > 0 ? (
+        <div className="adm-note adm-note-err" style={{ marginTop: 10 }}>
+          <b>Fali poštanski broj</b> za {missingPostal.length}{" "}
+          {missingPostal.length === 1 ? "narudžbu" : "narudžbi"} u izvezenom fajlu — dopiši
+          ručno prije uploada u A2B: {missingPostal.join(", ")}
+        </div>
+      ) : null}
     </>
   );
 }
