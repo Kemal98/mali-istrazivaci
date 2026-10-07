@@ -64,35 +64,100 @@ function pushText(out: ContentItem[], text: string) {
   if (t.length > 1) out.push({ kind: "text", text: t.slice(0, MAX_TEXT) });
 }
 
+/** Mutable "trenutni tekst paragrafa dok se gradi" — dijeli se kroz rekurziju. */
+interface ParaState {
+  buf: string;
+}
+
+function flushPara(out: ContentItem[], state: ParaState) {
+  pushText(out, state.buf);
+  state.buf = "";
+}
+
+function pushMedia(out: ContentItem[], el: Element, $: cheerio.CheerioAPI, base: URL) {
+  const tag = el.tagName?.toLowerCase();
+  if (tag === "img") {
+    const src = $(el).attr("src") || $(el).attr("data-src") || $(el).attr("data-lazy-src");
+    if (src && !/^data:/.test(src)) {
+      const abs = absolutize(src, base);
+      if (abs) out.push({ kind: isGifUrl(abs) ? "gif" : "image", url: abs });
+    }
+    return;
+  }
+  if (tag === "video") {
+    const src = $(el).attr("src") || $(el).find("source").first().attr("src");
+    if (src) {
+      const abs = absolutize(src, base);
+      if (abs) out.push({ kind: "video", url: abs });
+    }
+  }
+}
+
 /**
- * Tekst paragrafa SA formatiranjem, ne .text() (koji briše sve tagove).
- * <b>/<strong> -> **bold**, <i>/<em> -> __italic__ — isti markeri koje
- * RichText.tsx (naš prikaz) zna pretvoriti nazad u pravo podebljano/
- * ukošeno slovo. Bez ovoga bi se izgubilo "boldovano je boldovano, nije
- * nije" sa izvorne stranice, sav uvezeni tekst bi ispao isti (obično).
+ * Prolazi kroz SADRŽAJ paragrafa (tekst, bold/italic, slike/gif/video
+ * zalijepljeni UNUTAR teksta, prelomi reda) i gradi ga u ISTOM redoslijedu
+ * kako je na izvornoj stranici. Mnogi sajtovi (npr. Shopify) stavljaju
+ * sliku NASRED pasusa — <p>tekst<img>tekst</p> — a stari kod je radio
+ * .text()/jednu spojenu string-vrijednost po paragrafu, pa je takva
+ * slika nestajala BEZ TRAGA (nije ni postala "prazan prostor" placeholder,
+ * nego se prosto izgubila), a tekst prije/poslije nje ispadao nepovezan.
+ * Sad se tekst prikupi u `state.buf`, a čim se naiđe na <img>/<video>,
+ * dosadašnji tekst se "ispljune" kao jedna text stavka i slika postane
+ * svoja stavka — redoslijed ostaje tačan.
  */
-function inlineMarkdown($node: cheerio.Cheerio<AnyNode>, $: cheerio.CheerioAPI): string {
-  let out = "";
+function walkParaContent(
+  $node: cheerio.Cheerio<AnyNode>,
+  $: cheerio.CheerioAPI,
+  base: URL,
+  out: ContentItem[],
+  state: ParaState
+): void {
   $node.contents().each((_, child) => {
+    if (out.length >= MAX_ITEMS) return;
     if (child.type === "text") {
-      out += (child as unknown as { data?: string }).data ?? "";
+      state.buf += (child as unknown as { data?: string }).data ?? "";
       return;
     }
     if (child.type !== "tag") return;
     const el = child as Element;
     const tag = el.tagName?.toLowerCase();
+    if (!tag || SKIP_TAGS.has(tag)) return;
+
     if (tag === "br") {
-      out += "\n";
+      state.buf += "\n";
       return;
     }
-    if (SKIP_TAGS.has(tag)) return;
-    const inner = inlineMarkdown($(el), $);
-    if (!inner.trim()) return;
-    if (tag === "b" || tag === "strong") out += `**${inner}**`;
-    else if (tag === "i" || tag === "em") out += `__${inner}__`;
-    else out += inner;
+    if (tag === "img" || tag === "video") {
+      flushPara(out, state);
+      pushMedia(out, el, $, base);
+      return;
+    }
+    if (tag === "b" || tag === "strong" || tag === "i" || tag === "em") {
+      const marker = tag === "b" || tag === "strong" ? "**" : "__";
+      // ISTI state/out kao i ostatak paragrafa (ne poseban buffer) — tako
+      // redoslijed ostaje tačan čak i kad nešto iznutra "ispljune" (slika).
+      // Marker se ne piše unaprijed: tek nakon rekurzije, ako UNUTAR nije
+      // bilo flush-a (nema slike u ovom rasponu), markeri se naknadno
+      // umetnu oko tog dijela buffera. Ako JE bilo flush-a (npr. pravi
+      // slučaj sa Shopify stranica: "<strong><br><br><img></strong>"),
+      // taj dio teksta je već izašao kao običan tekst prije slike — ne
+      // pokušavamo ga naknadno boldovati preko granice flush-a, da ne
+      // ostane nespareni "**" koji RichText ne bi umio prikazati.
+      const markerStart = state.buf.length;
+      const outStart = out.length;
+      walkParaContent($(el), $, base, out, state);
+      if (out.length === outStart) {
+        const inner = state.buf.slice(markerStart);
+        if (inner.trim()) {
+          state.buf = state.buf.slice(0, markerStart) + marker + inner + marker;
+        }
+      }
+      return;
+    }
+    // ostali inline kontejneri (span, a, font…) — ista "rečenica u toku",
+    // samo nastavi u isti buffer
+    walkParaContent($(el), $, base, out, state);
   });
-  return out;
 }
 
 function walk(
@@ -121,30 +186,18 @@ function walk(
     return;
   }
 
-  if (tag === "img") {
-    const src =
-      $(el).attr("src") || $(el).attr("data-src") || $(el).attr("data-lazy-src");
-    if (src && !/^data:/.test(src)) {
-      const abs = absolutize(src, base);
-      if (abs) out.push({ kind: isGifUrl(abs) ? "gif" : "image", url: abs });
-    }
-    return;
-  }
-
-  if (tag === "video") {
-    const src = $(el).attr("src") || $(el).find("source").first().attr("src");
-    if (src) {
-      const abs = absolutize(src, base);
-      if (abs) out.push({ kind: "video", url: abs });
-    }
+  if (tag === "img" || tag === "video") {
+    pushMedia(out, el, $, base);
     return;
   }
 
   if (tag === "p" || tag === "li" || tag === "span") {
     // ne silazi dublje kao zaseban "walk" po djeci (izbjegava sjeckanje
     // jedne rečenice u mikro-blokove) — ali SE čita <b>/<strong>/<i>/<em>
-    // unutar, pretvoreno u **bold**/__italic__ (vidi inlineMarkdown).
-    pushText(out, inlineMarkdown($(el), $));
+    // i slike/video UNUTAR teksta (vidi walkParaContent), ne samo plain tekst.
+    const state: ParaState = { buf: "" };
+    walkParaContent($(el), $, base, out, state);
+    flushPara(out, state);
     return;
   }
 
