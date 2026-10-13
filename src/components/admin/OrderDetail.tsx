@@ -5,6 +5,7 @@ import Link from "next/link";
 import { datum } from "@/lib/cms/datum";
 import { channelOf } from "@/lib/orders/attribution";
 import {
+  DELIVERY_ISSUE_REASONS,
   ORDER_STATUSES,
   STATUS_CLASS,
   STATUS_COLOR,
@@ -54,6 +55,8 @@ function eventText(e: OrderEvent): string {
   if (e.kind === "merged") return `Spojene narudžbe u ovu: ${e.note}`;
   if (e.kind === "merged_into") return `Spojeno u drugu narudžbu: ${e.note}`;
   if (e.kind === "deleted") return "Narudžba obrisana";
+  if (e.kind === "delivery_issue")
+    return `Ne isporučeno — ${e.field}${e.note ? `: ${e.note}` : ""}`;
   return e.kind;
 }
 
@@ -74,6 +77,8 @@ export default function OrderDetail({
   const [custCity, setCustCity] = useState(initialOrder.city);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [issueReason, setIssueReason] = useState<string>(DELIVERY_ISSUE_REASONS[0]);
+  const [issueNote, setIssueNote] = useState("");
 
   const custDirty =
     custName !== order.customerName ||
@@ -85,6 +90,11 @@ export default function OrderDetail({
   // "Proizvod" kao "1x A, 2x B" — pravi nazivi proizvoda u ovom shopu
   // nemaju zarez, pa je ovo dovoljno pouzdano bez posebnog polja u bazi.
   const isMerged = order.productName.includes(", ");
+
+  // "Ne isporučeno" upisi imaju svoju karticu — izdvoje se iz opšte
+  // "Historije izmjena" da se ne dupliraju na dva mjesta.
+  const issueEvents = events.filter((e) => e.kind === "delivery_issue");
+  const historyEvents = events.filter((e) => e.kind !== "delivery_issue");
 
   async function patch(body: Record<string, unknown>, okMsg: string) {
     setBusy(true);
@@ -121,6 +131,29 @@ export default function OrderDetail({
         ? "Upisano u Google Sheet."
         : `Nije uspjelo: ${data?.error ?? "nepoznata greška"}`
     );
+  }
+
+  async function addIssue() {
+    setBusy(true);
+    setMsg("");
+    const res = await fetch(`/api/admin/orders/${order.id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "add-delivery-issue",
+        reason: issueReason,
+        note: issueNote,
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (data?.ok) {
+      setEvents(data.events ?? events);
+      setIssueNote("");
+      setMsg("Upis dodat.");
+    } else {
+      setMsg(data?.error || "Greška.");
+    }
   }
 
   return (
@@ -357,6 +390,65 @@ export default function OrderDetail({
               </dl>
             ) : null}
           </div>
+
+          <div className="adm-card">
+            <div className="adm-card-title">Ne isporučeno</div>
+            <p className="adm-hint" style={{ marginBottom: 10 }}>
+              Bilješke dok se rješava problem oko isporuke (kurir zvao, broj
+              pogrešan…). Ovo NE mijenja status narudžbe — status mijenjaš
+              ručno gore kad znaš kraj priče.
+            </p>
+            {issueEvents.length > 0 ? (
+              <ul className="adm-log" style={{ marginBottom: 14 }}>
+                {issueEvents.map((e) => (
+                  <li key={e.id}>
+                    <time>{datum(e.createdAt)}</time>
+                    <b>{e.field}</b>
+                    {e.note ? ` — ${e.note}` : ""}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            <div className="adm-row">
+              <div className="adm-field">
+                <label htmlFor="iss-reason">Razlog</label>
+                <select
+                  id="iss-reason"
+                  value={issueReason}
+                  onChange={(e) => setIssueReason(e.target.value)}
+                >
+                  {DELIVERY_ISSUE_REASONS.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="adm-field">
+              <label htmlFor="iss-note">
+                Napomena{" "}
+                <span style={{ color: "var(--ink3)", fontWeight: 500 }}>
+                  (opcionalno)
+                </span>
+              </label>
+              <textarea
+                id="iss-note"
+                rows={2}
+                value={issueNote}
+                onChange={(e) => setIssueNote(e.target.value)}
+                placeholder="npr. probala ispravan broj, i dalje se ne javlja"
+              />
+            </div>
+            <button
+              type="button"
+              className="adm-btn adm-btn-primary"
+              disabled={busy}
+              onClick={addIssue}
+            >
+              DODAJ UPIS
+            </button>
+          </div>
         </div>
 
         <div>
@@ -438,7 +530,7 @@ export default function OrderDetail({
           <div className="adm-card">
             <div className="adm-card-title">Historija izmjena</div>
             <ul className="adm-log">
-              {events.map((e) => (
+              {historyEvents.map((e) => (
                 <li key={e.id}>
                   <time>
                     {datum(e.createdAt)}

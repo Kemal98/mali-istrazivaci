@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import {
+  addDeliveryIssue,
   deleteOrder,
   getOrder,
   listEvents,
@@ -8,7 +9,7 @@ import {
   setStatus,
 } from "@/lib/orders/repo";
 import { retrySheetSync } from "@/lib/orders/service";
-import { isOrderStatus } from "@/lib/orders/types";
+import { DELIVERY_ISSUE_REASONS, isOrderStatus } from "@/lib/orders/types";
 import { str } from "@/lib/cms/sanitize";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -65,18 +66,32 @@ export async function PATCH(request: Request, { params }: Ctx) {
   return NextResponse.json({ order, events: await listEvents(id) });
 }
 
-/** action: retry-sheet — ponovni pokušaj upisa u Google Sheet. */
+/** action: retry-sheet | add-delivery-issue */
 export async function POST(request: Request, { params }: Ctx) {
   const { id } = await params;
   const body = await request.json().catch(() => ({}));
-
-  if (str(body?.action, 30) !== "retry-sheet") {
-    return NextResponse.json({ error: "Nepoznata akcija." }, { status: 400 });
-  }
+  const action = str(body?.action, 30);
 
   const order = await getOrder(id);
   if (!order)
     return NextResponse.json({ error: "Nema narudžbe." }, { status: 404 });
+
+  if (action === "add-delivery-issue") {
+    const reason = str(body?.reason, 40);
+    if (!(DELIVERY_ISSUE_REASONS as readonly string[]).includes(reason)) {
+      return NextResponse.json({ error: "Nepoznat razlog." }, { status: 400 });
+    }
+    await addDeliveryIssue(
+      id,
+      reason as (typeof DELIVERY_ISSUE_REASONS)[number],
+      str(body?.note, 500)
+    );
+    return NextResponse.json({ ok: true, events: await listEvents(id) });
+  }
+
+  if (action !== "retry-sheet") {
+    return NextResponse.json({ error: "Nepoznata akcija." }, { status: 400 });
+  }
 
   const res = await retrySheetSync(order);
   return NextResponse.json({

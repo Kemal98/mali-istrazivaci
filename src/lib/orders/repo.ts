@@ -2,6 +2,8 @@ import { newId, nowIso, sql } from "@/lib/cms/db";
 import { normalizePhone } from "./phone";
 import {
   isOrderStatus,
+  DELIVERY_RESOLVED_STATUSES,
+  type DeliveryIssueReason,
   type Order,
   type OrderEvent,
   type OrderStatus,
@@ -239,6 +241,57 @@ export async function listEvents(orderId: string): Promise<OrderEvent[]> {
     SELECT * FROM order_events WHERE order_id = ${orderId}
      ORDER BY created_at ASC`;
   return rows.map(rowToEvent);
+}
+
+/* ------------------------------ "Ne isporučeno" log ------------------------------ */
+// Bilješke dok se rješava problem oko isporuke (kurir zvao, broj
+// pogrešan…) — potpuno odvojeno od statusa narudžbe (status i dalje
+// mijenja admin ručno). Čuva se kao order_events red kind="delivery_issue",
+// field=razlog, note=slobodan tekst — isti mehanizam kao ostatak audit
+// loga, nema potrebe za posebnom tabelom.
+
+export async function addDeliveryIssue(
+  orderId: string,
+  reason: DeliveryIssueReason,
+  note: string
+): Promise<void> {
+  await addEvent(orderId, { kind: "delivery_issue", field: reason, note });
+}
+
+export interface OpenDeliveryIssue {
+  order: Order;
+  /** Zadnji upis u logu — da se na listi vidi "šta se dešava" bez klikanja u narudžbu. */
+  latestReason: string;
+  latestNote: string;
+  latestAt: string;
+}
+
+/**
+ * Narudžbe koje imaju bar jedan upis u "Ne isporučeno" logu I čiji status
+ * još nije Dostavljena/Vraćena/Otkazana — čim status postane jedan od ta
+ * tri, narudžba automatski nestaje sa liste (nema posebnog "riješeno"
+ * dugmeta, status je dovoljan signal). Uz svaku narudžbu ide i njen
+ * ZADNJI upis (DISTINCT ON po order_id, najnoviji prvi).
+ */
+export async function listOpenDeliveryIssues(): Promise<OpenDeliveryIssue[]> {
+  const db = sql();
+  const rows = await db<Row[]>`
+    SELECT o.*, latest.field AS issue_field, latest.note AS issue_note,
+           latest.created_at AS issue_created_at
+      FROM orders o
+      INNER JOIN LATERAL (
+        SELECT field, note, created_at FROM order_events
+         WHERE order_id = o.id AND kind = 'delivery_issue'
+         ORDER BY created_at DESC LIMIT 1
+      ) latest ON true
+     WHERE o.deleted_at IS NULL AND o.status NOT IN ${db(DELIVERY_RESOLVED_STATUSES)}
+     ORDER BY latest.created_at DESC`;
+  return rows.map((r) => ({
+    order: rowToOrder(r),
+    latestReason: s(r.issue_field),
+    latestNote: s(r.issue_note),
+    latestAt: s(r.issue_created_at),
+  }));
 }
 
 /* ------------------------------ čitanje ------------------------------ */

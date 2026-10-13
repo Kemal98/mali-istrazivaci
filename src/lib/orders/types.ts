@@ -63,6 +63,29 @@ export function isOrderStatus(v: unknown): v is OrderStatus {
   return typeof v === "string" && (ORDER_STATUSES as readonly string[]).includes(v);
 }
 
+/**
+ * Razlozi za "Ne isporučeno" log — bilješke dok se rješava problem oko
+ * isporuke (kurir zvao, broj pogrešan i sl.), NEZAVISNO od statusa
+ * narudžbe (vidi addDeliveryIssue u repo.ts). Status se i dalje mijenja
+ * ručno tek kad se zna kraj priče.
+ */
+export const DELIVERY_ISSUE_REASONS = [
+  "Pogrešan broj",
+  "Ne javlja se",
+  "Odbio preuzeti",
+  "Nije bio kod kuće",
+  "Ostalo",
+] as const;
+
+export type DeliveryIssueReason = (typeof DELIVERY_ISSUE_REASONS)[number];
+
+/** Statusi kod kojih se narudžba smatra "riješenom" — nestaje sa liste "Ne isporučeno". */
+export const DELIVERY_RESOLVED_STATUSES: OrderStatus[] = [
+  "DELIVERED",
+  "RETURNED",
+  "CANCELLED",
+];
+
 export interface Order {
   id: string;
   orderNumber: string;
