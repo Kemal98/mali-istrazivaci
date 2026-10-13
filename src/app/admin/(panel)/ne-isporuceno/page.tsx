@@ -2,6 +2,7 @@ import Link from "next/link";
 import { listOpenDeliveryIssues } from "@/lib/orders/repo";
 import { datum } from "@/lib/cms/datum";
 import { STATUS_CLASS, STATUS_ICON, STATUS_LABEL } from "@/lib/orders/types";
+import QuickDeliveryIssue from "@/components/admin/QuickDeliveryIssue";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,8 @@ export default async function NeIsporucenoPage() {
           </p>
         </div>
       </div>
+
+      <QuickDeliveryIssue />
 
       {issues.length === 0 ? (
         <div className="adm-empty" style={{ background: "#fff", borderRadius: 10 }}>
