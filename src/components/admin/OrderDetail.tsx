@@ -55,6 +55,7 @@ function eventText(e: OrderEvent): string {
   if (e.kind === "merged") return `Spojene narudžbe u ovu: ${e.note}`;
   if (e.kind === "merged_into") return `Spojeno u drugu narudžbu: ${e.note}`;
   if (e.kind === "deleted") return "Narudžba obrisana";
+  if (e.kind === "restored") return "Narudžba vraćena (poništeno brisanje)";
   if (e.kind === "delivery_issue")
     return `Ne isporučeno — ${e.field}${e.note ? `: ${e.note}` : ""}`;
   return e.kind;

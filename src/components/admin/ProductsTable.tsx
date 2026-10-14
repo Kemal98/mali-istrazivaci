@@ -7,8 +7,19 @@ import ConfirmModal from "./ConfirmModal";
 import type { Product } from "@/lib/cms/types";
 import { datum } from "@/lib/cms/datum";
 
-export default function ProductsTable({ initial }: { initial: Product[] }) {
+/** Prag ispod kojeg se "Na stanju" prikazuje crveno — nisko, treba dopuniti. */
+const LOW_STOCK = 5;
+
+export default function ProductsTable({
+  initial,
+  stockEntries,
+}: {
+  initial: Product[];
+  /** [normalizovano ime, na_stanju] — iz profitAsIfSold, nema nabavke = null. */
+  stockEntries: [string, number | null][];
+}) {
   const router = useRouter();
+  const stockByName = new Map(stockEntries);
   const [q, setQ] = useState("");
   const [rows, setRows] = useState(initial);
   const [busyId, setBusyId] = useState("");
@@ -128,6 +139,7 @@ export default function ProductsTable({ initial }: { initial: Product[] }) {
                 <th style={{ width: 68 }}>Slika</th>
                 <th>Naziv</th>
                 <th>Cijena</th>
+                <th>Na stanju</th>
                 <th>Status</th>
                 <th>URL</th>
                 <th>Zadnja izmjena</th>
@@ -164,6 +176,20 @@ export default function ProductsTable({ initial }: { initial: Product[] }) {
                         ) : null}
                       </>
                     )}
+                  </td>
+                  <td>
+                    {(() => {
+                      const stock = stockByName.get(p.naziv.trim().toLowerCase());
+                      if (stock === undefined || stock === null)
+                        return <span className="adm-hint">—</span>;
+                      if (stock <= 0)
+                        return (
+                          <b style={{ color: "#b3261e" }}>Rasprodano</b>
+                        );
+                      if (stock < LOW_STOCK)
+                        return <b style={{ color: "#b3261e" }}>{stock} kom</b>;
+                      return <span>{stock} kom</span>;
+                    })()}
                   </td>
                   <td>
                     <span

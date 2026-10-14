@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { listProducts, listTemplates } from "@/lib/cms/repo";
 import { profitAsIfSold } from "@/lib/orders/profit";
 import ProductsTable from "@/components/admin/ProductsTable";
@@ -14,6 +15,14 @@ export default async function ProductsPage() {
   // Sve vrijeme (bez perioda) — brz pregled po proizvodu, detaljnije
   // razrade po periodu su na Dashboardu.
   const profit = await profitAsIfSold({}, "2000-01-01", "2100-01-01");
+  // "Na stanju" (kupljeno − prodano) po proizvodu, za bojenu oznaku na
+  // listi proizvoda — isti podatak koji profitAsIfSold već računa, samo
+  // se ovdje prikazuje svuda (ne samo kod proizvoda sa narudžbom/reklamom
+  // u ovoj tabeli ispod).
+  const stockEntries: [string, number | null][] = profit.rows.map((p) => [
+    p.productName.trim().toLowerCase(),
+    p.stock,
+  ]);
 
   return (
     <>
@@ -34,7 +43,7 @@ export default async function ProductsPage() {
           <p className="adm-hint" style={{ marginBottom: 10 }}>
             Kao da je sve prodano (sve narudžbe, bez obzira na status). Za
             period i detalje idi na{" "}
-            <a href="/admin/dashboard">Dashboard</a>.
+            <Link href="/admin/dashboard">Dashboard</Link>.
           </p>
           <div className="adm-table-wrap" style={{ border: "none" }}>
             <table className="adm-table" style={{ minWidth: 620 }}>
@@ -79,7 +88,7 @@ export default async function ProductsPage() {
         </div>
       ) : null}
 
-      <ProductsTable initial={products} />
+      <ProductsTable initial={products} stockEntries={stockEntries} />
     </>
   );
 }

@@ -553,6 +553,32 @@ export async function deleteOrderBulk(
   return changed;
 }
 
+/** Obrisane narudžbe (zadnje prvo) — sigurnosna mreža za greškom obrisano. */
+export async function listDeletedOrders(limit = 200): Promise<Order[]> {
+  const rows = await sql()<Row[]>`
+    SELECT * FROM orders WHERE deleted_at IS NOT NULL
+     ORDER BY deleted_at DESC LIMIT ${limit}`;
+  return rows.map(rowToOrder);
+}
+
+/** Vraća greškom obrisanu narudžbu — čisti deleted_at, upisuje u audit log. */
+export async function restoreOrder(
+  id: string,
+  actor = "admin"
+): Promise<Order | null> {
+  const rows = await sql()<Row[]>`
+    SELECT * FROM orders WHERE id = ${id} AND deleted_at IS NOT NULL LIMIT 1`;
+  if (!rows[0]) return null;
+
+  await sql()`
+    UPDATE orders SET deleted_at = NULL, updated_at = ${nowIso()}
+     WHERE id = ${id}`;
+
+  await addEvent(id, { kind: "restored", actor });
+
+  return getOrder(id);
+}
+
 /**
  * Spaja više narudžbi ISTOG kupca u JEDNU — za slučaj kad je naručio
  * nekoliko puta posebno, a treba ići kao jedan paket. Shema ima "jedna

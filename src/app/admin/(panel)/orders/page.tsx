@@ -10,6 +10,7 @@ import {
 import { listProducts } from "@/lib/cms/repo";
 import { isOrderStatus } from "@/lib/orders/types";
 import OrderFilters from "@/components/admin/OrderFilters";
+import SavedFilters from "@/components/admin/SavedFilters";
 import OrdersTable from "@/components/admin/OrdersTable";
 import AddOrderButton from "@/components/admin/AddOrderButton";
 import QuickSaleManager from "@/components/admin/QuickSaleManager";
@@ -93,6 +94,9 @@ export default async function OrdersPage({
           <Link className="adm-btn" href="/admin/orders/import">
             ⤒ UVEZI IZ GOOGLE SHEETA
           </Link>
+          <Link className="adm-btn" href="/admin/orders/obrisane">
+            🗑 OBRISANE NARUDŽBE
+          </Link>
         </div>
       </div>
 
@@ -102,6 +106,7 @@ export default async function OrdersPage({
       />
 
       <Suspense fallback={<div className="adm-hint">Učitavam filtere…</div>}>
+        <SavedFilters />
         <OrderFilters
           products={options.products}
           cities={options.cities}

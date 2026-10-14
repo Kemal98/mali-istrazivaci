@@ -4,6 +4,7 @@ import {
   deleteOrder,
   getOrder,
   listEvents,
+  restoreOrder,
   setCustomerInfo,
   setShipping,
   setStatus,
@@ -66,11 +67,24 @@ export async function PATCH(request: Request, { params }: Ctx) {
   return NextResponse.json({ order, events: await listEvents(id) });
 }
 
-/** action: retry-sheet | add-delivery-issue */
+/** action: retry-sheet | add-delivery-issue | restore */
 export async function POST(request: Request, { params }: Ctx) {
   const { id } = await params;
   const body = await request.json().catch(() => ({}));
   const action = str(body?.action, 30);
+
+  // "restore" radi baš na OBRISANOJ narudžbi — getOrder() ispod namjerno
+  // ne vidi takve (filtrira deleted_at IS NULL), pa ova grana mora ići
+  // prije tog provjere, ne poslije.
+  if (action === "restore") {
+    const order = await restoreOrder(id);
+    if (!order)
+      return NextResponse.json(
+        { error: "Nema obrisane narudžbe sa tim ID-em." },
+        { status: 404 }
+      );
+    return NextResponse.json({ ok: true, order });
+  }
 
   const order = await getOrder(id);
   if (!order)
