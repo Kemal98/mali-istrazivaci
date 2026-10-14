@@ -41,17 +41,22 @@ export async function syncMetaSpend(
   if (!res.ok || !res.data) return { ok: false, error: res.error ?? "greška" };
   const rows = res.data;
 
-  const mapping = await listCampaignMap();
-  const byId = new Map(mapping.map((m) => [m.campaignId, m.productName]));
+  let mapping = await listCampaignMap();
+  let byId = new Map(mapping.map((m) => [m.campaignId, m.productName]));
 
   // Kampanje koje se pojave u insights-u a nisu još u mapiranju (nove,
-  // ili je admin preskočio "Učitaj kampanje") — dodaj ih odmah, prazne,
-  // da se ne izgube iz vidokruga.
+  // ili je admin preskočio "Učitaj kampanje") — dodaj ih odmah. Ako neka
+  // ima ISTO ime kao već mapirana kampanja (npr. isto ime na drugom ad
+  // nalogu), upsertCampaignNames je odmah auto-mapira na isti proizvod —
+  // zato se `byId` ponovo učita OVDJE, da se ta auto-mapa iskoristi ODMAH
+  // u ovom istom sync-u, ne tek od sljedećeg.
   const seen = new Map<string, string>();
   for (const r of rows) seen.set(r.campaignId, r.campaignName);
   const newOnes = [...seen.entries()].filter(([id]) => !byId.has(id));
   if (newOnes.length) {
     await upsertCampaignNames(newOnes.map(([id, name]) => ({ id, name })));
+    mapping = await listCampaignMap();
+    byId = new Map(mapping.map((m) => [m.campaignId, m.productName]));
   }
 
   let totalSpend = 0;

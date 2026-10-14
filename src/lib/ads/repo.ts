@@ -113,14 +113,28 @@ export async function listCampaignMap(): Promise<CampaignMapping[]> {
   return rows.map(rowToMapping);
 }
 
-/** Upiši listu kampanja iz Meta API-ja — čuva postojeće mapiranje, dodaje nove. */
+const norm = (v: string) => v.trim().toLowerCase();
+
+/**
+ * Upiši listu kampanja iz Meta API-ja — čuva postojeće mapiranje, dodaje
+ * nove. NOVA kampanja sa ISTIM nazivom kao neka već mapirana (npr. isto
+ * ime kampanje na drugom ad nalogu, poslije prebacivanja naloga) odmah
+ * dobije taj isti proizvod — admin je ne mora ručno ponovo mapirati.
+ */
 export async function upsertCampaignNames(
   campaigns: { id: string; name: string }[]
 ): Promise<void> {
+  const existing = await listCampaignMap();
+  const productByName = new Map<string, string>();
+  for (const m of existing) {
+    if (m.productName) productByName.set(norm(m.campaignName), m.productName);
+  }
+
   for (const c of campaigns) {
+    const autoProduct = productByName.get(norm(c.name)) ?? "";
     await sql()`
       INSERT INTO ad_campaign_map (campaign_id, campaign_name, product_name, updated_at)
-      VALUES (${c.id}, ${c.name}, '', ${nowIso()})
+      VALUES (${c.id}, ${c.name}, ${autoProduct}, ${nowIso()})
       ON CONFLICT (campaign_id) DO UPDATE SET campaign_name = EXCLUDED.campaign_name`;
   }
 }
