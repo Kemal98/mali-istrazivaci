@@ -3,7 +3,12 @@ import { Suspense } from "react";
 import Script from "next/script";
 import PixelEvents from "@/components/PixelEvents";
 import UtmCapture from "@/components/UtmCapture";
-import { META_PIXEL_ID, CLARITY_PROJECT_ID, GA_MEASUREMENT_ID } from "@/lib/constants";
+import {
+  META_PIXEL_ID,
+  META_PIXEL_ID_2,
+  CLARITY_PROJECT_ID,
+  GA_MEASUREMENT_ID,
+} from "@/lib/constants";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -48,7 +53,9 @@ export default function RootLayout({
             n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
             t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
             (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init','${META_PIXEL_ID}');fbq('track','PageView');
+            fbq('init','${META_PIXEL_ID}');
+            fbq('init','${META_PIXEL_ID_2}');
+            fbq('track','PageView');
           `}
         </Script>
         <noscript>
@@ -58,6 +65,16 @@ export default function RootLayout({
             width={1}
             style={{ display: "none" }}
             src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+            alt=""
+          />
+        </noscript>
+        <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            height={1}
+            width={1}
+            style={{ display: "none" }}
+            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID_2}&ev=PageView&noscript=1`}
             alt=""
           />
         </noscript>

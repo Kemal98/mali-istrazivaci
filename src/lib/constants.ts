@@ -1,4 +1,8 @@
 export const META_PIXEL_ID = "2651862191901133";
+// Drugi Pixel — radi ISTOVREMENO sa prvim (oba inicijalizirana u
+// layout.tsx), stari se ne gasi. Svi fbq('track', ...) pozivi po sajtu
+// automatski idu u SVE inicijalizirane pixele, pa se oni ne diraju.
+export const META_PIXEL_ID_2 = "1654583616058621";
 
 // Microsoft Clarity — besplatna analitika (snimci sesija, heatmape).
 // Project ID iz clarity.microsoft.com -> Setup -> Install tracking code.
