@@ -692,9 +692,9 @@ body:has(.home-page-root){padding-bottom:0}
 /* uvodni opis (mobitel): isti bočni razmak i širina kao .dawn-col */
 .dawn-intro-right{max-width:600px;margin:0 auto;padding:0 20px;text-align:center}
 
-/* announcement + header — obavijena u jedan sticky omotač, vidi
-   .dawn-topbar-wrap, umjesto da svaki dio bude sam za sebe fiksiran */
-.dawn-topbar-wrap{position:sticky;top:0;z-index:250}
+/* announcement + header — NIJE fiksirano, skrola se normalno sa
+   stranicom (namjerno ugašeno, ranije je bilo sticky). */
+.dawn-topbar-wrap{position:static;z-index:250}
 .dawn-announce{display:block;background:var(--orange);color:#fff;font-weight:700;
   font-size:.78rem;padding:8px 0;letter-spacing:.01em;overflow:hidden;
   text-decoration:none;cursor:pointer}
