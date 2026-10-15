@@ -844,6 +844,10 @@
   background: #e8f7ee;
   color: #0f6136;
 }
+.adm-note-warn {
+  background: #fdf1dc;
+  color: var(--amber);
+}
 .adm-note-info {
   background: #eef2f8;
   color: #2c3a4d;

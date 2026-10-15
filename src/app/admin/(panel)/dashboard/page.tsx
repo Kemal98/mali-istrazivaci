@@ -151,6 +151,13 @@ export default async function DashboardPage({
     sarajevoDateOnly(fromDate),
     sarajevoDateOnly(toDate)
   );
+  // "stock" u profitAsIfSold je uvijek SVE VRIJEME (kupljeno − prodano,
+  // bez obzira na izabrani period dashboarda) — isti prag kao boja na
+  // listi Proizvoda (ProductsTable.tsx).
+  const LOW_STOCK = 5;
+  const lowStock = profit.rows.filter(
+    (r) => r.stock !== null && r.stock < LOW_STOCK
+  );
   const productDaysMap = await profitByProductDay(
     sarajevoDateOnly(fromDate),
     sarajevoDateOnly(toDate)
@@ -199,6 +206,25 @@ export default async function DashboardPage({
                     sve vrijeme) — nabavna i reklame pojedu više od prihoda.
                   </>
                 )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {lowStock.length > 0 ? (
+        <div className="adm-note adm-note-warn" style={{ marginBottom: 12 }}>
+          <b>📦 Malo zaliha:</b>
+          <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
+            {lowStock.map((r) => (
+              <li key={r.productName}>
+                <Link href="/admin/products">
+                  <b>{r.productName}</b>
+                </Link>{" "}
+                —{" "}
+                {r.stock !== null && r.stock <= 0
+                  ? "rasprodano"
+                  : `samo ${r.stock} kom`}
               </li>
             ))}
           </ul>
