@@ -30,6 +30,9 @@ export default function ProductsTable({
     | { kind: "delete" | "unpublish"; product: Product }
     | null
   >(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkConfirm, setBulkConfirm] = useState<"delete" | null>(null);
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const filtered = rows.filter((p) => {
     const s = q.trim().toLowerCase();
@@ -100,6 +103,55 @@ export default function ProductsTable({
     await refresh();
   }
 
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    setSelected((prev) =>
+      prev.size === filtered.length ? new Set() : new Set(filtered.map((p) => p.id))
+    );
+  }
+
+  /** Masovna akcija nad izabranim proizvodima — šalje isti poziv kao za
+   *  jedan proizvod, samo redom za svaki izabrani (do 21 proizvoda u
+   *  shopu, sekvencijalno je dovoljno brzo i ne opterećuje bazu). */
+  async function bulkAction(act: "publish" | "unpublish" | "delete") {
+    const ids = [...selected];
+    if (!ids.length) return;
+    setBulkBusy(true);
+    setMsg(null);
+    let failed = 0;
+    for (const id of ids) {
+      const res =
+        act === "delete"
+          ? await fetch(`/api/admin/products/${id}`, { method: "DELETE" })
+          : await fetch(`/api/admin/products/${id}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: act }),
+            });
+      if (!res.ok) failed++;
+    }
+    setBulkBusy(false);
+    setBulkConfirm(null);
+    setSelected(new Set());
+    const verb =
+      act === "delete" ? "obrisano" : act === "publish" ? "objavljeno" : "skinuto sa objave";
+    setMsg({
+      kind: failed ? "err" : "ok",
+      text: failed
+        ? `${ids.length - failed}/${ids.length} ${verb}, ${failed} nije uspjelo (vjerovatno fali obavezno polje).`
+        : `${ids.length} proizvoda ${verb}.`,
+    });
+    await refresh();
+  }
+
   return (
     <>
       <div className="adm-search">
@@ -125,6 +177,44 @@ export default function ProductsTable({
         </div>
       ) : null}
 
+      {selected.size > 0 ? (
+        <div className="adm-note adm-note-info" style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <b>{selected.size} izabrano</b>
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm adm-btn-green"
+            disabled={bulkBusy}
+            onClick={() => bulkAction("publish")}
+          >
+            OBJAVI SVE
+          </button>
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm"
+            disabled={bulkBusy}
+            onClick={() => bulkAction("unpublish")}
+          >
+            SKINI SA OBJAVE
+          </button>
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm adm-btn-danger"
+            disabled={bulkBusy}
+            onClick={() => setBulkConfirm("delete")}
+          >
+            OBRIŠI
+          </button>
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm"
+            disabled={bulkBusy}
+            onClick={() => setSelected(new Set())}
+          >
+            OTKAŽI IZBOR
+          </button>
+        </div>
+      ) : null}
+
       <div className="adm-table-wrap">
         {filtered.length === 0 ? (
           <div className="adm-empty">
@@ -136,6 +226,14 @@ export default function ProductsTable({
           <table className="adm-table">
             <thead>
               <tr>
+                <th style={{ width: 32 }}>
+                  <input
+                    type="checkbox"
+                    checked={filtered.length > 0 && selected.size === filtered.length}
+                    onChange={toggleSelectAll}
+                    aria-label="Izaberi sve"
+                  />
+                </th>
                 <th style={{ width: 68 }}>Slika</th>
                 <th>Naziv</th>
                 <th>Cijena</th>
@@ -149,6 +247,14 @@ export default function ProductsTable({
             <tbody>
               {filtered.map((p) => (
                 <tr key={p.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selected.has(p.id)}
+                      onChange={() => toggleSelect(p.id)}
+                      aria-label={`Izaberi ${p.naziv || "proizvod"}`}
+                    />
+                  </td>
                   <td>
                     {p.hero?.slika ? (
                       /* eslint-disable-next-line @next/next/no-img-element */
@@ -292,6 +398,18 @@ export default function ProductsTable({
           busy={busyId === confirm.product.id}
           onConfirm={() => doDelete(confirm.product)}
           onCancel={() => setConfirm(null)}
+        />
+      ) : null}
+
+      {bulkConfirm === "delete" ? (
+        <ConfirmModal
+          title={`Obrisati ${selected.size} proizvoda?`}
+          text="Svi izabrani proizvodi se arhiviraju (soft delete) — podaci ostaju u bazi, ali se nigdje ne prikazuju. Objavljene stranice više neće biti dostupne."
+          confirmLabel="OBRIŠI SVE"
+          danger
+          busy={bulkBusy}
+          onConfirm={() => bulkAction("delete")}
+          onCancel={() => setBulkConfirm(null)}
         />
       ) : null}
 
