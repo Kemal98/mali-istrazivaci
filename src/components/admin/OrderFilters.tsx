@@ -93,6 +93,12 @@ export default function OrderFilters({
       // problem kao ranije na dashboardu ako bismo to računali ovdje.
       if (exportFrom) qs.set("from", exportFrom);
       if (exportTo) qs.set("to", exportTo);
+      // Proizvod SE prenosi iz filtera iznad — ako je admin izabrao samo
+      // jedan proizvod na listi, izvoz za A2B/pakovanje treba da sadrži
+      // samo taj proizvod, ne sve. (Status se namjerno NE prenosi — A2B
+      // uvijek uzima Nova+Potvrđena, vidi DEFAULT_STATUSES.)
+      const product = params.get("product");
+      if (product) qs.set("product", product);
       const res = await fetch(`${endpoint}?${qs.toString()}`, { method: "POST" });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
