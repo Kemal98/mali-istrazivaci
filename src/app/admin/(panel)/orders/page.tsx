@@ -5,10 +5,12 @@ import {
   listFilterOptions,
   listManualSales,
   listOrders,
+  listSuspectedDuplicates,
   type OrderSort,
 } from "@/lib/orders/repo";
 import { listProducts } from "@/lib/cms/repo";
-import { isOrderStatus } from "@/lib/orders/types";
+import { datum } from "@/lib/cms/datum";
+import { isOrderStatus, STATUS_LABEL } from "@/lib/orders/types";
 import OrderFilters from "@/components/admin/OrderFilters";
 import SavedFilters from "@/components/admin/SavedFilters";
 import OrdersTable from "@/components/admin/OrdersTable";
@@ -78,6 +80,7 @@ export default async function OrdersPage({
     )
     .map((p) => ({ id: p.id, naziv: p.naziv, cijena: p.cijena }));
   const manualSales = await listManualSales();
+  const duplicates = await listSuspectedDuplicates();
 
   return (
     <>
@@ -99,6 +102,36 @@ export default async function OrdersPage({
           </Link>
         </div>
       </div>
+
+      {duplicates.length > 0 ? (
+        <div className="adm-note adm-note-warn" style={{ marginBottom: 14 }}>
+          <b>
+            ⚠️ {duplicates.length === 1 ? "Moguća duplirana narudžba" : "Moguće duplirane narudžbe"}:
+          </b>{" "}
+          isti kupac je naručio isti proizvod više puta u kratkom periodu —
+          provjeri da nije greška prije slanja.
+          <ul style={{ margin: "6px 0 0", paddingLeft: 20 }}>
+            {duplicates.map((g) => (
+              <li key={`${g.phoneNormalized}|${g.productName}`}>
+                <b>{g.productName}</b> —{" "}
+                <a className="adm-tel" href={`tel:${g.phone.replace(/\s/g, "")}`}>
+                  {g.phone}
+                </a>
+                :{" "}
+                {g.orders.map((o, i) => (
+                  <span key={o.id}>
+                    {i > 0 ? ", " : ""}
+                    <Link href={`/admin/orders/${o.id}`}>
+                      <b>{o.orderNumber}</b>
+                    </Link>{" "}
+                    ({datum(o.createdAt)}, {STATUS_LABEL[o.status]})
+                  </span>
+                ))}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       <QuickSaleManager
         initial={manualSales}

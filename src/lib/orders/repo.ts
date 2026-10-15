@@ -5,6 +5,7 @@ import {
   DELIVERY_RESOLVED_STATUSES,
   type Customer,
   type DeliveryIssueReason,
+  type DuplicateOrderGroup,
   type Order,
   type OrderEvent,
   type OrderStatus,
@@ -551,6 +552,57 @@ export async function listCustomers(
     perPage,
     pages: Math.max(1, Math.ceil(total / perPage)),
   };
+}
+
+/**
+ * Narudžbe koje sumnjamo da su greškom duplirane: isti kupac (po broju
+ * telefona, ne po imenu — ime se zna malo razlikovati od narudžbe do
+ * narudžbe), isti proizvod, naručeno 2+ puta unutar 7 dana. Računaju se
+ * SAMO narudžbe koje još nisu poslane (Nova/Potvrđena/Pakovanje) — čim
+ * je nešto već poslano/dostavljeno/otkazano/vraćeno, kasno je da se
+ * kupac kontaktira "prije slanja", pa grupa sama nestane sa liste.
+ */
+export async function listSuspectedDuplicates(): Promise<DuplicateOrderGroup[]> {
+  const db = sql();
+  const dupStatuses: OrderStatus[] = ["NEW", "CONFIRMED", "PACKING"];
+  const rows = await db<Row[]>`
+    WITH flagged AS (
+      SELECT phone_normalized, lower(trim(product_name)) AS pname
+        FROM orders
+       WHERE deleted_at IS NULL AND phone_normalized <> ''
+         AND status IN ${db(dupStatuses)}
+       GROUP BY phone_normalized, lower(trim(product_name))
+      HAVING COUNT(*) >= 2
+         AND MAX(created_at::timestamptz) - MIN(created_at::timestamptz) <= INTERVAL '7 days'
+    )
+    SELECT o.id, o.order_number, o.customer_name, o.phone, o.phone_normalized,
+           o.product_name, o.created_at, o.status
+      FROM orders o
+      JOIN flagged f
+        ON f.phone_normalized = o.phone_normalized
+       AND f.pname = lower(trim(o.product_name))
+     WHERE o.deleted_at IS NULL AND o.status IN ${db(dupStatuses)}
+     ORDER BY o.phone_normalized, o.product_name, o.created_at`;
+
+  const groups = new Map<string, DuplicateOrderGroup>();
+  for (const r of rows) {
+    const key = `${r.phone_normalized}|${s(r.product_name).trim().toLowerCase()}`;
+    const g = groups.get(key) ?? {
+      phoneNormalized: s(r.phone_normalized),
+      phone: s(r.phone),
+      productName: s(r.product_name),
+      orders: [],
+    };
+    g.orders.push({
+      id: s(r.id),
+      orderNumber: s(r.order_number),
+      customerName: s(r.customer_name),
+      createdAt: s(r.created_at),
+      status: (r.status as OrderStatus) ?? "NEW",
+    });
+    groups.set(key, g);
+  }
+  return [...groups.values()];
 }
 
 /* ------------------------------ izmjene ------------------------------ */

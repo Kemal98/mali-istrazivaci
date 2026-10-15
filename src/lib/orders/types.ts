@@ -160,6 +160,26 @@ export interface Customer {
   lastOrderAt: string;
 }
 
+/**
+ * Grupa narudžbi za koje sumnjamo da su greškom duplirane — isti kupac
+ * (phone_normalized), isti proizvod, naručeno 2+ puta unutar par dana.
+ * Vjerovatno isti razlog kao i rate limit na checkoutu (dupli klik,
+ * kupac mislio da prvi put nije prošlo i probao opet) — ovdje se admin
+ * samo upozori da provjeri/kontaktira kupca, ništa se ne mijenja samo.
+ */
+export interface DuplicateOrderGroup {
+  phoneNormalized: string;
+  phone: string;
+  productName: string;
+  orders: {
+    id: string;
+    orderNumber: string;
+    customerName: string;
+    createdAt: string;
+    status: OrderStatus;
+  }[];
+}
+
 export interface OrderEvent {
   id: string;
   orderId: string;
