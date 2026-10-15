@@ -3,6 +3,7 @@ import { normalizePhone } from "./phone";
 import {
   isOrderStatus,
   DELIVERY_RESOLVED_STATUSES,
+  type Customer,
   type DeliveryIssueReason,
   type Order,
   type OrderEvent,
@@ -456,6 +457,99 @@ export async function listFilterOptions(): Promise<{
   return {
     products: prods.map((r) => s(r.v)),
     cities: cities.map((r) => s(r.v)),
+  };
+}
+
+/* ------------------------------- kupci ------------------------------- */
+
+function rowToCustomer(r: Row): Customer {
+  return {
+    phoneNormalized: s(r.phone_normalized),
+    customerName: s(r.customer_name),
+    phone: s(r.phone),
+    city: s(r.city),
+    ordersCount: n(r.orders_count),
+    deliveredCount: n(r.delivered_count),
+    totalSpent: Math.round(n(r.total_spent) * 100) / 100,
+    lastOrderAt: s(r.last_order_at),
+  };
+}
+
+export type CustomerSort = "recent" | "spent" | "orders";
+
+export interface ListCustomersOptions {
+  search?: string;
+  sort?: CustomerSort;
+  page?: number;
+  perPage?: number;
+}
+
+export interface ListCustomersResult {
+  customers: Customer[];
+  total: number;
+  page: number;
+  perPage: number;
+  pages: number;
+}
+
+/**
+ * Jedan red po kupcu (grupisano po phone_normalized — vidi Customer u
+ * types.ts), agregirano iz svih njegovih narudžbi. Ime/telefon/grad su
+ * iz NAJNOVIJE narudžbe (array_agg ... ORDER BY created_at DESC, [1]).
+ */
+export async function listCustomers(
+  opts: ListCustomersOptions = {}
+): Promise<ListCustomersResult> {
+  const db = sql();
+  const perPage = [25, 50, 100].includes(Number(opts.perPage))
+    ? Number(opts.perPage)
+    : 25;
+  const page = Math.max(1, Number(opts.page) || 1);
+  const offset = (page - 1) * perPage;
+
+  const order =
+    opts.sort === "recent"
+      ? db`last_order_at DESC`
+      : opts.sort === "orders"
+        ? db`orders_count DESC, total_spent DESC`
+        : db`total_spent DESC, orders_count DESC`;
+
+  const q = opts.search?.trim();
+  const searchWhere = q
+    ? db`AND (lower(customer_name) LIKE ${`%${q.toLowerCase()}%`}
+          OR lower(city) LIKE ${`%${q.toLowerCase()}%`}
+          OR phone_normalized LIKE ${`%${normalizePhone(q)}%`})`
+    : db``;
+
+  const agg = db`
+    SELECT
+      phone_normalized,
+      (array_agg(customer_name ORDER BY created_at DESC))[1] AS customer_name,
+      (array_agg(phone ORDER BY created_at DESC))[1] AS phone,
+      (array_agg(city ORDER BY created_at DESC))[1] AS city,
+      COUNT(*) AS orders_count,
+      COUNT(*) FILTER (WHERE status = 'DELIVERED') AS delivered_count,
+      COALESCE(SUM(total_price) FILTER (WHERE status = 'DELIVERED'), 0) AS total_spent,
+      MAX(created_at) AS last_order_at
+    FROM orders
+    WHERE deleted_at IS NULL AND phone_normalized <> ''
+    GROUP BY phone_normalized`;
+
+  const countRows = await db<Row[]>`
+    SELECT COUNT(*) AS c FROM (${agg}) x WHERE 1=1 ${searchWhere}`;
+  const total = n(countRows[0]?.c);
+
+  const rows = await db<Row[]>`
+    SELECT * FROM (${agg}) x WHERE 1=1 ${searchWhere}
+     ORDER BY ${order}
+     LIMIT ${perPage} OFFSET ${offset}`;
+
+  return {
+    customers: rows.map(rowToCustomer),
+    total,
+    page,
+    perPage,
+    pages: Math.max(1, Math.ceil(total / perPage)),
   };
 }
 

@@ -142,6 +142,24 @@ export interface Order {
   source: string;
 }
 
+/**
+ * Jedan kupac = jedan `phone_normalized` (vidi phone.ts) — isti broj
+ * upisan na desetak načina broji se kao ista osoba. Ime/grad/telefon su
+ * iz NAJNOVIJE narudžbe te osobe (mogu se malo razlikovati od narudžbe
+ * do narudžbe, uzimamo zadnji upisan).
+ */
+export interface Customer {
+  phoneNormalized: string;
+  customerName: string;
+  phone: string;
+  city: string;
+  ordersCount: number;
+  deliveredCount: number;
+  /** Zbir total_price SAMO dostavljenih narudžbi — stvarno naplaćeno (pouzeće). */
+  totalSpent: number;
+  lastOrderAt: string;
+}
+
 export interface OrderEvent {
   id: string;
   orderId: string;
