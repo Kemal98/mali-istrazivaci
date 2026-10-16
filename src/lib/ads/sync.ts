@@ -1,7 +1,12 @@
 import "server-only";
 
 import { adAmountKm } from "./currency";
-import { fetchMetaDailySpend, listMetaCampaigns } from "./meta";
+import {
+  configuredAccounts,
+  fetchMetaDailySpend,
+  listMetaCampaigns,
+  type MetaDaySpend,
+} from "./meta";
 import {
   listCampaignMap,
   upsertCampaignNames,
@@ -9,18 +14,33 @@ import {
 } from "./repo";
 
 /**
- * Učitaj sve kampanje sa Meta naloga (i one bez ijedne potrošnje u
- * zadnje vrijeme) da admin ima šta mapirati PRIJE prvog sync-a — inače
- * bi se nova kampanja pojavila tek kad već ima potrošnju, i taj prvi dan
- * bi otišao pod "Nemapirano".
+ * Učitaj sve kampanje sa SVIH podešenih Meta naloga (1 ili 2 — vidi
+ * configuredAccounts) i one bez ijedne potrošnje u zadnje vrijeme, da
+ * admin ima šta mapirati PRIJE prvog sync-a — inače bi se nova kampanja
+ * pojavila tek kad već ima potrošnju, i taj prvi dan bi otišao pod
+ * "Nemapirano". ID kampanje je jedinstven na cijelom Meta-i, pa se
+ * kampanje sa dva naloga nikad ne sudare.
  */
 export async function refreshCampaignList(): Promise<
   { ok: true; count: number } | { ok: false; error: string }
 > {
-  const res = await listMetaCampaigns();
-  if (!res.ok || !res.data) return { ok: false, error: res.error ?? "greška" };
-  await upsertCampaignNames(res.data.map((c) => ({ id: c.id, name: c.name })));
-  return { ok: true, count: res.data.length };
+  const accounts = configuredAccounts();
+  if (!accounts.length) return { ok: false, error: "Meta nalog nije podešen." };
+
+  const all: { id: string; name: string }[] = [];
+  const errors: string[] = [];
+  for (const creds of accounts) {
+    const res = await listMetaCampaigns(creds);
+    if (!res.ok || !res.data) {
+      errors.push(`Nalog ${creds.slot}: ${res.error ?? "greška"}`);
+      continue;
+    }
+    all.push(...res.data.map((c) => ({ id: c.id, name: c.name })));
+  }
+  if (!all.length) return { ok: false, error: errors.join(" | ") || "greška" };
+
+  await upsertCampaignNames(all);
+  return { ok: true, count: all.length };
 }
 
 export interface SyncSummary {
@@ -30,16 +50,30 @@ export interface SyncSummary {
 }
 
 /**
- * Povuci dnevnu potrošnju za [since, until] i upiši u ad_spend, po
- * proizvodu iz mapiranja. Idempotentno — vidi upsertMetaAdSpend.
+ * Povuci dnevnu potrošnju za [since, until] sa SVIH podešenih Meta
+ * naloga (1 ili 2) i upiši u ad_spend, po proizvodu iz mapiranja.
+ * Idempotentno — vidi upsertMetaAdSpend. Ako jedan nalog padne (npr.
+ * token istekao) a drugi radi, nastavlja se sa onim što je uspjelo —
+ * ne obara cijeli sync zbog jednog naloga.
  */
 export async function syncMetaSpend(
   since: string,
   until: string
 ): Promise<{ ok: true; summary: SyncSummary } | { ok: false; error: string }> {
-  const res = await fetchMetaDailySpend(since, until);
-  if (!res.ok || !res.data) return { ok: false, error: res.error ?? "greška" };
-  const rows = res.data;
+  const accounts = configuredAccounts();
+  if (!accounts.length) return { ok: false, error: "Meta nalog nije podešen." };
+
+  const rows: MetaDaySpend[] = [];
+  const errors: string[] = [];
+  for (const creds of accounts) {
+    const res = await fetchMetaDailySpend(creds, since, until);
+    if (!res.ok || !res.data) {
+      errors.push(`Nalog ${creds.slot}: ${res.error ?? "greška"}`);
+      continue;
+    }
+    rows.push(...res.data);
+  }
+  if (!rows.length && errors.length) return { ok: false, error: errors.join(" | ") };
 
   let mapping = await listCampaignMap();
   let byId = new Map(mapping.map((m) => [m.campaignId, m.productName]));

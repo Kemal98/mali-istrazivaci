@@ -15,14 +15,36 @@ import "server-only";
 const API_VERSION = "v21.0";
 const BASE = `https://graph.facebook.com/${API_VERSION}`;
 
-function accountId(): string | null {
-  const raw = process.env.META_AD_ACCOUNT_ID;
-  if (!raw) return null;
-  return raw.startsWith("act_") ? raw : `act_${raw}`;
+export interface MetaAccountCreds {
+  /** Samo za prikaz u greškama (koji nalog je pao) — "1" ili "2". */
+  slot: string;
+  accountId: string;
+  token: string;
 }
 
-function token(): string | null {
-  return process.env.META_ACCESS_TOKEN || null;
+function readAccount(idEnv: string, tokenEnv: string, slot: string): MetaAccountCreds | null {
+  const rawId = process.env[idEnv];
+  const t = process.env[tokenEnv];
+  if (!rawId || !t) return null;
+  return {
+    slot,
+    accountId: rawId.startsWith("act_") ? rawId : `act_${rawId}`,
+    token: t,
+  };
+}
+
+/**
+ * Nalozi koji su trenutno podešeni (1 ili 2) — drugi je za prelazak na
+ * novi ad nalog BEZ gašenja starog usput (isti razlog kao i drugi Meta
+ * Pixel): dok oba rade, potrošnja sa oba se sabira po istom proizvodu.
+ */
+export function configuredAccounts(): MetaAccountCreds[] {
+  const out: MetaAccountCreds[] = [];
+  const a1 = readAccount("META_AD_ACCOUNT_ID", "META_ACCESS_TOKEN", "1");
+  if (a1) out.push(a1);
+  const a2 = readAccount("META_AD_ACCOUNT_ID_2", "META_ACCESS_TOKEN_2", "2");
+  if (a2) out.push(a2);
+  return out;
 }
 
 export interface MetaResult<T> {
@@ -31,21 +53,19 @@ export interface MetaResult<T> {
   error?: string;
 }
 
-/** Da li su oba env-a postavljena — UI koristi ovo da zna prikazati li dugme. */
+/** Da li je BAR JEDAN nalog podešen — UI koristi ovo da zna prikazati li dugme. */
 export function metaConfigured(): boolean {
-  return Boolean(token() && accountId());
+  return configuredAccounts().length > 0;
 }
 
-async function graphGet<T>(path: string, params: Record<string, string>): Promise<MetaResult<T>> {
-  const t = token();
-  const acc = accountId();
-  if (!t || !acc) {
-    return { ok: false, error: "META_ACCESS_TOKEN / META_AD_ACCOUNT_ID nisu postavljeni." };
-  }
-
-  const url = new URL(`${BASE}/${path.replace("{account}", acc)}`);
+async function graphGet<T>(
+  creds: MetaAccountCreds,
+  path: string,
+  params: Record<string, string>
+): Promise<MetaResult<T>> {
+  const url = new URL(`${BASE}/${path.replace("{account}", creds.accountId)}`);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  url.searchParams.set("access_token", t);
+  url.searchParams.set("access_token", creds.token);
 
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 15000);
@@ -72,8 +92,10 @@ export interface MetaCampaign {
 }
 
 /** Sve kampanje na nalogu (aktivne i pauzirane — mapiranje treba obje). */
-export async function listMetaCampaigns(): Promise<MetaResult<MetaCampaign[]>> {
-  const res = await graphGet<{ data: MetaCampaign[] }>("{account}/campaigns", {
+export async function listMetaCampaigns(
+  creds: MetaAccountCreds
+): Promise<MetaResult<MetaCampaign[]>> {
+  const res = await graphGet<{ data: MetaCampaign[] }>(creds, "{account}/campaigns", {
     fields: "id,name,status",
     limit: "200",
   });
@@ -94,12 +116,13 @@ export interface MetaDaySpend {
  * jedan poziv pokrije i "povuci zadnjih 7 dana" i "samo juče".
  */
 export async function fetchMetaDailySpend(
+  creds: MetaAccountCreds,
   since: string,
   until: string
 ): Promise<MetaResult<MetaDaySpend[]>> {
   const res = await graphGet<{
     data: { campaign_id: string; campaign_name: string; spend: string; date_start: string }[];
-  }>("{account}/insights", {
+  }>(creds, "{account}/insights", {
     level: "campaign",
     fields: "campaign_id,campaign_name,spend",
     time_increment: "1",
