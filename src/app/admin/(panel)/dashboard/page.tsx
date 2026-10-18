@@ -607,7 +607,9 @@ export default async function DashboardPage({
             <ProductProfitTable rows={profit.rows} byDay={productDays} />
             <p className="adm-hint" style={{ marginTop: 8 }}>
               Klikni na proizvod da vidiš potrošnju/zaradu dan-po-dan za
-              izabrani period.
+              izabrani period. <b>Treba još</b> = koliko komada tog proizvoda
+              treba prodati (po dosadašnjoj marži) da reklame koje su na
+              njega potrošene budu pokrivene.
             </p>
           </>
         ) : (

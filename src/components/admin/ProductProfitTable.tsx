@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ProfitRow, DayProfit } from "@/lib/orders/profit";
+import { breakEven } from "@/lib/orders/breakEven";
 
 const km = (v: number) => `${v.toLocaleString("bs-BA")} KM`;
 
@@ -24,7 +25,7 @@ export default function ProductProfitTable({
 
   return (
     <div className="adm-table-wrap" style={{ border: "none", marginTop: 14 }}>
-      <table className="adm-table" style={{ minWidth: 720 }}>
+      <table className="adm-table" style={{ minWidth: 820 }}>
         <thead>
           <tr>
             <th>Proizvod</th>
@@ -33,6 +34,7 @@ export default function ProductProfitTable({
             <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Nabavna</th>
             <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Reklame</th>
             <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Zarada</th>
+            <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Treba još</th>
             <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Po narudž.</th>
             <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Na stanju</th>
           </tr>
@@ -75,6 +77,16 @@ export default function ProductProfitTable({
                       {km(p.profit)}
                     </b>
                   </td>
+                  <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                    {(() => {
+                      const be = breakEven(p);
+                      if (be.kind === "covered")
+                        return <span style={{ color: "#148a4b" }}>✅ pokriveno</span>;
+                      if (be.kind === "none")
+                        return <span className="adm-hint">— nema marže</span>;
+                      return <b style={{ color: "#b7791f" }}>{be.units} kom</b>;
+                    })()}
+                  </td>
                   <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
                     {p.orders ? km(Math.round((p.profit / p.orders) * 100) / 100) : "—"}
                   </td>
@@ -84,7 +96,7 @@ export default function ProductProfitTable({
                 </tr>
                 {isOpen ? (
                   <tr key={`${p.productName}-days`}>
-                    <td colSpan={8} style={{ padding: 0, background: "#f8f8f6" }}>
+                    <td colSpan={9} style={{ padding: 0, background: "#f8f8f6" }}>
                       <table className="adm-table" style={{ minWidth: 0, width: "100%" }}>
                         <thead>
                           <tr>

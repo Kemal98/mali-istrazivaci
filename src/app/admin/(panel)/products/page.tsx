@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listProducts, listTemplates } from "@/lib/cms/repo";
 import { profitAsIfSold } from "@/lib/orders/profit";
+import { breakEven } from "@/lib/orders/breakEven";
 import ProductsTable from "@/components/admin/ProductsTable";
 import NewProductButton from "@/components/admin/NewProductButton";
 import ImportProductButton from "@/components/admin/ImportProductButton";
@@ -46,7 +47,7 @@ export default async function ProductsPage() {
             <Link href="/admin/dashboard">Dashboard</Link>.
           </p>
           <div className="adm-table-wrap" style={{ border: "none" }}>
-            <table className="adm-table" style={{ minWidth: 620 }}>
+            <table className="adm-table" style={{ minWidth: 720 }}>
               <thead>
                 <tr>
                   <th>Proizvod</th>
@@ -54,6 +55,7 @@ export default async function ProductsPage() {
                   <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Reklame</th>
                   <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Nabavna</th>
                   <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Zarada</th>
+                  <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Treba još</th>
                 </tr>
               </thead>
               <tbody>
@@ -79,6 +81,16 @@ export default async function ProductsPage() {
                       <b style={{ color: p.profit >= 0 ? "#148a4b" : "#b3261e" }}>
                         {km(p.profit)}
                       </b>
+                    </td>
+                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                      {(() => {
+                        const be = breakEven(p);
+                        if (be.kind === "covered")
+                          return <span style={{ color: "#148a4b" }}>✅ pokriveno</span>;
+                        if (be.kind === "none")
+                          return <span className="adm-hint">— nema marže</span>;
+                        return <b style={{ color: "#b7791f" }}>{be.units} kom</b>;
+                      })()}
                     </td>
                   </tr>
                 ))}
