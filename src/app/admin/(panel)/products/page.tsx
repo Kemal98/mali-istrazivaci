@@ -35,6 +35,9 @@ export default async function ProductsPage() {
         <div className="adm-head-actions">
           <ImportProductButton />
           <NewProductButton templates={templates} products={products} />
+          <Link className="adm-btn" href="/admin/products/obrisani">
+            🗑 OBRISANI PROIZVODI
+          </Link>
         </div>
       </div>
 

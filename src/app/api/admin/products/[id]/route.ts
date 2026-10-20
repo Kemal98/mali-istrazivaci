@@ -4,6 +4,7 @@ import {
   duplicateProduct,
   getProduct,
   publishProduct,
+  restoreProduct,
   softDeleteProduct,
   unpublishProduct,
   updateProduct,
@@ -85,6 +86,12 @@ export async function POST(request: Request, { params }: Ctx) {
     const copy = await duplicateProduct(id);
     if (!copy) return NextResponse.json({ error: "Nema proizvoda." }, { status: 404 });
     return NextResponse.json({ product: copy });
+  }
+
+  if (action === "restore") {
+    const product = await restoreProduct(id);
+    if (!product) return NextResponse.json({ error: "Nema obrisanog proizvoda." }, { status: 404 });
+    return NextResponse.json({ product });
   }
 
   return NextResponse.json({ error: "Nepoznata akcija." }, { status: 400 });

@@ -357,9 +357,32 @@ export async function duplicateProduct(id: string): Promise<Product | null> {
 export async function softDeleteProduct(id: string): Promise<string | null> {
   const p = await getProduct(id);
   if (!p) return null;
+  const now = nowIso();
   await sql()`
-    UPDATE products SET deleted_at = ${nowIso()}, status = 'draft' WHERE id = ${id}`;
+    UPDATE products SET deleted_at = ${now}, updated_at = ${now}, status = 'draft'
+     WHERE id = ${id}`;
   return p.slug;
+}
+
+/** Obrisani proizvodi (zadnjih 200) — za stranicu "Obrisani proizvodi". */
+export async function listDeletedProducts(limit = 200): Promise<Product[]> {
+  const rows = await sql()<Row[]>`
+    SELECT * FROM products WHERE deleted_at IS NOT NULL
+     ORDER BY deleted_at DESC LIMIT ${limit}`;
+  return rows.map(rowToProduct);
+}
+
+/**
+ * Vrati obrisani proizvod — `getProduct` ga ne vidi (filtrira
+ * deleted_at), zato se ovdje čita direktno. Status ostaje kakav je bio
+ * (obično "draft", jer ga je i softDeleteProduct tako ostavio) — vraćanje
+ * NE objavljuje stranicu nazad, admin to radi svjesno preko "Objavi".
+ */
+export async function restoreProduct(id: string): Promise<Product | null> {
+  const rows = await sql()<Row[]>`
+    UPDATE products SET deleted_at = NULL WHERE id = ${id} AND deleted_at IS NOT NULL
+    RETURNING *`;
+  return rows[0] ? rowToProduct(rows[0]) : null;
 }
 
 export async function productStats() {
