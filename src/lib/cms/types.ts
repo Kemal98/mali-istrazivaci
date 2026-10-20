@@ -70,6 +70,14 @@ export interface Hero {
   prikaziPovjerenje?: boolean;
   /** Tekst na fiksnom dugmetu koje se pojavi pri dnu ekrana dok se skrola (mobitel). Prazno = "Poruči sada". */
   stickyCtaTekst?: string;
+  /**
+   * Poruke "oskudice" (urgentnost) iznad dugmeta — npr. "Ostalo je samo
+   * par komada po ovoj cijeni". Prazno = ništa se ne prikazuje. Kad ima
+   * više poruka, rotiraju se automatski svaka 2 sata (vidi
+   * currentOskudicaPoruka u CmsHero.tsx) — ista poruka za sve posjetioce
+   * u tom periodu, ne nasumično po posjeti.
+   */
+  oskudicaPoruke?: string[];
 }
 
 export interface Seo {
@@ -178,6 +186,7 @@ export function defaultHero(): Hero {
     prikaziCtaPodtekst: false,
     ctaPodtekst: "Plaćanje pouzećem, pouzdana kupovina",
     alt: "",
+    oskudicaPoruke: [],
   };
 }
 

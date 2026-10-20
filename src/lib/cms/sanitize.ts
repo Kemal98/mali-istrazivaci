@@ -114,6 +114,7 @@ export function sanitizeHero(v: unknown): Hero {
     alt: str(raw.alt),
     prikaziPovjerenje: bool(raw.prikaziPovjerenje),
     stickyCtaTekst: str(raw.stickyCtaTekst, 40),
+    oskudicaPoruke: strList(raw.oskudicaPoruke, 10),
   };
 }
 

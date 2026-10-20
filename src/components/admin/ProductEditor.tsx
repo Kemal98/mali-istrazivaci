@@ -7,7 +7,15 @@ import MediaField from "./MediaField";
 import PageBuilder from "./PageBuilder";
 import PopuniIzClaudea from "./PopuniIzClaudea";
 import ReviewsPanel from "./ReviewsPanel";
-import { NumberField, RichTextArea, SelectField, TextArea, TextField, Toggle } from "./fields";
+import {
+  NumberField,
+  RichTextArea,
+  SelectField,
+  StringList,
+  TextArea,
+  TextField,
+  Toggle,
+} from "./fields";
 import { slugify } from "@/lib/cms/slug";
 import type { Block, GlobalSettings, Hero, Product, Review, Seo } from "@/lib/cms/types";
 
@@ -699,6 +707,21 @@ export default function ProductEditor({
               hint={`Globalno: „${settings.placanjeTekst}, ${settings.dostavaTekst}".`}
             />
           ) : null}
+
+          <hr style={{ border: "none", borderTop: "1px solid #e3e5e9", margin: "14px 0" }} />
+
+          <StringList
+            label="Poruke oskudice/urgentnosti (iznad dugmeta)"
+            items={draft.hero.oskudicaPoruke ?? []}
+            onChange={(v) => patchHero({ oskudicaPoruke: v })}
+            addLabel="+ DODAJ PORUKU"
+            placeholder="npr. Ostalo je samo par komada po ovoj cijeni"
+          />
+          <p className="adm-hint" style={{ marginTop: -8 }}>
+            Prazno = ništa se ne prikazuje. Dvije ili više poruka = sama se
+            rotira svaka 2 sata (ista poruka za sve posjetioce u tom
+            periodu). Pazi da piše istinu — ne izmišljaj brojeve.
+          </p>
         </div>
       ) : null}
 

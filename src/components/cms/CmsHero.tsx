@@ -4,6 +4,18 @@ import RichText from "./RichText";
 import type { Hero } from "@/lib/cms/types";
 import { ocjene } from "@/lib/cms/plural";
 
+/**
+ * Jedna od `hero.oskudicaPoruke` — ista poruka za SVE posjetioce u istom
+ * dvosatnom bloku (ne nasumično po posjeti), da se ne čini da je
+ * izmišljena na licu mjesta. Mijenja se sama svaka 2 sata.
+ */
+function currentOskudicaPoruka(poruke: string[] | undefined): string | null {
+  if (!poruke || !poruke.length) return null;
+  const DVA_SATA_MS = 2 * 60 * 60 * 1000;
+  const idx = Math.floor(Date.now() / DVA_SATA_MS) % poruke.length;
+  return poruke[idx];
+}
+
 // Hero za CMS proizvode. Identične .dawn-* klase kao postojeće hero
 // sekcije (BlingerHero/RattleHero), pa je vizuelni identitet isti.
 export default function CmsHero({
@@ -19,6 +31,7 @@ export default function CmsHero({
   staraCijena: number | null;
   badge: string;
 }) {
+  const oskudicaPoruka = currentOskudicaPoruka(hero.oskudicaPoruke);
   return (
     <section className="dawn-product" id="top">
       <div className="dawn-col">
@@ -78,6 +91,8 @@ export default function CmsHero({
             ) : null}
           </div>
         ) : null}
+
+        {oskudicaPoruka ? <p className="dawn-oskudica">⚡ {oskudicaPoruka}</p> : null}
 
         <BookOrderTrigger className="dawn-btn-black dawn-btn-pulse">
           {hero.ctaTekst || "PORUČI SADA"}
