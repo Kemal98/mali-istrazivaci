@@ -167,6 +167,9 @@ export interface GlobalSettings {
   garancijaTekst: string;
   kontaktEmail: string;
   defaultCtaTekst: string;
+  /** Kad je true, cijeli javni sajt (ne admin) pokazuje "zatvoreno" stranicu — vidi proxy.ts. */
+  siteClosed?: boolean;
+  siteClosedMessage?: string;
   footerTekst: string;
 }
 

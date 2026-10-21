@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TextField } from "./fields";
+import { TextArea, TextField, Toggle } from "./fields";
 import type { GlobalSettings } from "@/lib/cms/types";
 
 export default function SettingsForm({
@@ -13,7 +13,7 @@ export default function SettingsForm({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
-  function set(k: keyof GlobalSettings, v: string) {
+  function set<K extends keyof GlobalSettings>(k: K, v: GlobalSettings[K]) {
     setS((x) => ({ ...x, [k]: v }));
     setMsg("");
   }
@@ -90,6 +90,46 @@ export default function SettingsForm({
           style={{ marginTop: 6 }}
         >
           {busy ? "Snimam…" : "SNIMI POSTAVKE"}
+        </button>
+      </div>
+
+      <div className="adm-card" style={{ borderColor: "#f6d5d0" }}>
+        <div className="adm-card-title" style={{ color: "#b3261e" }}>
+          ⚠️ Zatvori cijeli sajt
+        </div>
+        <p className="adm-hint" style={{ marginBottom: 14 }}>
+          Kad je uključeno, NIKO ne može otvoriti nijednu stranicu sajta
+          (samo ovaj admin ostaje dostupan) — umjesto toga vide poruku
+          ispod. Koristi za hitno zatvaranje, održavanje i sl.
+        </p>
+
+        <Toggle
+          label="Sajt je zatvoren za posjetioce"
+          value={Boolean(s.siteClosed)}
+          onChange={(v) => set("siteClosed", v)}
+        />
+
+        {s.siteClosed ? (
+          <TextArea
+            label="Poruka koju vide posjetioci"
+            value={s.siteClosedMessage ?? ""}
+            onChange={(v) => set("siteClosedMessage", v)}
+            rows={3}
+          />
+        ) : null}
+
+        <button
+          type="button"
+          className={s.siteClosed ? "adm-btn adm-btn-danger" : "adm-btn adm-btn-primary"}
+          onClick={save}
+          disabled={busy}
+          style={{ marginTop: 6 }}
+        >
+          {busy
+            ? "Snimam…"
+            : s.siteClosed
+              ? "SNIMI — SAJT ĆE SE ZATVORITI"
+              : "SNIMI POSTAVKE"}
         </button>
       </div>
     </>

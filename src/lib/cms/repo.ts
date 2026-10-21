@@ -584,6 +584,8 @@ const DEFAULT_SETTINGS: GlobalSettings = {
   kontaktEmail: "svijetistrazivaca@gmail.com",
   defaultCtaTekst: "PORUČI SADA",
   footerTekst: "© Mali Istraživači",
+  siteClosed: false,
+  siteClosedMessage: "Trenutno smo zatvoreni. Vraćamo se uskoro — hvala na strpljenju!",
 };
 
 export async function getSettings(): Promise<GlobalSettings> {
