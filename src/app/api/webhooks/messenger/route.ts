@@ -10,10 +10,12 @@ import { resolveSenderName } from "@/lib/messenger/graph";
  *  - POST: X-Hub-Signature-256 potpis (HMAC SHA-256 preko App Secret-a) —
  *          bez ovoga bi bilo ko mogao POST-ovati lažne "poruke" u bazu.
  *
- * Isti webhook URL i isti App Secret rade za OBA pretplatom (Messenger
- * "page" + Instagram "instagram" webhook subskripcija u istom FB App-u)
- * — payload oblik (entry[].messaging[]) je identičan, razlikuje se samo
- * `object` polje, pa se ovdje samo tagira koji je kanal u pitanju.
+ * Instagram (novi "Instagram Business Login" flow) ima SVOJ odvojeni
+ * App ID/App Secret, različit od glavnog Facebook App-a koji potpisuje
+ * Messenger "page" evente — zato se ovdje provjerava potpis protiv OBA
+ * poznata secreta (MESSENGER_APP_SECRET, INSTAGRAM_APP_SECRET), šta god
+ * se poklopi. Payload oblik (entry[].messaging[]) je inače identičan,
+ * razlikuje se samo `object` polje, pa se to koristi samo za tag kanala.
  */
 
 export async function GET(request: Request) {
@@ -33,16 +35,22 @@ export async function GET(request: Request) {
   return new Response("Forbidden", { status: 403 });
 }
 
-function validSignature(raw: string, signatureHeader: string | null): boolean {
-  const secret = process.env.MESSENGER_APP_SECRET;
-  // Bez podešenog secreta ne možemo provjeriti — radije odbij nego da
-  // tiho prihvatimo neprovjerene zahtjeve iz javnog interneta.
-  if (!secret || !signatureHeader) return false;
+function signatureMatches(raw: string, signatureHeader: string, secret: string): boolean {
   const expected =
     "sha256=" + crypto.createHmac("sha256", secret).update(raw).digest("hex");
   const a = Buffer.from(signatureHeader);
   const b = Buffer.from(expected);
   return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+function validSignature(raw: string, signatureHeader: string | null): boolean {
+  if (!signatureHeader) return false;
+  const secrets = [process.env.MESSENGER_APP_SECRET, process.env.INSTAGRAM_APP_SECRET].filter(
+    (s): s is string => Boolean(s)
+  );
+  // Bez ijednog podešenog secreta ne možemo provjeriti — radije odbij
+  // nego da tiho prihvatimo neprovjerene zahtjeve iz javnog interneta.
+  return secrets.some((secret) => signatureMatches(raw, signatureHeader, secret));
 }
 
 interface MessagingEvent {
