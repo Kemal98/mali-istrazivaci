@@ -1,6 +1,8 @@
 import { listMessengerMessages } from "@/lib/messenger/repo";
+import { backfillConfigured } from "@/lib/messenger/graph";
 import { datum } from "@/lib/cms/datum";
 import MarkMessengerRead from "@/components/admin/MarkMessengerRead";
+import BackfillMessenger from "@/components/admin/BackfillMessenger";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +34,16 @@ export default async function MessengerPage() {
           {unread > 0 ? <MarkMessengerRead /> : null}
         </div>
       </div>
+
+      {backfillConfigured() ? (
+        <div className="adm-card" style={{ marginBottom: 14 }}>
+          <BackfillMessenger />
+          <p className="adm-hint" style={{ marginTop: 8, marginBottom: 0 }}>
+            Povuče i poruke koje su stigle PRIJE nego je webhook podešen.
+            Sigurno je pokrenuti više puta — ne pravi duplikate.
+          </p>
+        </div>
+      ) : null}
 
       {messages.length === 0 ? (
         <div className="adm-empty" style={{ background: "#fff", borderRadius: 10 }}>
