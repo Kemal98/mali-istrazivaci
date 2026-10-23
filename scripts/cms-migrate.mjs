@@ -21,6 +21,7 @@ const schemaFiles = [
   path.join(process.cwd(), "src", "lib", "cms", "schema.sql"),
   path.join(process.cwd(), "src", "lib", "orders", "schema.sql"),
   path.join(process.cwd(), "src", "lib", "ads", "schema.sql"),
+  path.join(process.cwd(), "src", "lib", "messenger", "schema.sql"),
 ];
 
 const sql = postgres(conn, { prepare: false, max: 1, onnotice: () => {} });

@@ -58,10 +58,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Cron rute (Vercel Cron) rade i dok je sajt "zatvoren" — ne zavise
-  // od posjetilaca, i Meta potrošnja se i dalje treba pratiti.
-  const isCron = pathname.startsWith("/api/cron/");
-  if (!isCron && pathname !== "/zatvoreno" && (await isSiteClosed())) {
+  // Cron rute (Vercel Cron) i webhookovi (npr. Meta Messenger) rade i
+  // dok je sajt "zatvoren" — ne zavise od posjetilaca, i Meta zna zvati
+  // webhook bilo kad, nezavisno od toga da li je shop trenutno otvoren.
+  const bypassClosed =
+    pathname.startsWith("/api/cron/") || pathname.startsWith("/api/webhooks/");
+  if (!bypassClosed && pathname !== "/zatvoreno" && (await isSiteClosed())) {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json(
         { error: "Sajt je trenutno privremeno nedostupan." },

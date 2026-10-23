@@ -117,6 +117,17 @@
   text-align: center;
   font-size: 0.85rem;
 }
+.adm-nav-badge {
+  margin-left: auto;
+  background: var(--red, #dc2626);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  min-width: 16px;
+  text-align: center;
+}
 
 .adm-side-foot {
   margin-top: auto;

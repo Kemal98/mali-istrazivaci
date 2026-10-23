@@ -1,0 +1,83 @@
+import crypto from "node:crypto";
+import { insertMessengerMessage } from "@/lib/messenger/repo";
+import { resolveSenderName } from "@/lib/messenger/graph";
+
+/**
+ * Meta Messenger webhook — JAVNA ruta (Meta je zove, ne naš admin), pa
+ * nema proxy.ts zaštitu. Umjesto session cookieja, provjerava se:
+ *  - GET:  hub.verify_token (jednokratna provjera pri podešavanju webhooka)
+ *  - POST: X-Hub-Signature-256 potpis (HMAC SHA-256 preko App Secret-a) —
+ *          bez ovoga bi bilo ko mogao POST-ovati lažne "poruke" u bazu.
+ */
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const mode = url.searchParams.get("hub.mode");
+  const token = url.searchParams.get("hub.verify_token");
+  const challenge = url.searchParams.get("hub.challenge");
+
+  if (
+    mode === "subscribe" &&
+    challenge &&
+    token &&
+    token === process.env.MESSENGER_VERIFY_TOKEN
+  ) {
+    return new Response(challenge, { status: 200 });
+  }
+  return new Response("Forbidden", { status: 403 });
+}
+
+function validSignature(raw: string, signatureHeader: string | null): boolean {
+  const secret = process.env.MESSENGER_APP_SECRET;
+  // Bez podešenog secreta ne možemo provjeriti — radije odbij nego da
+  // tiho prihvatimo neprovjerene zahtjeve iz javnog interneta.
+  if (!secret || !signatureHeader) return false;
+  const expected =
+    "sha256=" + crypto.createHmac("sha256", secret).update(raw).digest("hex");
+  const a = Buffer.from(signatureHeader);
+  const b = Buffer.from(expected);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+interface MessagingEvent {
+  sender?: { id?: string };
+  timestamp?: number;
+  message?: { mid?: string; text?: string; is_echo?: boolean };
+}
+
+export async function POST(request: Request) {
+  const raw = await request.text();
+  if (!validSignature(raw, request.headers.get("x-hub-signature-256"))) {
+    return new Response("Invalid signature", { status: 401 });
+  }
+
+  const body = JSON.parse(raw) as {
+    object?: string;
+    entry?: { messaging?: MessagingEvent[] }[];
+  };
+  if (body.object !== "page") return new Response("ignored", { status: 200 });
+
+  for (const entry of body.entry ?? []) {
+    for (const event of entry.messaging ?? []) {
+      const text = event.message?.text;
+      const mid = event.message?.mid;
+      const psid = event.sender?.id;
+      // is_echo = poruka koju je STRANICA poslala (naš odgovor iz
+      // Page Inboxa), ne kupčeva — preskoči, ovo je inbox za PRIMLJENE.
+      if (!text || !mid || !psid || event.message?.is_echo) continue;
+
+      const senderName = await resolveSenderName(psid);
+      await insertMessengerMessage({
+        mid,
+        psid,
+        senderName,
+        text,
+        createdAt: event.timestamp
+          ? new Date(event.timestamp).toISOString()
+          : new Date().toISOString(),
+      });
+    }
+  }
+
+  return new Response("EVENT_RECEIVED", { status: 200 });
+}

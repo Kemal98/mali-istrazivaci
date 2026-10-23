@@ -9,6 +9,7 @@ const ITEMS = [
   { href: "/admin/orders", label: "NARUDŽBE", ico: "🧾" },
   { href: "/admin/ne-isporuceno", label: "NE ISPORUČENO", ico: "📵" },
   { href: "/admin/kupci", label: "KUPCI", ico: "👤" },
+  { href: "/admin/messenger", label: "MESSENGER", ico: "💬" },
   { href: "/admin/products", label: "PROIZVODI", ico: "▤" },
   { href: "/admin/troskovi", label: "TROŠKOVI REKLAMA", ico: "📣" },
   { href: "/admin/nabavka", label: "NABAVKA ROBE", ico: "📦" },
@@ -18,7 +19,11 @@ const ITEMS = [
   { href: "/admin/settings", label: "GLOBALNE POSTAVKE", ico: "⚙" },
 ];
 
-export default function AdminNav() {
+export default function AdminNav({
+  unreadMessenger = 0,
+}: {
+  unreadMessenger?: number;
+}) {
   const pathname = usePathname() || "";
   const router = useRouter();
 
@@ -38,12 +43,14 @@ export default function AdminNav() {
       <nav className="adm-nav">
         {ITEMS.map((it) => {
           const active = pathname.startsWith(it.href);
+          const badge = it.href === "/admin/messenger" ? unreadMessenger : 0;
           return (
             <Link key={it.href} href={it.href} data-active={active}>
               <span className="adm-nav-ico" aria-hidden="true">
                 {it.ico}
               </span>
               {it.label}
+              {badge > 0 ? <span className="adm-nav-badge">{badge}</span> : null}
             </Link>
           );
         })}
