@@ -26,6 +26,11 @@
   font-size: 14px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+  /* Sakrivena mobilna ladica (.adm-side, position:fixed + transform
+     translateX(-100%)) zna "proširiti" dokument udesno u nekim
+     browserima iako se vizuelno ne vidi — ovo garantuje da stranica
+     nikad ne dobije vodoravni scroll zbog toga. */
+  overflow-x: hidden;
 }
 
 .adm *,
