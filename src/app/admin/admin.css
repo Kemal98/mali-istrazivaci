@@ -138,6 +138,25 @@
   color: rgba(255, 255, 255, 0.45);
 }
 
+/* Mobilna traka (hamburger) i zatamnjenje iza otvorenog menija — oboje
+   sakriveno na desktopu, uključi se tek u @media ispod (900px). */
+.adm-mobile-bar {
+  display: none;
+}
+.adm-nav-toggle {
+  appearance: none;
+  border: none;
+  background: none;
+  color: #fff;
+  font-size: 1.3rem;
+  line-height: 1;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+.adm-nav-backdrop {
+  display: none;
+}
+
 .adm-main {
   flex: 1 1 auto;
   min-width: 0;
@@ -930,29 +949,65 @@
   max-width: 100%;
 }
 
+/* Ispod 900px: sidebar postaje puna ladica preko cijelog ekrana koja se
+   otvara/zatvara (umjesto da se stisne u red ikonica) — otvara se
+   dugmetom u .adm-mobile-bar, zatvara klikom na zatamnjeni pozadinski
+   sloj ili na sam link (vidi AdminNav.tsx). */
 @media (max-width: 900px) {
+  .adm-mobile-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 52px;
+    padding: 0 10px;
+    background: var(--brand);
+    color: #fff;
+    z-index: 220;
+  }
+  .adm-mobile-bar-title {
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    font-size: 0.85rem;
+  }
+
+  .adm-nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 230;
+  }
+
   .adm-shell {
     flex-direction: column;
   }
   .adm-side {
-    width: auto;
-    flex: 0 0 auto;
-    position: static;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-    overflow-x: auto;
-    padding: 12px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    max-width: 82vw;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    z-index: 240;
+    box-shadow: 2px 0 18px rgba(0, 0, 0, 0.25);
+  }
+  .adm-side[data-open="true"] {
+    transform: translateX(0);
   }
   .adm-nav {
-    flex-direction: row;
+    flex-direction: column;
   }
   .adm-side-foot {
-    margin: 0;
+    margin-top: auto;
   }
   .adm-main {
-    padding: 18px 14px 70px;
+    padding: 68px 14px 70px;
   }
   .adm-bar {
     margin: -18px -14px 16px;

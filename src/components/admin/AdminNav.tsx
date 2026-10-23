@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -26,6 +27,10 @@ export default function AdminNav({
 }) {
   const pathname = usePathname() || "";
   const router = useRouter();
+  // Meni na mobitelu je fiksna ladica (van ekrana dok se ne otvori) —
+  // na desktopu ovaj state se ne koristi (.adm-side je uvijek vidljiv
+  // preko CSS-a iznad 900px, vidi admin.css).
+  const [open, setOpen] = useState(false);
 
   async function logout() {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -34,36 +39,65 @@ export default function AdminNav({
   }
 
   return (
-    <aside className="adm-side">
-      <div className="adm-logo">
-        MALI ISTRAŽIVAČI
-        <small>ADMIN PANEL</small>
-      </div>
-
-      <nav className="adm-nav">
-        {ITEMS.map((it) => {
-          const active = pathname.startsWith(it.href);
-          const badge = it.href === "/admin/messenger" ? unreadMessenger : 0;
-          return (
-            <Link key={it.href} href={it.href} data-active={active}>
-              <span className="adm-nav-ico" aria-hidden="true">
-                {it.ico}
-              </span>
-              {it.label}
-              {badge > 0 ? <span className="adm-nav-badge">{badge}</span> : null}
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="adm-side-foot">
-        <a href="/" target="_blank" rel="noreferrer">
-          ↗ Otvori shop
-        </a>
-        <button type="button" className="adm-btn adm-btn-sm" onClick={logout}>
-          ODJAVI SE
+    <>
+      {/* Samo na mobitelu (CSS >900px ovo sakrije) — fiksna traka sa
+          dugmetom za otvaranje menija, pošto je .adm-side van ekrana. */}
+      <div className="adm-mobile-bar">
+        <button
+          type="button"
+          className="adm-nav-toggle"
+          onClick={() => setOpen(true)}
+          aria-label="Otvori meni"
+        >
+          ☰
         </button>
+        <span className="adm-mobile-bar-title">MALI ISTRAŽIVAČI</span>
       </div>
-    </aside>
+
+      {open ? (
+        <div
+          className="adm-nav-backdrop"
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+      ) : null}
+
+      <aside className="adm-side" data-open={open}>
+        <div className="adm-logo">
+          MALI ISTRAŽIVAČI
+          <small>ADMIN PANEL</small>
+        </div>
+
+        <nav className="adm-nav">
+          {ITEMS.map((it) => {
+            const active = pathname.startsWith(it.href);
+            const badge = it.href === "/admin/messenger" ? unreadMessenger : 0;
+            return (
+              <Link
+                key={it.href}
+                href={it.href}
+                data-active={active}
+                onClick={() => setOpen(false)}
+              >
+                <span className="adm-nav-ico" aria-hidden="true">
+                  {it.ico}
+                </span>
+                {it.label}
+                {badge > 0 ? <span className="adm-nav-badge">{badge}</span> : null}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="adm-side-foot">
+          <a href="/" target="_blank" rel="noreferrer">
+            ↗ Otvori shop
+          </a>
+          <button type="button" className="adm-btn adm-btn-sm" onClick={logout}>
+            ODJAVI SE
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
