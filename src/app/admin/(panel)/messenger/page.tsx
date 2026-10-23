@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { listMessengerMessages } from "@/lib/messenger/repo";
 import { backfillConfigured } from "@/lib/messenger/graph";
+import { listCustomerNameIndex } from "@/lib/orders/repo";
 import { datum } from "@/lib/cms/datum";
 import MarkMessengerRead from "@/components/admin/MarkMessengerRead";
 import BackfillMessenger from "@/components/admin/BackfillMessenger";
@@ -19,6 +21,10 @@ const PLATFORM_ICON: Record<string, string> = {
 export default async function MessengerPage() {
   const messages = await listMessengerMessages();
   const unread = messages.filter((m) => !m.readAt).length;
+  // Ime sa Messengera/Instagrama se poredi sa imenima iz narudžbi —
+  // nije savršeno (ljudi ponekad pišu ime malo drugačije), ali je
+  // najbolja dostupna veza (poruka ne nosi telefon).
+  const customerIndex = await listCustomerNameIndex();
 
   return (
     <>
@@ -60,28 +66,54 @@ export default async function MessengerPage() {
                 <th>Od</th>
                 <th>Poruka</th>
                 <th>Kad</th>
+                <th>Narudžbe</th>
               </tr>
             </thead>
             <tbody>
-              {messages.map((m) => (
-                <tr key={m.id} style={!m.readAt ? { background: "#fdf1dc" } : undefined}>
-                  <td title={m.platform === "instagram" ? "Instagram" : "Messenger"}>
-                    {PLATFORM_ICON[m.platform]}
-                  </td>
-                  <td style={{ whiteSpace: "nowrap" }}>
-                    <b>{m.senderName || "(nepoznato ime)"}</b>
-                    <div className="adm-hint">{m.psid}</div>
-                  </td>
-                  <td>{m.text}</td>
-                  <td className="adm-hint" style={{ whiteSpace: "nowrap" }}>
-                    {datum(m.createdAt)}
-                  </td>
-                </tr>
-              ))}
+              {messages.map((m) => {
+                const match = customerIndex.get(m.senderName.trim().toLowerCase());
+                return (
+                  <tr key={m.id} style={!m.readAt ? { background: "#fdf1dc" } : undefined}>
+                    <td title={m.platform === "instagram" ? "Instagram" : "Messenger"}>
+                      {PLATFORM_ICON[m.platform]}
+                    </td>
+                    <td style={{ whiteSpace: "nowrap" }}>
+                      <b>{m.senderName || "(nepoznato ime)"}</b>
+                      <div className="adm-hint">{m.psid}</div>
+                    </td>
+                    <td>{m.text}</td>
+                    <td className="adm-hint" style={{ whiteSpace: "nowrap" }}>
+                      {datum(m.createdAt)}
+                    </td>
+                    <td style={{ whiteSpace: "nowrap" }}>
+                      {match ? (
+                        <Link
+                          href={`/admin/orders?q=${encodeURIComponent(m.senderName)}`}
+                          title={`Zadnja narudžba: ${datum(match.lastOrderAt)}`}
+                        >
+                          <span style={{ color: "#148a4b", fontWeight: 700 }}>
+                            ✅ već naručivala ({match.ordersCount})
+                          </span>
+                        </Link>
+                      ) : (
+                        <span className="adm-hint">— nova osoba</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       )}
+      {messages.length > 0 ? (
+        <p className="adm-hint" style={{ marginTop: 8 }}>
+          <b>&quot;Već naručivala&quot;</b> poredi ime sa Messengera/Instagrama sa
+          imenima iz narudžbi — nije 100% pouzdano (ime se ponekad piše
+          malo drugačije), ali je dobar brz nagovještaj. Klik vodi na
+          njene narudžbe.
+        </p>
+      ) : null}
     </>
   );
 }

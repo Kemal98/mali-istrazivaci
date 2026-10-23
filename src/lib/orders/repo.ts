@@ -554,6 +554,45 @@ export async function listCustomers(
   };
 }
 
+export interface CustomerNameMatch {
+  ordersCount: number;
+  lastOrderAt: string;
+}
+
+/**
+ * Indeks "ime → broj narudžbi" preko SVIH kupaca (sve vrijeme), ključ
+ * je normalizovano ime (trim+lowercase). Namjena: Messenger/Instagram
+ * poruke nose samo ime (ne telefon), pa je ovo jedini praktičan način
+ * da se u adminu pokaže "ova osoba je već naručivala" uz tu poruku —
+ * nije 100% pouzdano (ime na Messengeru i ime pri narudžbi mogu malo
+ * da se razlikuju), ali je najbolja dostupna veza.
+ */
+export async function listCustomerNameIndex(): Promise<Map<string, CustomerNameMatch>> {
+  const rows = await sql()<Row[]>`
+    SELECT customer_name, COUNT(*) AS c, MAX(created_at) AS last
+      FROM orders
+     WHERE deleted_at IS NULL AND customer_name <> ''
+     GROUP BY customer_name`;
+
+  const map = new Map<string, CustomerNameMatch>();
+  for (const r of rows) {
+    const key = s(r.customer_name).trim().toLowerCase();
+    if (!key) continue;
+    const prev = map.get(key);
+    const c = n(r.c);
+    const last = s(r.last);
+    if (!prev) {
+      map.set(key, { ordersCount: c, lastOrderAt: last });
+    } else {
+      map.set(key, {
+        ordersCount: prev.ordersCount + c,
+        lastOrderAt: last > prev.lastOrderAt ? last : prev.lastOrderAt,
+      });
+    }
+  }
+  return map;
+}
+
 /**
  * Narudžbe koje sumnjamo da su greškom duplirane: isti kupac (po broju
  * telefona, ne po imenu — ime se zna malo razlikovati od narudžbe do
