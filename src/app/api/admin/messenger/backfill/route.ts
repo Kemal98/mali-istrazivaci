@@ -7,7 +7,12 @@ import { insertMessengerMessage } from "@/lib/messenger/repo";
  * poruka preko Conversations API — webhook hvata samo nove od momenta
  * podešavanja, ovo popuni i historiju. Idempotentno (isti `mid` UNIQUE
  * kao i webhook), pa se može pokrenuti više puta bez duplikata.
+ *
+ * Može potrajati (puno konverzacija = puno sekvencijalnih Graph API
+ * poziva) — Vercel default (10s) bi ovo zna prekinuti, zato maxDuration.
  */
+export const maxDuration = 60;
+
 export async function POST() {
   const res = await fetchAllConversationMessages();
   if (!res.ok) return NextResponse.json({ error: res.error }, { status: 502 });

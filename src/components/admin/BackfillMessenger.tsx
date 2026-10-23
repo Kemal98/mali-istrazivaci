@@ -11,15 +11,22 @@ export default function BackfillMessenger() {
   async function run() {
     setBusy(true);
     setMsg("");
-    const res = await fetch("/api/admin/messenger/backfill", { method: "POST" });
-    const data = await res.json().catch(() => ({}));
-    setBusy(false);
-    if (!res.ok) {
-      setMsg(data?.error || "Nije uspjelo.");
-      return;
+    try {
+      const res = await fetch("/api/admin/messenger/backfill", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setMsg(data?.error || "Nije uspjelo.");
+        return;
+      }
+      setMsg(`Pronađeno ${data.found}, upisano/ažurirano ${data.processed}.`);
+      router.refresh();
+    } catch {
+      // Nema veze sa internetom i sl. — ovo je jedino mjesto koje je
+      // ranije tiho puklo bez poruke (vidi "ništa ne piše" problem).
+      setMsg("Nema veze sa internetom. Pokušajte ponovo.");
+    } finally {
+      setBusy(false);
     }
-    setMsg(`Pronađeno ${data.found}, upisano/ažurirano ${data.processed}.`);
-    router.refresh();
   }
 
   return (
