@@ -1,7 +1,7 @@
 import "server-only";
 
 import { newId, nowIso, sql } from "@/lib/cms/db";
-import type { MessengerMessage } from "./types";
+import type { MessengerMessage, MessengerPlatform } from "./types";
 
 type Row = Record<string, unknown>;
 const s = (v: unknown) => (v === null || v === undefined ? "" : String(v));
@@ -15,6 +15,7 @@ function rowToMessage(r: Row): MessengerMessage {
     text: s(r.text),
     createdAt: s(r.created_at),
     readAt: r.read_at ? s(r.read_at) : null,
+    platform: r.platform === "instagram" ? "instagram" : "messenger",
   };
 }
 
@@ -28,11 +29,12 @@ export async function insertMessengerMessage(input: {
   senderName: string;
   text: string;
   createdAt: string;
+  platform: MessengerPlatform;
 }): Promise<void> {
   await sql()`
-    INSERT INTO messenger_messages (id, mid, psid, sender_name, text, created_at)
+    INSERT INTO messenger_messages (id, mid, psid, sender_name, text, created_at, platform)
     VALUES (${newId("mm")}, ${input.mid}, ${input.psid}, ${input.senderName},
-            ${input.text}, ${input.createdAt})
+            ${input.text}, ${input.createdAt}, ${input.platform})
     ON CONFLICT (mid) DO NOTHING`;
 }
 

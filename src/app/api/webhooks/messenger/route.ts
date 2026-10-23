@@ -3,11 +3,17 @@ import { insertMessengerMessage } from "@/lib/messenger/repo";
 import { resolveSenderName } from "@/lib/messenger/graph";
 
 /**
- * Meta Messenger webhook — JAVNA ruta (Meta je zove, ne naš admin), pa
- * nema proxy.ts zaštitu. Umjesto session cookieja, provjerava se:
+ * Meta Messenger + Instagram DM webhook — JAVNA ruta (Meta je zove, ne
+ * naš admin), pa nema proxy.ts zaštitu. Umjesto session cookieja,
+ * provjerava se:
  *  - GET:  hub.verify_token (jednokratna provjera pri podešavanju webhooka)
  *  - POST: X-Hub-Signature-256 potpis (HMAC SHA-256 preko App Secret-a) —
  *          bez ovoga bi bilo ko mogao POST-ovati lažne "poruke" u bazu.
+ *
+ * Isti webhook URL i isti App Secret rade za OBA pretplatom (Messenger
+ * "page" + Instagram "instagram" webhook subskripcija u istom FB App-u)
+ * — payload oblik (entry[].messaging[]) je identičan, razlikuje se samo
+ * `object` polje, pa se ovdje samo tagira koji je kanal u pitanju.
  */
 
 export async function GET(request: Request) {
@@ -55,15 +61,17 @@ export async function POST(request: Request) {
     object?: string;
     entry?: { messaging?: MessagingEvent[] }[];
   };
-  if (body.object !== "page") return new Response("ignored", { status: 200 });
+  const platform =
+    body.object === "instagram" ? "instagram" : body.object === "page" ? "messenger" : null;
+  if (!platform) return new Response("ignored", { status: 200 });
 
   for (const entry of body.entry ?? []) {
     for (const event of entry.messaging ?? []) {
       const text = event.message?.text;
       const mid = event.message?.mid;
       const psid = event.sender?.id;
-      // is_echo = poruka koju je STRANICA poslala (naš odgovor iz
-      // Page Inboxa), ne kupčeva — preskoči, ovo je inbox za PRIMLJENE.
+      // is_echo = poruka koju je STRANICA/profil poslala (naš odgovor),
+      // ne kupčeva — preskoči, ovo je inbox za PRIMLJENE.
       if (!text || !mid || !psid || event.message?.is_echo) continue;
 
       const senderName = await resolveSenderName(psid);
@@ -72,6 +80,7 @@ export async function POST(request: Request) {
         psid,
         senderName,
         text,
+        platform,
         createdAt: event.timestamp
           ? new Date(event.timestamp).toISOString()
           : new Date().toISOString(),
