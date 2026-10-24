@@ -2,9 +2,11 @@ import Link from "next/link";
 import { listProducts, listTemplates } from "@/lib/cms/repo";
 import { profitAsIfSold } from "@/lib/orders/profit";
 import { breakEven } from "@/lib/orders/breakEven";
+import { aiImportConfigured } from "@/lib/cms/aiImport";
 import ProductsTable from "@/components/admin/ProductsTable";
 import NewProductButton from "@/components/admin/NewProductButton";
 import ImportProductButton from "@/components/admin/ImportProductButton";
+import AiImportButton from "@/components/admin/AiImportButton";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +35,7 @@ export default async function ProductsPage() {
           <p>Sve proizvod-stranice shopa. Nacrti se javno ne vide.</p>
         </div>
         <div className="adm-head-actions">
+          {aiImportConfigured() ? <AiImportButton /> : null}
           <ImportProductButton />
           <NewProductButton templates={templates} products={products} />
           <Link className="adm-btn" href="/admin/products/obrisani">
