@@ -3,7 +3,6 @@ import "server-only";
 import { createProduct, updateProduct } from "./repo";
 import { scrapeProductPage, type ScrapeResult } from "./scrape";
 import { SABLONI, napraviPrompt, popuniStranicu, sablonHero, sablonSekcije } from "./sabloni";
-import type { Block } from "./types";
 
 /**
  * "AI uvoz proizvoda" — jedan korak umjesto dva: link + izabrani šablon
@@ -12,9 +11,9 @@ import type { Block } from "./types";
  * se poziv Claude-u radi ovdje server-side preko API ključa, ne kroz
  * kopiranje između admina i Claude chata).
  *
- * Slike se NE generišu AI-jem — koriste se STVARNE slike pronađene na
- * izvornoj stranici (isti scraper kao "Uvezi sa linka"), raspoređene u
- * slika/gif mjesta iz šablona po redoslijedu; višak ide u hero galeriju.
+ * Slike se NAMJERNO ne diraju — ni hero, ni slika/gif mjesta u šablonu.
+ * Admin ih uvijek sam ručno bira u editoru (na izričit zahtjev — ranije
+ * je ovo automatski navlačilo slike sa izvora, nije se koristilo).
  */
 
 const MODEL = "claude-sonnet-5-5";
@@ -82,35 +81,14 @@ async function callClaude(
   }
 }
 
-/** Jedna slika koja čeka skidanje — isti oblik koji importProductImages već prima. */
-interface PendingImage {
-  sourceUrl: string;
-  blockId?: string;
-}
-
-/** Rasporedi pronađene slike u slika/gif mjesta iz šablona, po redoslijedu; višak -> hero galerija. */
-function buildPendingImages(sections: Block[], images: string[]): PendingImage[] {
-  const slots = sections.filter((s) => s.type === "slika" || s.type === "gif");
-  const pending: PendingImage[] = [];
-  let i = 0;
-  for (; i < slots.length && i < images.length; i++) {
-    pending.push({ sourceUrl: images[i], blockId: slots[i].id });
-  }
-  for (; i < images.length; i++) pending.push({ sourceUrl: images[i] });
-  return pending;
-}
-
 export interface AiImportResult {
   ok: boolean;
   error?: string;
   productId?: string;
-  pending?: PendingImage[];
   popunjeno?: string[];
   nedostaje?: string[];
   /** Nacrt je napravljen, ali AI popunjavanje nije uspjelo — admin dovršava ručno. */
   aiError?: string;
-  /** Naslov sa izvora — koristi se kao alt tekst na skinutim slikama. */
-  title?: string;
   /** Claude-ov odgovor je dosegao max_tokens — zadnja sekcija (U_KUTIJI/NAPOMENA) je možda skraćena. */
   truncated?: boolean;
 }
@@ -126,12 +104,9 @@ export async function aiImportProduct(
   if (!scraped.ok) return { ok: false, error: scraped.error };
 
   const product = await createProduct({ naziv: scraped.title || def.naziv });
-  const hero = { ...sablonHero(scraped.title || product.naziv), alt: scraped.title || "" };
+  const hero = sablonHero(scraped.title || product.naziv);
   const sections = sablonSekcije(def);
   await updateProduct(product.id, { hero, sections });
-
-  const images = (scraped.images ?? []).slice(0, 8);
-  const pending = buildPendingImages(sections, images);
 
   const prompt = napraviPrompt(sections).replace(
     "[OVDJE ZALIJEPI LINK ILI OPIS PROIZVODA]",
@@ -140,7 +115,7 @@ export async function aiImportProduct(
 
   const ai = await callClaude(prompt);
   if (!ai.ok) {
-    return { ok: true, productId: product.id, pending, aiError: ai.error, title: scraped.title };
+    return { ok: true, productId: product.id, aiError: ai.error };
   }
 
   const result = popuniStranicu(ai.text, hero, sections);
@@ -157,10 +132,8 @@ export async function aiImportProduct(
   return {
     ok: true,
     productId: product.id,
-    pending,
     popunjeno: result.popunjeno,
     nedostaje: result.nedostaje,
-    title: scraped.title,
     truncated: ai.truncated,
   };
 }

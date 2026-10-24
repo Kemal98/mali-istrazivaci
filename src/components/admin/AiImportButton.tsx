@@ -41,7 +41,6 @@ export default function AiImportButton() {
         return;
       }
       const params = new URLSearchParams();
-      if (data.imagesQueued) params.set("uvozSlika", String(data.imagesQueued));
       if (data.truncated) params.set("uvozUpozorenje", "1");
       const q = params.toString() ? `?${params.toString()}` : "";
       router.push(`/admin/products/${data.productId}${q}`);
@@ -73,8 +72,8 @@ export default function AiImportButton() {
             <h2>AI uvoz proizvoda</h2>
             <p className="adm-hint" style={{ marginBottom: 16 }}>
               Zalijepi link dobavljača i izaberi šablon — Claude sam napravi
-              naslov, tekst i rasporedi pronađene slike. Ništa se ne
-              objavljuje automatski, nacrt pregledaš i doradiš u editoru.
+              naslov i tekst (slike NE dira, dodaješ ih sam u editoru).
+              Ništa se ne objavljuje automatski, nacrt pregledaš i doradiš.
             </p>
 
             {error ? <div className="adm-note adm-note-err">{error}</div> : null}
