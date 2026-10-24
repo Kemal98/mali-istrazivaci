@@ -16,7 +16,15 @@ import { resolveSenderName } from "@/lib/messenger/graph";
  * poznata secreta (MESSENGER_APP_SECRET, INSTAGRAM_APP_SECRET), šta god
  * se poklopi. Payload oblik (entry[].messaging[]) je inače identičan,
  * razlikuje se samo `object` polje, pa se to koristi samo za tag kanala.
+ *
+ * PAUZIRANO (24.10.2026, na izričit zahtjev) — admin ne želi trenutni
+ * izgled/sistem inboxa, vratićemo se na doradu kasnije. Dolazne poruke
+ * se i dalje PRIHVATAJU (Meta ne dobija grešku/ne gasi webhook), ali se
+ * NE upisuju u bazu dok je MESSENGER_INBOX_PAUSED === true. Admin link
+ * u meniju je uklonjen (vidi AdminNav.tsx) — sve ostalo (tabela, kod)
+ * ostaje netaknuto za lakše vraćanje.
  */
+const MESSENGER_INBOX_PAUSED = true;
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -60,6 +68,8 @@ interface MessagingEvent {
 }
 
 export async function POST(request: Request) {
+  if (MESSENGER_INBOX_PAUSED) return new Response("paused", { status: 200 });
+
   const raw = await request.text();
   if (!validSignature(raw, request.headers.get("x-hub-signature-256"))) {
     return new Response("Invalid signature", { status: 401 });
