@@ -286,9 +286,11 @@ Proizvod (link ili opis): [OVDJE ZALIJEPI LINK ILI OPIS PROIZVODA]
 Pravila:
 - Piši na bosanskom jeziku, ijekavica, jednostavno i toplo, kao roditelj roditelju.
 - Konkretno: mjere, materijali, brojevi. Bez praznih pridjeva („vrhunski“, „revolucionarni“, „najbolji“).
+- Kratke, udarne rečenice — ne duže od dva reda. Jedna misao po rečenici, ne nabrajanje u istoj rečenici.
+- Naslovi sekcija (NASLOV, PROBLEM_NASLOV, ZASTO_NASLOV) neka budu jaki i konkretni, kao slogan — ne opisna etiketa. Npr. „Kad dijete traži da mu smisliš igru“, ne „Problem roditelja“.
 - Test: ako bi rečenica mogla stajati na tuđem proizvodu, prepiši je.
 - Ništa ne izmišljaj. Ako podatak (materijal, certifikat, uzrast) nije u izvoru, izostavi ga.
-- Bez medicinskih tvrdnji, bez zastrašivanja, bez lažne hitnosti.
+- Bez medicinskih tvrdnji, bez zastrašivanja, bez lažne hitnosti (ne izmišljaj "ostalo je još X komada" ni slične tvrdnje).
 - Ne spominji cijenu, dostavu ni povrat — to stranica već prikazuje.
 
 Vrati SAMO redove u ovom formatu, bez ikakvog drugog teksta, bez markdowna, svaki red počinje ključem velikim slovima i dvotačkom:
