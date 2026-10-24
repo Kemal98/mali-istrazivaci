@@ -40,5 +40,6 @@ export async function POST(request: Request) {
     popunjeno: res.popunjeno ?? [],
     nedostaje: res.nedostaje ?? [],
     aiError: res.aiError,
+    truncated: res.truncated ?? false,
   });
 }

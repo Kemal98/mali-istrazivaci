@@ -38,7 +38,7 @@ function scrapedContentForPrompt(scraped: ScrapeResult): string {
 
 async function callClaude(
   prompt: string
-): Promise<{ ok: true; text: string } | { ok: false; error: string }> {
+): Promise<{ ok: true; text: string; truncated: boolean } | { ok: false; error: string }> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return { ok: false, error: "ANTHROPIC_API_KEY nije postavljen." };
 
@@ -55,7 +55,11 @@ async function callClaude(
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 2000,
+        // Dovoljno prostora za CIJELU stranicu (naslov + svi blokovi) —
+        // premalo ovdje znači da Claude prekine odgovor NA POLA RIJEČI
+        // (viđeno uživo: "1x Cr" umjesto "1x Crawly Crab igračka"), što
+        // pokvari baš zadnji dio stranice bez ikakve vidljive greške.
+        max_tokens: 4096,
         messages: [{ role: "user", content: prompt }],
       }),
     });
@@ -69,7 +73,7 @@ async function callClaude(
       .map((b: { text?: string }) => b.text ?? "")
       .join("\n");
     if (!text.trim()) return { ok: false, error: "Claude je vratio prazan odgovor." };
-    return { ok: true, text };
+    return { ok: true, text, truncated: json.stop_reason === "max_tokens" };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return { ok: false, error: /abort/i.test(msg) ? "Claude ne odgovara (timeout)." : msg };
@@ -107,6 +111,8 @@ export interface AiImportResult {
   aiError?: string;
   /** Naslov sa izvora — koristi se kao alt tekst na skinutim slikama. */
   title?: string;
+  /** Claude-ov odgovor je dosegao max_tokens — zadnja sekcija (U_KUTIJI/NAPOMENA) je možda skraćena. */
+  truncated?: boolean;
 }
 
 export async function aiImportProduct(
@@ -138,7 +144,15 @@ export async function aiImportProduct(
   }
 
   const result = popuniStranicu(ai.text, hero, sections);
-  await updateProduct(product.id, { hero: result.hero, sections: result.sections });
+  // Admin-naziv (lista proizvoda, slug već postoji pa se ne mijenja) se
+  // sinhronizuje sa AI-prevedenim naslovom — bez ovoga ostaje engleski
+  // naziv sa izvora (npr. "The Crawly Crab™") iako je stranica na bosanskom.
+  const noviNaziv = result.hero.naslovLinija1 || product.naziv;
+  await updateProduct(product.id, {
+    naziv: noviNaziv,
+    hero: result.hero,
+    sections: result.sections,
+  });
 
   return {
     ok: true,
@@ -147,6 +161,7 @@ export async function aiImportProduct(
     popunjeno: result.popunjeno,
     nedostaje: result.nedostaje,
     title: scraped.title,
+    truncated: ai.truncated,
   };
 }
 

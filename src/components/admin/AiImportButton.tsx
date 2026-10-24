@@ -40,7 +40,10 @@ export default function AiImportButton() {
         setBusy(false);
         return;
       }
-      const q = data.imagesQueued ? `?uvozSlika=${data.imagesQueued}` : "";
+      const params = new URLSearchParams();
+      if (data.imagesQueued) params.set("uvozSlika", String(data.imagesQueued));
+      if (data.truncated) params.set("uvozUpozorenje", "1");
+      const q = params.toString() ? `?${params.toString()}` : "";
       router.push(`/admin/products/${data.productId}${q}`);
     } catch {
       setError("Nema veze sa internetom. Pokušajte ponovo.");

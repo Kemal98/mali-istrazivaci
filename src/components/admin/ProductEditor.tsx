@@ -93,9 +93,16 @@ export default function ProductEditor({
   // pročita se iz URL-a (?uvozSlika=N), ne iz propsa, jer se productId
   // ne mijenja ali sadržaj hoće kad admin osvježi.
   const [uvozNajava, setUvozNajava] = useState(0);
+  // Isti razlog kao gore — "AI uvoz" (vidi AiImportButton) javlja preko
+  // URL-a ako je Claude-ov odgovor dosegao limit dužine, pa je ZADNJA
+  // sekcija šablona (obično "Šta stiže u kutiji") možda skraćena na pola
+  // riječi — admin treba to ručno provjeriti/doraditi.
+  const [uvozUpozorenje, setUvozUpozorenje] = useState(false);
   useEffect(() => {
-    const n = Number(new URLSearchParams(window.location.search).get("uvozSlika"));
+    const params = new URLSearchParams(window.location.search);
+    const n = Number(params.get("uvozSlika"));
     if (n > 0) setUvozNajava(n);
+    if (params.get("uvozUpozorenje") === "1") setUvozUpozorenje(true);
   }, []);
 
   const patch = useCallback((p: Partial<Draft>) => {
@@ -346,6 +353,15 @@ export default function ProductEditor({
           Uvoz u toku — {uvozNajava}{" "}
           {uvozNajava === 1 ? "slika se" : "slika/e se"} skida u pozadini.
           Osvježi stranicu za par sekundi da ih vidiš u sadržaju.
+        </div>
+      ) : null}
+
+      {uvozUpozorenje ? (
+        <div className="adm-note adm-note-err">
+          <b>⚠️ Claude-ov odgovor je bio predug i prekinut je na pola.</b>{" "}
+          Zadnja sekcija u šablonu (obično „Šta stiže u kutiji&rdquo;) je
+          možda skraćena na pola riječi — provjeri je i dopuni ručno prije
+          objave.
         </div>
       ) : null}
 
