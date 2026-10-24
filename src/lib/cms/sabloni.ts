@@ -31,8 +31,12 @@ export interface SablonDef {
   blokovi: SablonBlok[];
 }
 
-const prazniKoristi = (n: number) =>
-  Array.from({ length: n }, () => ({ url: "", alt: "", naslov: "", tekst: "" }));
+// "isticanja" (ne "koristi") — na izričit zahtjev (24.10.2026): bez
+// slike po stavci, samo podebljan naslov + kratak tekst u kartici.
+// Uloga ostaje "koristi" (prompt/parser se ne mijenja), mijenja se
+// samo TIP bloka koji se puni.
+const prazneIstaknute = (n: number) =>
+  Array.from({ length: n }, () => ({ naslov: "", tekst: "" }));
 
 const RECENZIJE: SablonBlok = {
   type: "recenzije",
@@ -86,11 +90,11 @@ export const SABLONI: SablonDef[] = [
         data: { naslov: "Kako se koristi", items: ["", "", ""] },
       },
       {
-        type: "koristi",
+        type: "isticanja",
         uloga: "koristi",
         uputa:
           "3–5 koristi. Svaka: kratak ishod + detalj s mjerom/materijalom/brojem. Jedna neka bude o sigurnosti.",
-        data: { naslov: "", items: prazniKoristi(4) },
+        data: { naslov: "", items: prazneIstaknute(4) },
       },
       {
         type: "benefiti",
@@ -128,11 +132,11 @@ export const SABLONI: SablonDef[] = [
         data: { naslov: "Kako se igra", items: ["", "", ""] },
       },
       {
-        type: "koristi",
+        type: "isticanja",
         uloga: "koristi",
         uputa:
           "3–5 koristi, pomiješaj: šta dobija dijete (zabava, vještina) i šta dobija roditelj (mir, bez ekrana, bez nereda).",
-        data: { naslov: "", items: prazniKoristi(4) },
+        data: { naslov: "", items: prazneIstaknute(4) },
       },
       {
         type: "benefiti",
@@ -163,10 +167,10 @@ export const SABLONI: SablonDef[] = [
         data: { url: "", alt: "", radius: true, fullWidth: false, caption: "" },
       },
       {
-        type: "koristi",
+        type: "isticanja",
         uloga: "koristi",
         uputa: "Tačno 3 koristi, kratko, svaka s konkretnim detaljem.",
-        data: { naslov: "", items: prazniKoristi(3) },
+        data: { naslov: "", items: prazneIstaknute(3) },
       },
       U_KUTIJI,
       RECENZIJE,
@@ -205,10 +209,10 @@ export const SABLONI: SablonDef[] = [
         data: { naslov: "Kako radi", items: ["", "", ""] },
       },
       {
-        type: "koristi",
+        type: "isticanja",
         uloga: "koristi",
         uputa: "3–5 koristi, svaka s mjerom/materijalom/brojem.",
-        data: { naslov: "", items: prazniKoristi(4) },
+        data: { naslov: "", items: prazneIstaknute(4) },
       },
       U_KUTIJI,
       RECENZIJE,
@@ -377,15 +381,10 @@ export function popuniStranicu(text: string, hero: Hero, sections: Block[]): Pop
         oznaci(svi("U_KUTIJI").length > 0, "šta je u kutiji");
         break;
       case "koristi": {
-        const stare = (Array.isArray(d.items) ? d.items : []) as Record<string, string>[];
-        const nove = svi("KORIST").map((line, i) => {
+        // Blok tip je "isticanja" (bez slike) — vidi prazneIstaknute gore.
+        const nove = svi("KORIST").map((line) => {
           const [naslov, ...ostalo] = line.split("|");
-          return {
-            url: stare[i]?.url ?? "",
-            alt: stare[i]?.alt ?? "",
-            naslov: naslov.trim(),
-            tekst: ostalo.join("|").trim(),
-          };
+          return { naslov: naslov.trim(), tekst: ostalo.join("|").trim() };
         });
         if (nove.length) d.items = nove;
         oznaci(nove.length > 0, "koristi");
