@@ -579,12 +579,19 @@ export default function BlockFields({
                   </button>
                 </span>
               </div>
-              <MediaField
-                label="Slika ili GIF (opcionalno)"
-                value={it.url}
-                accept="image"
-                onChange={(url, alt) => setItem(i, { url, alt: alt ?? it.alt })}
-              />
+              {it.url ? (
+                // Polje za sliku se NAMJERNO prikazuje samo ako stavka već
+                // ima sliku (postojeći sadržaj, npr. objavljena Minecraft
+                // stranica) — nove "Koristi" stavke ga više ne nude (na
+                // izričit zahtjev, 24.10.2026), da se ne mora ručno
+                // dodavati slika za svaku od 3-5 koristi.
+                <MediaField
+                  label="Slika ili GIF (opcionalno)"
+                  value={it.url}
+                  accept="image"
+                  onChange={(url, alt) => setItem(i, { url, alt: alt ?? it.alt })}
+                />
+              ) : null}
               <TextField
                 label="Kratak naslov (ishod)"
                 value={it.naslov}
