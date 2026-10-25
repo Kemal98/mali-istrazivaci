@@ -159,7 +159,7 @@ export default function ImportReviewsModal({
               Zalijepi link proizvoda sa druge prodavnice — povučem SVE njegove
               recenzije i prevedem ih na bosanski. Pregledaš ih prije uvoza, a
               uvezu se kao SKRIVENE (ništa ne izlazi na stranicu dok ih ne uključiš).
-              Za sad: Shopify prodavnice sa Rivyo ili Ali Reviews recenzijama.
+              Radi sa bilo kojim sajtom na kojem se recenzije vide na stranici.
             </p>
             <div className="adm-field">
               <label htmlFor="rev-link">Link proizvoda</label>
