@@ -15,17 +15,22 @@ type Uloga =
   | "koristi"
   | "sigurnost"
   | "raste"
-  | "u_kutiji";
+  | "u_kutiji"
+  | "sekcija_naslov"
+  | "sekcija_tekst"
+  | "specs_naslov"
+  | "specs";
 
 interface SablonBlok {
   type: BlockType;
   uloga?: Uloga;
   uputa: string;
   data: Record<string, unknown>;
+  razmakIspod?: Block["razmakIspod"];
 }
 
 export interface SablonDef {
-  kljuc: "bebe" | "igracka" | "impulsni" | "problem";
+  kljuc: "kratki" | "bebe" | "igracka" | "impulsni" | "problem";
   naziv: string;
   galerijaUputa: string;
   blokovi: SablonBlok[];
@@ -57,7 +62,80 @@ const U_KUTIJI: SablonBlok = {
   data: { naslov: "Šta stiže u tvojoj kutiji?", items: ["", ""], napomena: "" },
 };
 
+/* "Kratki naslovi + slike" — po uzoru na igralica.com / zabavaonica.com:
+ * sve centrirano, naslov sekcije VELIKIM SLOVIMA (bold, iste veličine kao
+ * tekst), ispod 2–3 vrlo kratka reda, pa odmah slika/GIF. Ponavlja se. */
+const SEKCIJA_NASLOV = (uputa: string): SablonBlok => ({
+  type: "naslov",
+  uloga: "sekcija_naslov",
+  uputa,
+  data: { tekst: "", velicina: "S", bold: true, align: "center" },
+  razmakIspod: "none",
+});
+
+const SEKCIJA_TEKST: SablonBlok = {
+  type: "tekst",
+  uloga: "sekcija_tekst",
+  uputa: "2–3 vrlo kratka reda, svaki u svom redu (Enter). Važnu riječ podebljaj sa **riječ**.",
+  data: { tekst: "", bold: false, align: "center" },
+  razmakIspod: "s",
+};
+
+const SEKCIJA_SLIKA = (type: "slika" | "gif", uputa: string): SablonBlok => ({
+  type,
+  uputa,
+  data: { url: "", alt: "", radius: true, fullWidth: false, caption: "" },
+});
+
+const KRATKI: SablonDef = {
+  kljuc: "kratki",
+  naziv: "Kratki naslovi + slike (stil igralica / zabavaonica)",
+  galerijaUputa:
+    "Hero galerija 5–7 slika: 1) dijete koristi proizvod, 2) proizvod izbliza, 3) u ruci — vidi se veličina, 4) šta je u paketu. Ispod svakog naslova u stranici ide JEDNA slika ili GIF.",
+  blokovi: [
+    SEKCIJA_NASLOV("Naslov 1 VELIKIM SLOVIMA — glavna emocija/ishod, npr. „NEKA MAŠTA VAŠEG DJETETA POSTANE STVARNOST!“"),
+    SEKCIJA_TEKST,
+    SEKCIJA_SLIKA("slika", "Slika: dijete koristi proizvod (glavna, najljepša slika)."),
+    SEKCIJA_NASLOV("Naslov 2 VELIKIM SLOVIMA — kako se igra / šta radi."),
+    SEKCIJA_TEKST,
+    SEKCIJA_SLIKA("gif", "GIF: proizvod u akciji (3–5 sekundi)."),
+    SEKCIJA_NASLOV("Naslov 3 VELIKIM SLOVIMA — šta dijete razvija/uči."),
+    SEKCIJA_TEKST,
+    SEKCIJA_SLIKA("slika", "Slika: detalj proizvoda ili dijete u igri."),
+    {
+      type: "naslov",
+      uloga: "specs_naslov",
+      uputa: "Naslov iznad osnovnih podataka VELIKIM SLOVIMA.",
+      data: { tekst: "", velicina: "S", bold: true, align: "center" },
+      razmakIspod: "none",
+    },
+    {
+      type: "tekst",
+      uloga: "specs",
+      uputa: "Osnovni podaci, jedan po redu: „→ Uzrast: **3+ godine**“ (uzrast, materijal, dimenzije, baterije/punjenje).",
+      data: { tekst: "", bold: false, align: "center" },
+      razmakIspod: "s",
+    },
+    SEKCIJA_NASLOV("Naslov 4 VELIKIM SLOVIMA — poklon, npr. „SAVRŠENO ZA POKLON“."),
+    SEKCIJA_TEKST,
+    SEKCIJA_SLIKA("slika", "Slika: proizvod u kutiji / kao poklon."),
+    U_KUTIJI,
+    {
+      type: "trust",
+      uputa: "Sigurna kupovina — provjeri da tekst odgovara (pouzeće, dostava, povrat).",
+      data: {
+        naslov: "100% SIGURNA KUPOVINA",
+        items: ["Plaćanje pouzećem", "Dostava širom BiH"],
+        badge: "🛡️ 14 dana garancije za povrat",
+      },
+    },
+    RECENZIJE,
+    ZAVRSNI_CTA,
+  ],
+};
+
 export const SABLONI: SablonDef[] = [
+  KRATKI,
   {
     kljuc: "bebe",
     naziv: "Za bebe (sigurnost, materijal, pranje)",
@@ -242,6 +320,7 @@ export function sablonSekcije(def: SablonDef): Block[] {
     data: JSON.parse(JSON.stringify(b.data)),
     uputa: b.uputa,
     ...(b.uloga ? { uloga: b.uloga } : {}),
+    ...(b.razmakIspod ? { razmakIspod: b.razmakIspod } : {}),
   }));
 }
 
@@ -261,15 +340,37 @@ const ULOGA_FORMAT: Record<Uloga, string> = {
   raste: "RASTE: uzrast: šta dijete radi s proizvodom u tom uzrastu (3 reda)",
   u_kutiji:
     "U_KUTIJI: jedna stavka iz paketa, npr. „1x olovka“ (jedan red po stavci)\nNAPOMENA: šta NIJE uključeno i upozorenja (ako ima), jedna rečenica",
+  sekcija_naslov:
+    "SEKCIJA_NASLOV: naslov sekcije VELIKIM SLOVIMA, slogan od 4–8 riječi (npr. „DIJETE ĆE ZAVOLJETI UČENJE KROZ ZABAVU“)\nSEKCIJA: 2–3 vrlo kratka reda razdvojena znakom | (svaki red do 8 riječi, red NE počinji crticom)\n(napiši tačno {BROJ_SEKCIJA} para SEKCIJA_NASLOV + SEKCIJA, redom: {TEME_SEKCIJA})",
+  sekcija_tekst: "",
+  specs_naslov:
+    "SPEC_NASLOV: naslov iznad osnovnih podataka VELIKIM SLOVIMA, npr. „UČENJE POSTAJE ZABAVA“\nSPEC: jedan podatak u obliku „Oznaka: vrijednost“, npr. „Uzrast: 3+ godine“ (3–5 redova: uzrast, materijal, dimenzije, baterije/punjenje — samo ono što piše u izvoru)",
+  specs: "",
 };
+
+// Teme sekcija za šablon "kratki", redom kako idu na stranici.
+const TEME_SEKCIJA = [
+  "1) glavna emocija/ishod za dijete i roditelja",
+  "2) kako se igra / šta proizvod radi",
+  "3) šta dijete razvija i uči",
+  "4) poklon (rođendan, praznici)",
+];
 
 export function napraviPrompt(sections: Block[]): string {
   const uloge = [...new Set(sections.map((s) => s.uloga).filter(Boolean))] as Uloga[];
   const imaFaq = sections.some((s) => s.type === "faq");
+  const brojSekcija = sections.filter((s) => s.uloga === "sekcija_naslov").length;
   const linije = [
     "NASLOV: šta je proizvod + za koga (+ uzrast ako je bitan), do 60 znakova",
     "PODNASLOV: (opcionalno) kratko pojašnjenje, do 40 znakova",
-    ...uloge.map((u) => ULOGA_FORMAT[u]).filter(Boolean),
+    ...uloge
+      .map((u) => ULOGA_FORMAT[u])
+      .filter(Boolean)
+      .map((f) =>
+        f
+          .replace("{BROJ_SEKCIJA}", String(brojSekcija))
+          .replace("{TEME_SEKCIJA}", TEME_SEKCIJA.slice(0, brojSekcija).join(", "))
+      ),
     ...(imaFaq
       ? [
           "PITANJE: pitanje koje kupac stvarno postavlja (uzrast, sigurnost, kako se koristi/čisti) (4–6 pitanja)\nODGOVOR: odgovor na prethodno pitanje, 1–2 rečenice",
@@ -284,7 +385,7 @@ Pravila:
 - Piši na bosanskom jeziku, ijekavica, jednostavno i toplo, kao roditelj roditelju.
 - Konkretno: mjere, materijali, brojevi. Bez praznih pridjeva („vrhunski“, „revolucionarni“, „najbolji“).
 - Kratke, udarne rečenice — ne duže od dva reda. Jedna misao po rečenici, ne nabrajanje u istoj rečenici.
-- Naslovi sekcija (NASLOV, PROBLEM_NASLOV, ZASTO_NASLOV) neka budu jaki i konkretni, kao slogan — ne opisna etiketa. Npr. „Kad dijete traži da mu smisliš igru“, ne „Problem roditelja“.
+- Naslovi sekcija (NASLOV, PROBLEM_NASLOV, ZASTO_NASLOV, SEKCIJA_NASLOV) neka budu jaki i konkretni, kao slogan — ne opisna etiketa. Npr. „Kad dijete traži da mu smisliš igru“, ne „Problem roditelja“.
 - Test: ako bi rečenica mogla stajati na tuđem proizvodu, prepiši je.
 - Ništa ne izmišljaj. Ako podatak (materijal, certifikat, uzrast) nije u izvoru, izostavi ga.
 - Bez medicinskih tvrdnji, bez zastrašivanja, bez lažne hitnosti (ne izmišljaj "ostalo je još X komada" ni slične tvrdnje).
@@ -338,6 +439,21 @@ export function popuniStranicu(text: string, hero: Hero, sections: Block[]): Pop
   } else nedostaje.push("naslov");
   if (jedan("PODNASLOV")) noviHero.naslovLinija2 = jedan("PODNASLOV");
 
+  // Šablon "kratki" ima više parova SEKCIJA_NASLOV/SEKCIJA — i-ti blok
+  // uzima i-ti red tog ključa.
+  const sekNaslovi = svi("SEKCIJA_NASLOV");
+  const sekTekstovi = svi("SEKCIJA");
+  let iSekNaslov = 0;
+  let iSekTekst = 0;
+  // Redovi razdvojeni "|" (ili Enterom) → svaki u svom redu. Vodeća crtica
+  // se skida jer bi je RichText pretvorio u bullet listu.
+  const redovi = (t: string) =>
+    t
+      .split(/\||\n/)
+      .map((r) => r.trim().replace(/^[-•–]\s*/, ""))
+      .filter(Boolean)
+      .join("\n");
+
   const noveSekcije = sections.map((b) => {
     const d = { ...b.data };
     const oznaci = (ok: boolean, ime: string) => (ok ? popunjeno : nedostaje).push(ime);
@@ -378,6 +494,34 @@ export function popuniStranicu(text: string, hero: Hero, sections: Block[]): Pop
         if (svi("KORIST").length) d.items = svi("KORIST");
         oznaci(svi("KORIST").length > 0, "koristi");
         break;
+      case "sekcija_naslov": {
+        const n = iSekNaslov++;
+        const t = (sekNaslovi[n] ?? "").toUpperCase();
+        if (t) d.tekst = t;
+        oznaci(Boolean(t), `naslov sekcije ${n + 1}`);
+        break;
+      }
+      case "sekcija_tekst": {
+        const n = iSekTekst++;
+        const t = redovi(sekTekstovi[n] ?? "");
+        if (t) d.tekst = t;
+        oznaci(Boolean(t), `tekst sekcije ${n + 1}`);
+        break;
+      }
+      case "specs_naslov":
+        if (jedan("SPEC_NASLOV")) d.tekst = jedan("SPEC_NASLOV").toUpperCase();
+        oznaci(Boolean(jedan("SPEC_NASLOV")), "naslov osnovnih podataka");
+        break;
+      case "specs": {
+        // "Uzrast: 3+ godine" → "→ Uzrast: **3+ godine**"
+        const spec = svi("SPEC").map((r) => {
+          const m = r.replace(/^[→\-•–\s]+/, "").match(/^([^:]{1,30}):\s*(.+)$/);
+          return m ? `→ ${m[1].trim()}: **${m[2].replace(/\*\*/g, "").trim()}**` : `→ ${r}`;
+        });
+        if (spec.length) d.tekst = spec.join("\n");
+        oznaci(spec.length > 0, "osnovni podaci");
+        break;
+      }
     }
     if (b.type === "faq") {
       const p = svi("PITANJE");

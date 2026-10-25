@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SABLONI } from "@/lib/cms/sabloni";
 
+// AI uvoz nudi samo jedan šablon (na zahtjev) — "kratki", po uzoru na
+// igralica/zabavaonica. Ostali šabloni i dalje postoje za "Novi proizvod".
+const AI_SABLONI = SABLONI.filter((s) => s.kljuc === "kratki");
+
 /**
  * "AI uvoz proizvoda" — jedan klik: link + šablon ide Claude-u, vrati se
  * gotov nacrt (naslov, tekst, slike raspoređene) umjesto da admin ručno
@@ -15,7 +19,7 @@ export default function AiImportButton() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
-  const [sablon, setSablon] = useState<string>(SABLONI[0]?.kljuc ?? "");
+  const [sablon, setSablon] = useState<string>(AI_SABLONI[0]?.kljuc ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -99,7 +103,7 @@ export default function AiImportButton() {
                 onChange={(e) => setSablon(e.target.value)}
                 disabled={busy}
               >
-                {SABLONI.map((s) => (
+                {AI_SABLONI.map((s) => (
                   <option key={s.kljuc} value={s.kljuc}>
                     {s.naziv}
                   </option>
