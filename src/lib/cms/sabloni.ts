@@ -31,13 +31,6 @@ export interface SablonDef {
   blokovi: SablonBlok[];
 }
 
-// "isticanja" (ne "koristi") — na izričit zahtjev (24.10.2026): bez
-// slike po stavci, samo podebljan naslov + kratak tekst u kartici.
-// Uloga ostaje "koristi" (prompt/parser se ne mijenja), mijenja se
-// samo TIP bloka koji se puni.
-const prazneIstaknute = (n: number) =>
-  Array.from({ length: n }, () => ({ naslov: "", tekst: "" }));
-
 const RECENZIJE: SablonBlok = {
   type: "recenzije",
   uputa:
@@ -90,11 +83,11 @@ export const SABLONI: SablonDef[] = [
         data: { naslov: "Kako se koristi", items: ["", "", ""] },
       },
       {
-        type: "isticanja",
+        type: "benefiti",
         uloga: "koristi",
         uputa:
-          "3–5 koristi. Svaka: kratak ishod + detalj s mjerom/materijalom/brojem. Jedna neka bude o sigurnosti.",
-        data: { naslov: "", items: prazneIstaknute(4) },
+          "3–5 koristi, prosta lista sa kvačicom. Svaka: kratka rečenica sa konkretnim detaljem (mjera/materijal/broj). Jedna neka bude o sigurnosti.",
+        data: { naslov: "", items: ["", "", "", ""] },
       },
       {
         type: "benefiti",
@@ -132,11 +125,11 @@ export const SABLONI: SablonDef[] = [
         data: { naslov: "Kako se igra", items: ["", "", ""] },
       },
       {
-        type: "isticanja",
+        type: "benefiti",
         uloga: "koristi",
         uputa:
-          "3–5 koristi, pomiješaj: šta dobija dijete (zabava, vještina) i šta dobija roditelj (mir, bez ekrana, bez nereda).",
-        data: { naslov: "", items: prazneIstaknute(4) },
+          "3–5 koristi, prosta lista sa kvačicom. Pomiješaj: šta dobija dijete (zabava, vještina) i šta dobija roditelj (mir, bez ekrana, bez nereda).",
+        data: { naslov: "", items: ["", "", "", ""] },
       },
       {
         type: "benefiti",
@@ -167,10 +160,10 @@ export const SABLONI: SablonDef[] = [
         data: { url: "", alt: "", radius: true, fullWidth: false, caption: "" },
       },
       {
-        type: "isticanja",
+        type: "benefiti",
         uloga: "koristi",
-        uputa: "Tačno 3 koristi, kratko, svaka s konkretnim detaljem.",
-        data: { naslov: "", items: prazneIstaknute(3) },
+        uputa: "Tačno 3 koristi, prosta lista sa kvačicom, svaka s konkretnim detaljem.",
+        data: { naslov: "", items: ["", "", ""] },
       },
       U_KUTIJI,
       RECENZIJE,
@@ -209,10 +202,10 @@ export const SABLONI: SablonDef[] = [
         data: { naslov: "Kako radi", items: ["", "", ""] },
       },
       {
-        type: "isticanja",
+        type: "benefiti",
         uloga: "koristi",
-        uputa: "3–5 koristi, svaka s mjerom/materijalom/brojem.",
-        data: { naslov: "", items: prazneIstaknute(4) },
+        uputa: "3–5 koristi, prosta lista sa kvačicom, svaka s mjerom/materijalom/brojem.",
+        data: { naslov: "", items: ["", "", "", ""] },
       },
       U_KUTIJI,
       RECENZIJE,
@@ -262,7 +255,7 @@ const ULOGA_FORMAT: Record<Uloga, string> = {
     "ZASTO_NASLOV: kratak naslov, npr. „Zašto makaze nisu rješenje“\nZASTO: 2–3 rečenice zašto uobičajeno rješenje ne radi i šta je ovdje drugačije",
   koraci: "KORAK: jedan korak korištenja, jedna kratka rečenica (napiši tačno 3 reda KORAK)",
   koristi:
-    "KORIST: kratak naslov ishoda | 1–2 rečenice s konkretnim detaljem (mjera, materijal, broj) (napiši 3–5 redova KORIST)",
+    "KORIST: JEDNA kratka rečenica — konkretna korist s detaljem (mjera, materijal, broj), ne duža od 12 riječi (napiši 3–5 redova KORIST)",
   sigurnost:
     "SIGURNOST: jedna činjenica o sigurnosti/materijalu/pranju/uzrastu (3–4 reda; samo ono što piše u izvoru)",
   raste: "RASTE: uzrast: šta dijete radi s proizvodom u tom uzrastu (3 reda)",
@@ -380,16 +373,11 @@ export function popuniStranicu(text: string, hero: Hero, sections: Block[]): Pop
         if (jedan("NAPOMENA")) d.napomena = jedan("NAPOMENA");
         oznaci(svi("U_KUTIJI").length > 0, "šta je u kutiji");
         break;
-      case "koristi": {
-        // Blok tip je "isticanja" (bez slike) — vidi prazneIstaknute gore.
-        const nove = svi("KORIST").map((line) => {
-          const [naslov, ...ostalo] = line.split("|");
-          return { naslov: naslov.trim(), tekst: ostalo.join("|").trim() };
-        });
-        if (nove.length) d.items = nove;
-        oznaci(nove.length > 0, "koristi");
+      case "koristi":
+        // Blok tip je "benefiti" (prosta lista sa kvačicom, bez slike/kutije).
+        if (svi("KORIST").length) d.items = svi("KORIST");
+        oznaci(svi("KORIST").length > 0, "koristi");
         break;
-      }
     }
     if (b.type === "faq") {
       const p = svi("PITANJE");
