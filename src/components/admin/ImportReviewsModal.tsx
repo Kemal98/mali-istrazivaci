@@ -25,10 +25,47 @@ export default function ImportReviewsModal({
   onClose: () => void;
   onImported: () => void;
 }) {
+  const [nacin, setNacin] = useState<"link" | "tekst">("link");
+  const [link, setLink] = useState("");
   const [raw, setRaw] = useState("");
   const [items, setItems] = useState<Editable[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [info, setInfo] = useState("");
+  // Povučene sa linka (tuđi kupci) se uvoze SKRIVENE — admin ih dorađuje
+  // i sam uključi; zalijepljene ručno ostaju kao i prije (odmah objavljene).
+  const [izLinka, setIzLinka] = useState(false);
+
+  async function povuci() {
+    if (!link.trim()) return;
+    setBusy(true);
+    setMsg("");
+    try {
+      const res = await fetch("/api/admin/reviews/from-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: link.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setMsg(data?.error || "Greška pri povlačenju recenzija.");
+        return;
+      }
+      const list = (data.reviews ?? []) as ParsedReview[];
+      setItems(list.map((p) => ({ ...p, slika: "", skip: false })));
+      setIzLinka(true);
+      setInfo(
+        `Povučeno ${list.length} recenzija (${data.izvor}). ` +
+          (data.prevedeno
+            ? "Prevedeno na bosanski."
+            : `Prevod nije uspio (${data.prevodGreska}) — tekst je original.`)
+      );
+    } catch {
+      setMsg("Nema veze sa internetom. Pokušajte ponovo.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   function parse() {
     const parsed = parsePastedReviews(raw);
@@ -42,6 +79,8 @@ export default function ImportReviewsModal({
       return;
     }
     setItems(parsed.map((p) => ({ ...p, slika: "", skip: false })));
+    setIzLinka(false);
+    setInfo("");
     setMsg("");
   }
 
@@ -66,13 +105,17 @@ export default function ImportReviewsModal({
           tekst: it.tekst,
           slika: it.slika,
           verified: false, // uvezena, nije provjerena kroz našu kupovinu — admin ručno uključi ako želi
+          ...(izLinka ? { status: "hidden" } : {}),
         }),
       });
       if (res.ok) ok++;
     }
     setBusy(false);
     onImported();
-    setMsg(`Uvezeno ${ok} od ${toImport.length}.`);
+    setMsg(
+      `Uvezeno ${ok} od ${toImport.length}.` +
+        (izLinka ? " Skrivene su — doradi ih i uključi koje želiš." : "")
+    );
     if (ok === toImport.length) {
       setTimeout(onClose, 900);
     }
@@ -82,14 +125,76 @@ export default function ImportReviewsModal({
     <div className="adm-modal-bg" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="adm-modal" role="dialog" aria-modal="true" style={{ maxWidth: 640 }}>
         <h2>Uvezi recenzije</h2>
-        <p className="adm-hint" style={{ marginBottom: 16 }}>
-          Otvori recenzije proizvoda na Amazonu (ili drugom sajtu), selektuj
-          par recenzija mišem i kopiraj (Ctrl+C), pa zalijepi ovdje. Slike
-          reviewera se dodaju ručno ispod, poslije parsiranja.
-        </p>
 
         {!items ? (
+          <div className="adm-row" style={{ marginBottom: 14, gap: 8 }}>
+            <button
+              type="button"
+              className={`adm-btn${nacin === "link" ? " adm-btn-primary" : ""}`}
+              onClick={() => {
+                setNacin("link");
+                setMsg("");
+              }}
+              disabled={busy}
+            >
+              SA LINKA
+            </button>
+            <button
+              type="button"
+              className={`adm-btn${nacin === "tekst" ? " adm-btn-primary" : ""}`}
+              onClick={() => {
+                setNacin("tekst");
+                setMsg("");
+              }}
+              disabled={busy}
+            >
+              ZALIJEPI TEKST
+            </button>
+          </div>
+        ) : null}
+
+        {!items && nacin === "link" ? (
           <>
+            <p className="adm-hint" style={{ marginBottom: 16 }}>
+              Zalijepi link proizvoda sa druge prodavnice — povučem SVE njegove
+              recenzije i prevedem ih na bosanski. Pregledaš ih prije uvoza, a
+              uvezu se kao SKRIVENE (ništa ne izlazi na stranicu dok ih ne uključiš).
+              Za sad: Shopify prodavnice sa Rivyo ili Ali Reviews recenzijama.
+            </p>
+            <div className="adm-field">
+              <label htmlFor="rev-link">Link proizvoda</label>
+              <input
+                id="rev-link"
+                type="text"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+                placeholder="https://.../products/..."
+                autoFocus
+                disabled={busy}
+              />
+            </div>
+            {msg ? <div className="adm-note adm-note-err">{msg}</div> : null}
+            <div className="adm-modal-foot">
+              <button type="button" className="adm-btn" onClick={onClose} disabled={busy}>
+                OTKAŽI
+              </button>
+              <button
+                type="button"
+                className="adm-btn adm-btn-primary"
+                onClick={povuci}
+                disabled={busy || !link.trim()}
+              >
+                {busy ? "Povlačim i prevodim… (do 30-ak sekundi)" : "POVUCI I PREVEDI"}
+              </button>
+            </div>
+          </>
+        ) : !items ? (
+          <>
+            <p className="adm-hint" style={{ marginBottom: 16 }}>
+              Otvori recenzije proizvoda na Amazonu (ili drugom sajtu), selektuj
+              par recenzija mišem i kopiraj (Ctrl+C), pa zalijepi ovdje. Slike
+              reviewera se dodaju ručno ispod, poslije parsiranja.
+            </p>
             <div className="adm-field">
               <label>Zalijepi tekst recenzija</label>
               <textarea
@@ -118,6 +223,11 @@ export default function ImportReviewsModal({
           </>
         ) : (
           <>
+            {info ? (
+              <div className="adm-note adm-note-ok" style={{ marginBottom: 10 }}>
+                {info}
+              </div>
+            ) : null}
             <p className="adm-hint" style={{ marginBottom: 12 }}>
               Pronađeno {items.length} — pregledaj/ispravi, otkači one koje ne
               želiš, pa uvezi.
