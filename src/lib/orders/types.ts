@@ -180,6 +180,26 @@ export interface DuplicateOrderGroup {
   }[];
 }
 
+/** Isti broj telefona, više narudžbi ISTI dan — kandidat za jedan paket. */
+export interface SameDayOrderGroup {
+  phoneNormalized: string;
+  phone: string;
+  customerName: string;
+  /** YYYY-MM-DD, kalendarski dan (Europe/Sarajevo). */
+  day: string;
+  orders: {
+    id: string;
+    orderNumber: string;
+    productName: string;
+    quantity: number;
+    subtotal: number;
+    shippingPrice: number;
+    totalPrice: number;
+    createdAt: string;
+    status: OrderStatus;
+  }[];
+}
+
 export interface OrderEvent {
   id: string;
   orderId: string;

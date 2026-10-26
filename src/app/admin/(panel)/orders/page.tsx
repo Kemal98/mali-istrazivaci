@@ -5,6 +5,7 @@ import {
   listFilterOptions,
   listManualSales,
   listOrders,
+  listSameDayOrderGroups,
   listSuspectedDuplicates,
   type OrderSort,
 } from "@/lib/orders/repo";
@@ -16,6 +17,7 @@ import SavedFilters from "@/components/admin/SavedFilters";
 import OrdersTable from "@/components/admin/OrdersTable";
 import AddOrderButton from "@/components/admin/AddOrderButton";
 import QuickSaleManager from "@/components/admin/QuickSaleManager";
+import SameDayOrders from "@/components/admin/SameDayOrders";
 
 export const dynamic = "force-dynamic";
 
@@ -80,7 +82,13 @@ export default async function OrdersPage({
     )
     .map((p) => ({ id: p.id, naziv: p.naziv, cijena: p.cijena }));
   const manualSales = await listManualSales();
-  const duplicates = await listSuspectedDuplicates();
+  const sameDay = await listSameDayOrderGroups();
+  // Ista grupa ne treba u oba upozorenja — ako su sve narudžbe iz
+  // "duplikata" već u "isti dan" grupi, tamo su (sa dugmetom za spajanje).
+  const sameDayIds = new Set(sameDay.flatMap((g) => g.orders.map((o) => o.id)));
+  const duplicates = (await listSuspectedDuplicates()).filter(
+    (g) => !g.orders.every((o) => sameDayIds.has(o.id))
+  );
 
   return (
     <>
@@ -102,6 +110,8 @@ export default async function OrdersPage({
           </Link>
         </div>
       </div>
+
+      <SameDayOrders groups={sameDay} />
 
       {duplicates.length > 0 ? (
         <div className="adm-note adm-note-warn" style={{ marginBottom: 14 }}>

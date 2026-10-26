@@ -9,6 +9,7 @@ import {
   type Order,
   type OrderEvent,
   type OrderStatus,
+  type SameDayOrderGroup,
 } from "./types";
 
 type Row = Record<string, unknown>;
@@ -636,6 +637,55 @@ export async function listSuspectedDuplicates(): Promise<DuplicateOrderGroup[]> 
       id: s(r.id),
       orderNumber: s(r.order_number),
       customerName: s(r.customer_name),
+      createdAt: s(r.created_at),
+      status: (r.status as OrderStatus) ?? "NEW",
+    });
+    groups.set(key, g);
+  }
+  return [...groups.values()];
+}
+
+/**
+ * Isti broj telefona, 2+ narudžbe ISTI kalendarski dan (Sarajevo) koje
+ * još nisu poslane — admin ih vidi na vrhu Narudžbi i spoji u jedan paket
+ * jednim klikom (mergeOrders). Samo zadnja 3 dana: starije su u praksi
+ * već poslane, iako im status često ostane "Nova".
+ */
+export async function listSameDayOrderGroups(): Promise<SameDayOrderGroup[]> {
+  const db = sql();
+  const active: OrderStatus[] = ["NEW", "CONFIRMED", "PACKING"];
+  const rows = await db<Row[]>`
+    WITH o AS (
+      SELECT *, ((created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo')::date AS day
+        FROM orders
+       WHERE deleted_at IS NULL AND phone_normalized <> ''
+         AND status IN ${db(active)}
+         AND created_at::timestamptz >= now() - INTERVAL '3 days'
+    ), g AS (
+      SELECT phone_normalized, day FROM o GROUP BY 1, 2 HAVING COUNT(*) >= 2
+    )
+    SELECT o.*, to_char(o.day, 'YYYY-MM-DD') AS day_str
+      FROM o JOIN g USING (phone_normalized, day)
+     ORDER BY o.day DESC, o.phone_normalized, o.created_at`;
+
+  const groups = new Map<string, SameDayOrderGroup>();
+  for (const r of rows) {
+    const key = `${r.phone_normalized}|${r.day_str}`;
+    const g = groups.get(key) ?? {
+      phoneNormalized: s(r.phone_normalized),
+      phone: s(r.phone),
+      customerName: s(r.customer_name),
+      day: s(r.day_str),
+      orders: [],
+    };
+    g.orders.push({
+      id: s(r.id),
+      orderNumber: s(r.order_number),
+      productName: s(r.product_name),
+      quantity: n(r.quantity),
+      subtotal: n(r.subtotal),
+      shippingPrice: n(r.shipping_price),
+      totalPrice: n(r.total_price),
       createdAt: s(r.created_at),
       status: (r.status as OrderStatus) ?? "NEW",
     });
