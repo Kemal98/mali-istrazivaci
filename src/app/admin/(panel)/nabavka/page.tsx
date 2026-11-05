@@ -2,6 +2,7 @@ import { listPurchases } from "@/lib/ads/repo";
 import { listProducts } from "@/lib/cms/repo";
 import { profitAsIfSold } from "@/lib/orders/profit";
 import NabavkaManager from "@/components/admin/NabavkaManager";
+import StockCutoffButton from "@/components/admin/StockCutoffButton";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +10,7 @@ export default async function NabavkaPage() {
   const items = await listPurchases();
   const cms = await listProducts();
   const all = await profitAsIfSold({}, "2000-01-01", "2100-01-01");
-  const stock = all.rows.filter((r) => r.purchasedQty > 0);
+  const stock = all.rows.filter((r) => r.stock !== null);
 
   const products = [...new Set(cms.map((p) => p.naziv.trim()).filter(Boolean))].sort();
 
@@ -46,9 +47,7 @@ export default async function NabavkaPage() {
                   <tr key={r.productName}>
                     <td>{r.productName}</td>
                     <td style={{ textAlign: "right" }}>{r.purchasedQty}</td>
-                    <td style={{ textAlign: "right" }}>
-                      {r.purchasedQty - (r.stock ?? 0)}
-                    </td>
+                    <td style={{ textAlign: "right" }}>{r.soldQty}</td>
                     <td style={{ textAlign: "right" }}>
                       <b style={{ color: (r.stock ?? 0) < 0 ? "#b3261e" : undefined }}>
                         {r.stock}
@@ -58,13 +57,18 @@ export default async function NabavkaPage() {
                       {r.purchasedCost.toLocaleString("bs-BA")} KM
                     </td>
                     <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                      {(r.purchasedCost / r.purchasedQty).toFixed(2)} KM
+                      {r.purchasedQty > 0 ? `${(r.purchasedCost / r.purchasedQty).toFixed(2)} KM` : "—"}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          <StockCutoffButton
+            rows={stock
+              .filter((r) => (r.stock ?? 0) !== 0)
+              .map((r) => ({ productName: r.productName, stock: r.stock as number }))}
+          />
         </div>
       ) : null}
 

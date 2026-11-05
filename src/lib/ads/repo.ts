@@ -159,6 +159,7 @@ function rowToPurchase(r: Row): StockPurchase {
     totalCost: Math.round(n(r.total_cost) * 100) / 100,
     note: s(r.note),
     createdAt: s(r.created_at),
+    isAdjustment: Boolean(r.is_adjustment),
   };
 }
 
@@ -173,6 +174,28 @@ export async function insertPurchase(input: {
     INSERT INTO stock_purchases (id, date, product_name, quantity, total_cost, note, created_at)
     VALUES (${newId("stk")}, ${input.date}, ${input.productName}, ${input.quantity},
             ${input.totalCost}, ${input.note ?? ""}, ${nowIso()})
+    RETURNING *`;
+  return rowToPurchase(rows[0]);
+}
+
+/**
+ * "Presjek zaliha" — zatvori razliku do 0 (ili do bilo kojeg broja) BEZ
+ * diranja prosječne nabavne cijene: is_adjustment=true isključuje red iz
+ * sume koju profit.ts koristi za cijenu po komadu i za "Kupljeno"/"Uloženo",
+ * ulazi SAMO u "Na stanju". Quantity smije biti negativan (zatvaranje
+ * viška) ili pozitivan (naknadno uneseno stanje bez računa o plaćanju).
+ */
+export async function insertStockAdjustment(input: {
+  date: string;
+  productName: string;
+  quantity: number;
+  note: string;
+}): Promise<StockPurchase> {
+  const rows = await sql()<Row[]>`
+    INSERT INTO stock_purchases
+      (id, date, product_name, quantity, total_cost, note, created_at, is_adjustment)
+    VALUES (${newId("stk")}, ${input.date}, ${input.productName}, ${input.quantity},
+            0, ${input.note}, ${nowIso()}, true)
     RETURNING *`;
   return rowToPurchase(rows[0]);
 }

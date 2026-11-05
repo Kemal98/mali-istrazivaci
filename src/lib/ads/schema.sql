@@ -57,3 +57,11 @@ CREATE TABLE IF NOT EXISTS stock_purchases (
 );
 CREATE INDEX IF NOT EXISTS idx_stock_purchases_product ON stock_purchases (product_name);
 ALTER TABLE stock_purchases ENABLE ROW LEVEL SECURITY;
+
+-- Presjek zaliha ("od danas kao da nemam ništa na stanju") — upisuje se kao
+-- NEGATIVNA stavka u stock_purchases (zatvori razliku do 0), ali OZNAČENA
+-- is_adjustment=true da se izuzme iz prosječne nabavne cijene (ta se i dalje
+-- računa samo iz stvarno plaćenih nabavki, vidi profit.ts) i iz "Kupljeno"/
+-- "Uloženo" prikaza — ulazi SAMO u računanje "Na stanju". Ništa se ne briše:
+-- stare nabavke i narudžbe ostaju, presjek je dodatni red u istoj tabeli.
+ALTER TABLE stock_purchases ADD COLUMN IF NOT EXISTS is_adjustment boolean NOT NULL DEFAULT false;

@@ -25,4 +25,6 @@ export interface StockPurchase {
   totalCost: number;
   note: string;
   createdAt: string;
+  /** Presjek zaliha ("kreni od 0"), ne stvarna plaćena nabavka — vidi insertStockAdjustment u repo.ts. */
+  isAdjustment: boolean;
 }

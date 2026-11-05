@@ -25,10 +25,12 @@ export interface ProfitRow {
   unmapped: boolean;
   /** Od `quantity`/`revenue` gore — koliko je iz ručnog brojača (Messenger i sl.), bez prave narudžbe. */
   manualQty: number;
-  /** Kupljeno komada (sve vrijeme) i koliko je to koštalo — iz "Nabavka robe". */
+  /** Kupljeno komada (sve vrijeme, SAMO stvarno plaćene nabavke) i koliko je to koštalo — iz "Nabavka robe". */
   purchasedQty: number;
   purchasedCost: number;
-  /** kupljeno − prodano (sve vrijeme); null ako nema unesenih nabavki. */
+  /** Prodano komada (sve vrijeme) — isto što ulazi u "stock" ispod, direktno (ne izvodi se oduzimanjem). */
+  soldQty: number;
+  /** (kupljeno + presjeci zaliha) − prodano, sve vrijeme; null ako nema unesenih nabavki ni presjeka. */
   stock: number | null;
 }
 
@@ -77,9 +79,14 @@ export async function profitAsIfSold(
      WHERE date >= ${fromDate} AND date <= ${toDate}
      GROUP BY 1`;
 
-  // Nabavke (sve vrijeme) i ukupno prodano komada (sve vrijeme) po proizvodu
+  // Nabavke (sve vrijeme, SAMO stvarno plaćene — presjeci zaliha ne smiju
+  // razvodniti prosječnu cijenu po komadu), posebno zbir SVIH redova
+  // (uključujući presjeke) za "Na stanju", i ukupno prodano po proizvodu.
   const purchaseRows = await db<Row[]>`
     SELECT product_name, SUM(quantity) AS qty, SUM(total_cost) AS cost
+      FROM stock_purchases WHERE is_adjustment = false GROUP BY 1`;
+  const stockRows = await db<Row[]>`
+    SELECT product_name, SUM(quantity) AS qty
       FROM stock_purchases GROUP BY 1`;
   const soldAllRows = await db<Row[]>`
     SELECT COALESCE(pr.naziv, o.product_name) AS name, COALESCE(SUM(o.quantity), 0) AS qty
@@ -94,6 +101,8 @@ export async function profitAsIfSold(
   for (const r of purchaseRows) {
     purchased.set(norm(String(r.product_name)), { qty: n(r.qty), cost: n(r.cost) });
   }
+  const stockQty = new Map<string, number>();
+  for (const r of stockRows) stockQty.set(norm(String(r.product_name)), n(r.qty));
   const soldAll = new Map<string, number>();
   for (const r of soldAllRows) soldAll.set(norm(String(r.name)), n(r.qty));
 
@@ -111,6 +120,7 @@ export async function profitAsIfSold(
     manualQty: 0,
     purchasedQty: 0,
     purchasedCost: 0,
+    soldQty: 0,
     stock: null,
   });
 
@@ -169,24 +179,28 @@ export async function profitAsIfSold(
     map.set(norm(name), row);
   }
 
-  // Proizvodi s nabavkom a bez narudžbi/reklama u periodu također dobiju red
-  for (const [key, pu] of purchased) {
+  // Proizvodi s nabavkom/presjekom a bez narudžbi/reklama u periodu također dobiju red
+  for (const key of new Set([...purchased.keys(), ...stockQty.keys()])) {
     if (!map.has(key)) {
-      const nameRow = purchaseRows.find((r) => norm(String(r.product_name)) === key);
+      const nameRow =
+        purchaseRows.find((r) => norm(String(r.product_name)) === key) ??
+        stockRows.find((r) => norm(String(r.product_name)) === key);
       map.set(key, blank(String(nameRow?.product_name ?? key)));
-      void pu;
     }
   }
 
   for (const [key, row] of map) {
+    row.soldQty = soldAll.get(key) ?? 0;
     const pu = purchased.get(key);
-    if (!pu || pu.qty <= 0) continue;
-    // Ima unesenih nabavki: stvarna prosječna cijena po komadu (plaćeno / kupljeno)
-    row.cost = row.quantity * (pu.cost / pu.qty);
-    row.missingCost = false;
-    row.purchasedQty = pu.qty;
-    row.purchasedCost = pu.cost;
-    row.stock = pu.qty - (soldAll.get(key) ?? 0);
+    if (pu && pu.qty > 0) {
+      // Ima stvarno plaćenih nabavki: prosječna cijena po komadu (plaćeno / kupljeno)
+      row.cost = row.quantity * (pu.cost / pu.qty);
+      row.missingCost = false;
+      row.purchasedQty = pu.qty;
+      row.purchasedCost = pu.cost;
+    }
+    const sq = stockQty.get(key);
+    if (sq !== undefined) row.stock = sq - row.soldQty;
   }
 
   const rows = [...map.values()];

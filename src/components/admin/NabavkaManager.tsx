@@ -129,13 +129,22 @@ export default function NabavkaManager({
                 {items.map((i) => (
                   <tr key={i.id}>
                     <td>{i.date}</td>
-                    <td>{i.productName}</td>
-                    <td style={{ textAlign: "right" }}>{i.quantity}</td>
+                    <td>
+                      {i.productName}
+                      {i.isAdjustment ? (
+                        <span className="adm-badge" style={{ marginLeft: 6 }}>
+                          📐 presjek
+                        </span>
+                      ) : null}
+                    </td>
                     <td style={{ textAlign: "right" }}>
-                      <b>{i.totalCost} KM</b>
+                      {i.quantity > 0 ? `+${i.quantity}` : i.quantity}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      <b>{i.isAdjustment ? "—" : `${i.totalCost} KM`}</b>
                     </td>
                     <td style={{ textAlign: "right" }} className="adm-hint">
-                      {(i.totalCost / i.quantity).toFixed(2)} KM
+                      {i.isAdjustment ? "—" : `${(i.totalCost / i.quantity).toFixed(2)} KM`}
                     </td>
                     <td className="adm-hint">{i.note || "—"}</td>
                     <td className="adm-hint" style={{ whiteSpace: "nowrap" }}>
