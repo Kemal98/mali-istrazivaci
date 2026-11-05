@@ -10,7 +10,9 @@ import {
   updateProduct,
 } from "@/lib/cms/repo";
 import {
+  bool,
   num,
+  sanitizeBundles,
   sanitizeHero,
   sanitizeSeo,
   sanitizeSections,
@@ -47,6 +49,8 @@ export async function PATCH(request: Request, { params }: Ctx) {
   if (body.hero !== undefined) patch.hero = sanitizeHero(body.hero);
   if (body.seo !== undefined) patch.seo = sanitizeSeo(body.seo);
   if (body.sections !== undefined) patch.sections = sanitizeSections(body.sections);
+  if (body.paketiAktivni !== undefined) patch.paketiAktivni = bool(body.paketiAktivni);
+  if (body.paketi !== undefined) patch.paketi = sanitizeBundles(body.paketi);
 
   const product = await updateProduct(id, patch);
   if (!product) return NextResponse.json({ error: "Nema proizvoda." }, { status: 404 });

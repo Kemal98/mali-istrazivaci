@@ -37,6 +37,7 @@ function rowToOrder(r: Row): Order {
     productName: s(r.product_name),
     quantity: n(r.quantity),
     unitPrice: n(r.unit_price),
+    bundleLabel: s(r.bundle_label),
 
     subtotal: n(r.subtotal),
     shippingPrice: n(r.shipping_price),
@@ -101,6 +102,8 @@ export interface InsertOrderRow {
   productName: string;
   quantity: number;
   unitPrice: number;
+  /** Naziv izabranog paketa — "" ako narudžba nije iz paketne ponude. */
+  bundleLabel?: string;
   subtotal: number;
   shippingPrice: number;
   discount?: number;
@@ -162,7 +165,7 @@ export async function insertOrder(input: InsertOrderRow): Promise<Order> {
       id, order_number, created_at, updated_at,
       customer_name, phone, phone_normalized, email, city, address,
       postal_code, note,
-      product_id, product_name, quantity, unit_price,
+      product_id, product_name, quantity, unit_price, bundle_label,
       subtotal, shipping_price, discount, total_price,
       cost_price, cost_total,
       payment_method, status,
@@ -178,7 +181,7 @@ export async function insertOrder(input: InsertOrderRow): Promise<Order> {
       ${input.email ?? ""}, ${input.city}, ${input.address},
       ${input.postalCode ?? ""}, ${input.note ?? ""},
       ${input.productId ?? null}, ${input.productName}, ${input.quantity},
-      ${input.unitPrice},
+      ${input.unitPrice}, ${input.bundleLabel ?? ""},
       ${input.subtotal}, ${input.shippingPrice}, ${input.discount ?? 0},
       ${input.totalPrice},
       ${input.costPrice ?? 0}, ${input.costTotal ?? 0},

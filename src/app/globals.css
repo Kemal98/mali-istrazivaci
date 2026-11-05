@@ -757,6 +757,30 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-price-new{font-size:3rem;font-weight:800;color:var(--red)}
 .dawn-badge-sale{background:var(--orange);color:#fff;font-weight:800;font-size:.68rem;
   padding:4px 9px;border-radius:3px;letter-spacing:.03em}
+
+/* PAKETNE PONUDE — zamjenjuje .dawn-price-row kad su uključene (vidi
+   CmsHero.tsx). Svaka opcija je svoj "radio card" sa SVOJOM cijenom. */
+.dawn-paketi{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;text-align:left}
+.dawn-paket{position:relative;display:flex;align-items:center;gap:12px;width:100%;
+  padding:14px 16px;border:1.5px solid var(--line);border-radius:var(--r);
+  cursor:pointer;background:var(--card);transition:border-color .15s ease,background .15s ease}
+.dawn-paket:hover{border-color:#c7ccd3}
+.dawn-paket input{position:absolute;opacity:0;width:0;height:0}
+.dawn-paket-radio{flex:none;width:22px;height:22px;border-radius:50%;
+  border:2px solid #c7ccd3;position:relative;transition:border-color .15s ease}
+.dawn-paket[data-active="true"]{border-color:var(--red);background:#fdf3f2}
+.dawn-paket[data-active="true"] .dawn-paket-radio{border-color:var(--red)}
+.dawn-paket[data-active="true"] .dawn-paket-radio::after{content:"";position:absolute;
+  inset:3px;border-radius:50%;background:var(--red)}
+.dawn-paket-info{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.dawn-paket-naziv{font-weight:700;font-size:.98rem;color:var(--ink)}
+.dawn-paket-oznaka{align-self:flex-start;background:var(--orange);color:#fff;
+  font-weight:800;font-size:.64rem;padding:3px 8px;border-radius:3px;letter-spacing:.03em}
+.dawn-paket-cijena{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.dawn-paket-cijena-old{font-size:.8rem;color:#999;text-decoration:line-through;font-weight:600}
+.dawn-paket-cijena-new{font-size:1.25rem;font-weight:800;color:var(--ink)}
+.dawn-paket[data-active="true"] .dawn-paket-cijena-new{color:var(--red)}
+
 .dawn-oskudica{display:inline-block;background:#fdf0ee;color:var(--red);
   font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:20px;
   margin:0 0 14px;border:1px solid #f6d5d0}
@@ -988,6 +1012,9 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-h1-lg{font-size:2.3rem}
   .dawn-price-new{font-size:2.5rem}
   .dawn-price-old{font-size:1.2rem}
+  .dawn-paket{padding:12px 14px;gap:10px}
+  .dawn-paket-cijena-new{font-size:1.1rem}
+  .dawn-paket-naziv{font-size:.92rem}
   .dawn-story-stmt{font-size:1.05rem}
   .dawn-rating{font-size:.92rem}
   /* malo niža hero slika na mobitelu (samo zvečke), da cijena/dugme

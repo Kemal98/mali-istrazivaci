@@ -49,6 +49,7 @@ export async function POST(request: Request) {
       productName: String(body.productName ?? ""),
       quantity: Number(body.quantity ?? 1),
       unitPrice: Number(body.unitPrice ?? 0),
+      bundleId: body.bundleId ? String(body.bundleId) : undefined,
       shippingPrice: Number(body.shippingPrice ?? 0),
       // prolazi kroz do Apps Scripta nepromijenjeno (Meta CAPI dedup)
       sheetExtras:

@@ -286,6 +286,9 @@ export default function OrderDetail({
             <div className="adm-card-title">Proizvod i naplata</div>
             <dl className="adm-dl" style={{ marginBottom: 14 }}>
               <Row label="Proizvod" value={order.productName} />
+              {order.bundleLabel ? (
+                <Row label="📦 Izabrani paket" value={order.bundleLabel} />
+              ) : null}
               {/* Spojena narudžba (vidi mergeOrders) već ima "1x A, 2x B"
                   u "Proizvod" — Količina/Cijena-po-komadu bi tu bili
                   zbunjujući (odnose se samo na prvobitni, jedan proizvod). */}

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { markHvalaPurchaseAllowed, newIdempotencyKey, submitOrder } from "@/lib/orders/submit";
 import { useDawnQty } from "@/components/DawnQtyContext";
 import { useBookCheckoutModal } from "@/components/BookCheckoutModalContext";
+import { useBundle } from "@/components/BundleContext";
+import type { ProductBundle } from "@/lib/cms/types";
 
 declare global {
   interface Window {
@@ -26,6 +28,7 @@ export default function CmsCheckout({
   podnaslov,
   staraCijena,
   productId,
+  paketi = [],
 }: {
   naziv: string;
   cijena: number;
@@ -33,10 +36,13 @@ export default function CmsCheckout({
   podnaslov?: string;
   staraCijena?: number | null;
   productId?: string | null;
+  /** Paketna ponuda — kad ima stavki, zamjenjuje birač količine (vidi BundleContext). */
+  paketi?: ProductBundle[];
 }) {
   const router = useRouter();
   const { qty, setQty } = useDawnQty();
   const { open, setOpen } = useBookCheckoutModal();
+  const { bundle } = useBundle();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
@@ -44,7 +50,13 @@ export default function CmsCheckout({
   // ključ, pa backend vrati postojeću narudžbu umjesto da napravi drugu.
   const orderKeyRef = useRef("");
   const DELIVERY = 10;
-  const total = cijena * qty + DELIVERY;
+  // Kad su paketi uključeni, cijena/količina dolaze IZ IZABRANOG PAKETA,
+  // ne iz običnog birača količine — server ionako preračuna iz baze
+  // (vidi createOrder u service.ts), ovo je samo za prikaz kupcu.
+  const aktivanPaket = paketi.length > 0 ? bundle : null;
+  const prikazCijena = aktivanPaket ? aktivanPaket.cijena : cijena;
+  const efektivnaKolicina = aktivanPaket ? aktivanPaket.kolicina : qty;
+  const total = prikazCijena + DELIVERY;
 
   useEffect(() => {
     if (!open) return;
@@ -88,8 +100,9 @@ export default function CmsCheckout({
       city: String(formData.get("grad") || ""),
       productId: productId ?? null,
       productName: naziv,
-      quantity: qty,
-      unitPrice: cijena,
+      quantity: efektivnaKolicina,
+      unitPrice: aktivanPaket ? Math.round((aktivanPaket.cijena / aktivanPaket.kolicina) * 100) / 100 : cijena,
+      bundleId: aktivanPaket?.id,
       shippingPrice: DELIVERY,
     });
 
@@ -142,24 +155,34 @@ export default function CmsCheckout({
               )}
               <div>
                 <b>{naziv}</b>
-                {podnaslov ? <span>{podnaslov}</span> : null}
+                {aktivanPaket ? (
+                  <span>{aktivanPaket.naziv}</span>
+                ) : podnaslov ? (
+                  <span>{podnaslov}</span>
+                ) : null}
               </div>
               <div className="dawn-modal-price">
-                {staraCijena ? (
+                {aktivanPaket ? (
+                  aktivanPaket.staraCijena !== null ? (
+                    <span className="dawn-modal-price-old">{aktivanPaket.staraCijena} KM</span>
+                  ) : null
+                ) : staraCijena ? (
                   <span className="dawn-modal-price-old">{staraCijena} KM</span>
                 ) : null}
-                <span className="dawn-modal-price-new">{cijena} KM</span>
+                <span className="dawn-modal-price-new">{prikazCijena} KM</span>
               </div>
             </div>
 
-            <div className="dawn-modal-qty">
-              <span>Količina</span>
-              <div className="dawn-qty" role="group" aria-label="Količina">
-                <button type="button" onClick={() => setQty(qty - 1)} aria-label="Smanji količinu">−</button>
-                <span className="dawn-qty-val">{qty}</span>
-                <button type="button" onClick={() => setQty(qty + 1)} aria-label="Povećaj količinu">+</button>
+            {aktivanPaket ? null : (
+              <div className="dawn-modal-qty">
+                <span>Količina</span>
+                <div className="dawn-qty" role="group" aria-label="Količina">
+                  <button type="button" onClick={() => setQty(qty - 1)} aria-label="Smanji količinu">−</button>
+                  <span className="dawn-qty-val">{qty}</span>
+                  <button type="button" onClick={() => setQty(qty + 1)} aria-label="Povećaj količinu">+</button>
+                </div>
               </div>
-            </div>
+            )}
 
             <form onSubmit={handleSubmit} className="dawn-checkout-fields">
               <div className="dawn-field-row">

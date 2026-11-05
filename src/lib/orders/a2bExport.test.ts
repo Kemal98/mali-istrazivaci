@@ -21,6 +21,7 @@ function fakeOrder(patch: Partial<Order>): Order {
     productName: "SAT MIRA set 3u1",
     quantity: 1,
     unitPrice: 29,
+    bundleLabel: "",
     subtotal: 29,
     shippingPrice: 10,
     discount: 0,

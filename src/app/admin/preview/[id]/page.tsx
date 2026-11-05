@@ -47,6 +47,8 @@ export default async function PreviewPage({
         staraCijena={p.staraCijena}
         badge={p.badge}
         productId={p.id}
+        paketiAktivni={p.paketiAktivni}
+        paketi={p.paketi}
         preview
       />
     </>

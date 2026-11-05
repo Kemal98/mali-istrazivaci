@@ -159,3 +159,7 @@ CREATE TABLE IF NOT EXISTS business_cutoffs (
 CREATE INDEX IF NOT EXISTS idx_business_cutoffs_date ON business_cutoffs (date DESC);
 ALTER TABLE business_cutoffs ENABLE ROW LEVEL SECURITY;
 
+-- Paketne ponude (vidi products.paketi u cms/schema.sql) — koji je paket
+-- kupac izabrao na narudžbi, čisto za prikaz u detaljima narudžbe i izvoz.
+-- "" = narudžba nije iz paketne ponude (standardna kupovina, kao i do sad).
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS bundle_label text NOT NULL DEFAULT '';

@@ -1,4 +1,4 @@
-import { Block, BlockType, BLOCK_LABELS, Hero, Seo, defaultHero } from "./types";
+import { Block, BlockType, BLOCK_LABELS, Hero, ProductBundle, Seo, defaultHero } from "./types";
 import { publicUrlPrefix } from "./storage";
 
 // Server-side sanitizacija. Podacima iz admin UI-a se NE VJERUJE —
@@ -128,6 +128,36 @@ export function sanitizeSeo(v: unknown): Seo {
     ogImage: mediaUrl(raw.ogImage),
     canonical: str(raw.canonical, 300),
   };
+}
+
+/**
+ * Paketne ponude iz admin UI-a. Najviše JEDAN paket smije ostati
+ * `istaknut` (drugi po redu koji tvrdi da jeste se tiho otkloni) — ulazna
+ * lista je napravljena da to već poštuje (radio, ne checkbox), ali
+ * server nikad ne vjeruje klijentu. `kolicina` mora biti cijeli broj ≥ 1
+ * (to je množilac zaliha — ne smije biti 0 ni razlomak).
+ */
+export function sanitizeBundles(v: unknown): ProductBundle[] {
+  if (!Array.isArray(v)) return [];
+  let istaknutVec = false;
+  const out: ProductBundle[] = [];
+  for (const item of v.slice(0, 20)) {
+    const raw = (item ?? {}) as Record<string, unknown>;
+    const naziv = str(raw.naziv, 80);
+    if (!naziv) continue;
+    const istaknut = !istaknutVec && bool(raw.istaknut);
+    if (istaknut) istaknutVec = true;
+    out.push({
+      id: str(raw.id, 40) || `pkt_${Math.random().toString(36).slice(2, 10)}`,
+      naziv,
+      kolicina: Math.max(1, Math.round(num(raw.kolicina) ?? 1)),
+      cijena: Math.max(0, num(raw.cijena) ?? 0),
+      staraCijena: num(raw.staraCijena),
+      oznaka: str(raw.oznaka, 40),
+      istaknut,
+    });
+  }
+  return out;
 }
 
 export function sanitizeSections(v: unknown): Block[] {

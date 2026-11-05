@@ -91,6 +91,27 @@ export interface Seo {
 
 export type ProductStatus = "draft" | "published";
 
+/**
+ * Jedan "paket" u paketnoj ponudi (npr. "2 seta (6 zvečki)" — 34 KM).
+ * `kolicina` je u ISTOJ jedinici kao i obična prodaja tog proizvoda (ono
+ * što inače ide u orders.quantity, nabavka robe i stanje zaliha) — ako
+ * proizvod inače prodaje "1 set", paket "2 seta" ima kolicina=2, NE broj
+ * fizičkih zvečki u setu. Tako se zalihe i dalje tačno razdužuju, bez
+ * posebne logike u profit.ts/stock računanju.
+ */
+export interface ProductBundle {
+  id: string;
+  naziv: string;
+  kolicina: number;
+  cijena: number;
+  /** null = ne prikazuje se precrtana cijena za ovaj paket. */
+  staraCijena: number | null;
+  /** npr. "NAJBOLJA PONUDA" — "" = bez oznake. */
+  oznaka: string;
+  /** Unaprijed označen paket na stranici (tačno jedan po proizvodu). */
+  istaknut: boolean;
+}
+
 export interface Product {
   id: string;
   naziv: string;
@@ -109,9 +130,15 @@ export interface Product {
   hero: Hero;
   seo: Seo;
   sections: Block[];
+  /** Paketne ponude — NACRT (admin ga uređuje slobodno, ne utiče na javnu stranicu). */
+  paketiAktivni: boolean;
+  paketi: ProductBundle[];
   publishedHero: Hero | null;
   publishedSections: Block[] | null;
   publishedData: PublishedData | null;
+  /** Paketne ponude — OBJAVLJENO (ono što javna stranica stvarno prikazuje/prodaje). */
+  publishedPaketiAktivni: boolean;
+  publishedPaketi: ProductBundle[] | null;
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
@@ -190,6 +217,18 @@ export function defaultHero(): Hero {
     ctaPodtekst: "Plaćanje pouzećem, pouzdana kupovina",
     alt: "",
     oskudicaPoruke: [],
+  };
+}
+
+export function noviPaket(): ProductBundle {
+  return {
+    id: `pkt_${Math.random().toString(36).slice(2, 10)}`,
+    naziv: "",
+    kolicina: 1,
+    cijena: 0,
+    staraCijena: null,
+    oznaka: "",
+    istaknut: false,
   };
 }
 

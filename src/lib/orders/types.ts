@@ -105,6 +105,8 @@ export interface Order {
   productName: string;
   quantity: number;
   unitPrice: number;
+  /** Naziv izabranog paketa ("2 seta (6 zvečki)") — "" ako narudžba nije iz paketne ponude. */
+  bundleLabel: string;
 
   subtotal: number;
   shippingPrice: number;
@@ -240,6 +242,14 @@ export interface CreateOrderInput {
   quantity: number;
   unitPrice: number;
   shippingPrice: number;
+  /**
+   * Izabrani paket (vidi ProductBundle u cms/types.ts) — kad je poslan,
+   * server NIKAD ne vjeruje quantity/unitPrice iz zahtjeva: učita pravi
+   * proizvod iz baze, nađe ovaj paket po id-u i sam izračuna cijenu i
+   * količinu iz njega (vidi createOrder u service.ts). Tako kupac ne
+   * može cijenu paketa promijeniti kroz browser.
+   */
+  bundleId?: string;
 
   /** Dodatna polja koja postojeći Apps Script očekuje — prolaze kroz. */
   sheetExtras?: Record<string, unknown>;

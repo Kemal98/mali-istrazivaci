@@ -46,6 +46,17 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_products_slug_live
 ALTER TABLE products ADD COLUMN IF NOT EXISTS nabavna_cijena double precision;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS shop_kategorija text NOT NULL DEFAULT '';
 
+-- Paketne ponude ("1 set – 19 KM", "2 seta – 34 KM"…) — isti obrazac kao
+-- hero/sections: NACRT (paketi) se uređuje slobodno u adminu, a javna
+-- stranica čita SAMO published_paketi (snapshot iz trenutka "Objavi",
+-- vidi publishProduct). paketi_aktivni je prekidač "uključeno/isključeno"
+-- po proizvodu — kad je isključeno ili je lista prazna, proizvod se
+-- prikazuje i prodaje potpuno kao bez ove funkcije (ništa se ne mijenja).
+ALTER TABLE products ADD COLUMN IF NOT EXISTS paketi_aktivni boolean NOT NULL DEFAULT false;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS paketi text NOT NULL DEFAULT '[]';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS published_paketi_aktivni boolean NOT NULL DEFAULT false;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS published_paketi text;
+
 CREATE INDEX IF NOT EXISTS idx_products_updated
   ON products (updated_at DESC);
 

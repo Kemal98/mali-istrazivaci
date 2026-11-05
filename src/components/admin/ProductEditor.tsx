@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import ConfirmModal from "./ConfirmModal";
 import MediaField from "./MediaField";
 import PageBuilder from "./PageBuilder";
+import PaketiEditor from "./PaketiEditor";
 import PopuniIzClaudea from "./PopuniIzClaudea";
 import ReviewsPanel from "./ReviewsPanel";
 import {
@@ -17,7 +18,7 @@ import {
   Toggle,
 } from "./fields";
 import { slugify } from "@/lib/cms/slug";
-import type { Block, GlobalSettings, Hero, Product, Review, Seo } from "@/lib/cms/types";
+import type { Block, GlobalSettings, Hero, Product, ProductBundle, Review, Seo } from "@/lib/cms/types";
 
 type Tab = "osnovno" | "hero" | "sadrzaj" | "recenzije" | "seo";
 
@@ -42,6 +43,8 @@ interface Draft {
   hero: Hero;
   seo: Seo;
   sections: Block[];
+  paketiAktivni: boolean;
+  paketi: ProductBundle[];
 }
 
 function toDraft(p: Product): Draft {
@@ -58,6 +61,8 @@ function toDraft(p: Product): Draft {
     hero: p.hero,
     seo: p.seo,
     sections: p.sections,
+    paketiAktivni: p.paketiAktivni,
+    paketi: p.paketi,
   };
 }
 
@@ -492,6 +497,13 @@ export default function ProductEditor({
               stranicama — narudžbe idu u istu Google tabelu.
             </div>
           </div>
+
+          <PaketiEditor
+            aktivni={draft.paketiAktivni}
+            paketi={draft.paketi}
+            onChangeAktivni={(v) => patch({ paketiAktivni: v })}
+            onChangePaketi={(items) => patch({ paketi: items })}
+          />
 
           <div className="adm-card">
             <div className="adm-card-title">Ostale akcije</div>

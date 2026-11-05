@@ -5,6 +5,7 @@ import {
   Hero,
   Media,
   Product,
+  ProductBundle,
   ProductStatus,
   PublishedData,
   Review,
@@ -47,6 +48,8 @@ function rowToProduct(r: Row): Product {
     hero: { ...defaultHero(), ...parseJson<Partial<Hero>>(r.hero as string, {}) },
     seo: parseJson<Seo>(r.seo as string, {}),
     sections: parseJson<Block[]>(r.sections as string, []),
+    paketiAktivni: Boolean(r.paketi_aktivni),
+    paketi: parseJson<ProductBundle[]>(r.paketi as string, []),
     publishedHero: r.published_hero
       ? { ...defaultHero(), ...parseJson<Partial<Hero>>(r.published_hero as string, {}) }
       : null,
@@ -55,6 +58,10 @@ function rowToProduct(r: Row): Product {
       : null,
     publishedData: r.published_data
       ? parseJson<PublishedData | null>(r.published_data as string, null)
+      : null,
+    publishedPaketiAktivni: Boolean(r.published_paketi_aktivni),
+    publishedPaketi: r.published_paketi
+      ? parseJson<ProductBundle[]>(r.published_paketi as string, [])
       : null,
     createdAt: String(r.created_at),
     updatedAt: String(r.updated_at),
@@ -122,6 +129,26 @@ export async function getProductCostPrice(id: string): Promise<number | null> {
      WHERE id = ${id} AND deleted_at IS NULL`;
   const v = rows[0]?.nabavna_cijena;
   return v === null || v === undefined ? null : Number(v);
+}
+
+/**
+ * Server-side provjera izabranog paketa pri narudžbi — NIKAD se ne
+ * vjeruje cijeni/količini koju pošalje browser (vidi createOrder u
+ * orders/service.ts). Namjerno čita SAMO published_paketi (ono što je
+ * javna stranica stvarno prikazala), ne draft `paketi` — admin možda u
+ * tom trenutku uređuje druge cijene koje kupac nikad nije vidio.
+ */
+export async function getPublishedProductBundle(
+  productId: string,
+  bundleId: string
+): Promise<ProductBundle | null> {
+  const rows = await sql()<{ published_paketi_aktivni: boolean; published_paketi: string | null }[]>`
+    SELECT published_paketi_aktivni, published_paketi FROM products
+     WHERE id = ${productId} AND deleted_at IS NULL AND status = 'published'`;
+  const r = rows[0];
+  if (!r || !r.published_paketi_aktivni || !r.published_paketi) return null;
+  const list = parseJson<ProductBundle[]>(r.published_paketi, []);
+  return list.find((b) => b.id === bundleId) ?? null;
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -206,6 +233,8 @@ export async function createProduct(input: CreateProductInput): Promise<Product>
     VALUES (${id}, ${input.naziv}, ${slug}, '', '', '', 'draft', ${cijena},
             ${staraCijena}, ${nabavnaCijena}, ${badge}, ${JSON.stringify(hero)}, ${"{}"},
             ${JSON.stringify(sections)}, ${ts}, ${ts})`;
+  // paketi_aktivni/paketi ostaju na DEFAULT iz šeme (isključeno, []) —
+  // novi proizvod se uvijek ponaša kao bez paketa dok admin sam ne uključi.
 
   return (await getProduct(id))!;
 }
@@ -227,6 +256,8 @@ export interface UpdateProductInput {
   hero?: Hero;
   seo?: Seo;
   sections?: Block[];
+  paketiAktivni?: boolean;
+  paketi?: ProductBundle[];
 }
 
 /** Sprema NACRT. Nikad ne mijenja objavljenu verziju. */
@@ -258,6 +289,8 @@ export async function updateProduct(
     hero: patch.hero ?? cur.hero,
     seo: patch.seo ?? cur.seo,
     sections: patch.sections ?? cur.sections,
+    paketiAktivni: patch.paketiAktivni ?? cur.paketiAktivni,
+    paketi: patch.paketi ?? cur.paketi,
   };
 
   await sql()`
@@ -274,6 +307,8 @@ export async function updateProduct(
       hero = ${JSON.stringify(next.hero)},
       seo = ${JSON.stringify(next.seo)},
       sections = ${JSON.stringify(next.sections)},
+      paketi_aktivni = ${next.paketiAktivni},
+      paketi = ${JSON.stringify(next.paketi)},
       updated_at = ${nowIso()}
      WHERE id = ${id}`;
 
@@ -317,6 +352,8 @@ export async function publishProduct(
       published_hero = ${JSON.stringify(p.hero)},
       published_sections = ${JSON.stringify(p.sections)},
       published_data = ${JSON.stringify(pub)},
+      published_paketi_aktivni = ${p.paketiAktivni},
+      published_paketi = ${JSON.stringify(p.paketi)},
       published_at = ${ts},
       updated_at = ${ts}
      WHERE id = ${id}`;
@@ -340,12 +377,14 @@ export async function duplicateProduct(id: string): Promise<Product | null> {
     slug: uniqueSlug(`${src.slug}-copy`, await allSlugs()),
     copyFromId: id,
   });
-  // kopiraj i SEO/sku/kategoriju, ali ostaje DRAFT
+  // kopiraj i SEO/sku/kategoriju/pakete, ali ostaje DRAFT (paketi_aktivni
+  // se NAMJERNO ne kopira kao true — admin ponovo potvrdi na kopiji)
   await updateProduct(copy.id, {
     sku: src.sku,
     kategorija: src.kategorija,
     shopKategorija: src.shopKategorija,
     seo: { ...src.seo, canonical: "" },
+    paketi: src.paketi.map((b) => ({ ...b, id: `pkt_${Math.random().toString(36).slice(2, 10)}` })),
   });
   // kopiraj recenzije
   for (const r of await listReviews(id)) {

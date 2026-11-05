@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getProductCostPrice } from "@/lib/cms/repo";
+import { getProductCostPrice, getPublishedProductBundle } from "@/lib/cms/repo";
 import {
   getOrderByIdempotencyKey,
   insertOrder,
@@ -77,13 +77,45 @@ export async function createOrder(
   if (!productName)
     return { ok: false, status: 400, error: "Nedostaje proizvod." };
 
-  const quantity = Math.min(50, Math.max(1, Math.trunc(Number(raw.quantity) || 1)));
-  const unitPrice = Math.max(0, Number(raw.unitPrice) || 0);
   const shippingPrice = Math.max(0, Number(raw.shippingPrice) || 0);
-  if (!Number.isFinite(unitPrice) || !Number.isFinite(shippingPrice))
+  if (!Number.isFinite(shippingPrice))
     return { ok: false, status: 400, error: "Neispravna cijena." };
 
-  const subtotal = Math.round(unitPrice * quantity * 100) / 100;
+  let quantity = Math.min(50, Math.max(1, Math.trunc(Number(raw.quantity) || 1)));
+  let unitPrice = Math.max(0, Number(raw.unitPrice) || 0);
+  let subtotal = Math.round(unitPrice * quantity * 100) / 100;
+  let bundleLabel = "";
+
+  // Paketna ponuda: cijena/količina se NIKAD ne uzimaju iz zahtjeva —
+  // uvijek se pročitaju iz baze (ono što je javna stranica stvarno
+  // prikazala), pa kupac ne može izmijeniti cijenu kroz browser. Ako je
+  // bundleId poslan, a ne nađe se (paket obrisan/isključen u međuvremenu,
+  // ili tuđ productId), narudžba se ODBIJA — ne pada tiho nazad na
+  // klijentovu cijenu.
+  const productId = raw.productId ? clean(raw.productId, 64) : null;
+  const bundleId = clean(raw.bundleId, 40);
+  if (bundleId) {
+    if (!productId)
+      return { ok: false, status: 400, error: "Nedostaje proizvod za izabrani paket." };
+    const bundle = await getPublishedProductBundle(productId, bundleId);
+    if (!bundle)
+      return {
+        ok: false,
+        status: 409,
+        error: "Izabrani paket više nije dostupan. Osvježite stranicu i pokušajte ponovo.",
+      };
+    quantity = bundle.kolicina;
+    subtotal = Math.round(bundle.cijena * 100) / 100;
+    // unit_price je informativno (kolona postoji za SVE narudžbe) —
+    // izvedeno iz subtotal/quantity da zbir ostane tačan, umjesto da se
+    // koristi "redovna" cijena po komadu koju paket baš i ne prati 1:1.
+    unitPrice = Math.round((subtotal / quantity) * 100) / 100;
+    bundleLabel = bundle.naziv;
+  }
+
+  if (!Number.isFinite(unitPrice) || !Number.isFinite(subtotal))
+    return { ok: false, status: 400, error: "Neispravna cijena." };
+
   const totalPrice = Math.round((subtotal + shippingPrice) * 100) / 100;
 
   const idempotencyKey = clean(raw.idempotencyKey, 100);
@@ -121,8 +153,6 @@ export async function createOrder(
 
   /* ---------- 4. upis u bazu ---------- */
 
-  const productId = raw.productId ? clean(raw.productId, 64) : null;
-
   // Nabavna cijena se "fotografiše" ovdje, u trenutku prodaje — ne
   // referenciše proizvod, pa kasnija promjena cijene kod dobavljača ne
   // mijenja retroaktivno stare narudžbe. Ako lookup padne (baza, ili
@@ -151,6 +181,7 @@ export async function createOrder(
     productName,
     quantity,
     unitPrice,
+    bundleLabel,
     subtotal,
     shippingPrice,
     totalPrice,

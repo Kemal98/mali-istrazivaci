@@ -1,7 +1,8 @@
 import BookOrderTrigger from "@/components/BookOrderTrigger";
 import HeroGallery from "./HeroGallery";
+import PaketiPicker from "./PaketiPicker";
 import RichText from "./RichText";
-import type { Hero } from "@/lib/cms/types";
+import type { Hero, ProductBundle } from "@/lib/cms/types";
 import { ocjene } from "@/lib/cms/plural";
 
 /**
@@ -24,12 +25,15 @@ export default function CmsHero({
   staraCijena,
   badge,
   povjerenje = [],
+  paketi = [],
 }: {
   povjerenje?: string[];
   hero: Hero;
   cijena: number | null;
   staraCijena: number | null;
   badge: string;
+  /** Paketna ponuda — kad ima stavki, PRIKAZUJE SE UMJESTO obične cijene. */
+  paketi?: ProductBundle[];
 }) {
   const oskudicaPoruka = currentOskudicaPoruka(hero.oskudicaPoruke);
   return (
@@ -80,7 +84,9 @@ export default function CmsHero({
           )
         ) : null}
 
-        {hero.prikaziCijenu && cijena !== null ? (
+        {paketi.length > 0 ? (
+          <PaketiPicker paketi={paketi} />
+        ) : hero.prikaziCijenu && cijena !== null ? (
           <div className="dawn-price-row">
             {staraCijena !== null ? (
               <span className="dawn-price-old">{staraCijena} KM</span>

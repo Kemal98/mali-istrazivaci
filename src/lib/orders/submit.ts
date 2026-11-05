@@ -21,6 +21,8 @@ export interface SubmitOrderInput {
   productName: string;
   quantity: number;
   unitPrice: number;
+  /** Izabrani paket (vidi CreateOrderInput u orders/types.ts) — server ignoriše unitPrice/quantity gore kad je ovo poslano. */
+  bundleId?: string;
   shippingPrice: number;
   /** Polja koja postojeći Apps Script koristi za Meta CAPI (eventId itd.). */
   sheetExtras?: Record<string, unknown>;
