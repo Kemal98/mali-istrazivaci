@@ -13,6 +13,7 @@ import {
   type DayProfit,
 } from "@/lib/orders/profit";
 import { countUnsynced, listOrders } from "@/lib/orders/repo";
+import { latestCutoffDate } from "@/lib/orders/cutoffs";
 import { shopStats } from "@/lib/orders/dashboard";
 import {
   bySource,
@@ -34,12 +35,30 @@ export const dynamic = "force-dynamic";
 
 /* ---------- pomoćno: rasponi datuma ---------- */
 
+/**
+ * Zadani period (bez period/from/to u URL-u) je "od zadnjeg presjeka" ako
+ * admin ima napravljen bar jedan (vidi /admin/presjeci), inače stari zadani
+ * "30 dana" — da se ponašanje ne promijeni dok presjek ne postoji. Stariji
+ * period ostaje dostupan preko ostalih čipova (90 dana, prošli mjesec,
+ * datum od-do) — presjek ništa ne sakriva, samo mijenja šta je zadano.
+ */
 function resolvePeriod(
   period: string | undefined,
   from?: string,
-  to?: string
+  to?: string,
+  cutoffDate?: string | null
 ): { range: Period; fromDate: Date; toDate: Date; label: string } {
   const now = new Date();
+
+  if (period === "cutoff" && cutoffDate) {
+    const f = sarajevoStartOfDay(new Date(`${cutoffDate}T12:00:00Z`));
+    return {
+      range: { from: f.toISOString() },
+      fromDate: f,
+      toDate: now,
+      label: `od presjeka ${cutoffDate.split("-").reverse().join(".")}.`,
+    };
+  }
 
   if (from || to) {
     const f = from ? new Date(from) : sarajevoStartOfDay(new Date(now.getTime() - 29 * 864e5));
@@ -76,6 +95,15 @@ function resolvePeriod(
       };
     }
     default: {
+      if (!period && cutoffDate) {
+        const f = sarajevoStartOfDay(new Date(`${cutoffDate}T12:00:00Z`));
+        return {
+          range: { from: f.toISOString() },
+          fromDate: f,
+          toDate: now,
+          label: `od presjeka ${cutoffDate.split("-").reverse().join(".")}.`,
+        };
+      }
       const f = sarajevoStartOfDay(new Date(now.getTime() - 29 * 864e5));
       return { range: { from: f.toISOString() }, fromDate: f, toDate: now, label: "30 dana" };
     }
@@ -110,7 +138,8 @@ export default async function DashboardPage({
       }
     });
   }
-  const { range, fromDate, toDate, label } = resolvePeriod(sp.period, sp.from, sp.to);
+  const cutoffDate = await latestCutoffDate();
+  const { range, fromDate, toDate, label } = resolvePeriod(sp.period, sp.from, sp.to, cutoffDate);
 
   const now = new Date();
   const todayRange: Period = { from: sarajevoStartOfDay(now).toISOString() };
@@ -441,7 +470,7 @@ export default async function DashboardPage({
           <span>Narudžbe i promet po danima — {label}</span>
         </div>
         <Suspense fallback={<div className="adm-hint">Učitavam…</div>}>
-          <DashboardPeriod />
+          <DashboardPeriod cutoffDate={cutoffDate} />
         </Suspense>
         <div style={{ marginTop: 16 }}>
           <OrdersChart data={series} />

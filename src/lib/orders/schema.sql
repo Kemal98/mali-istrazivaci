@@ -142,3 +142,20 @@ CREATE INDEX IF NOT EXISTS idx_manual_sales_product ON manual_sales (product_nam
 CREATE INDEX IF NOT EXISTS idx_manual_sales_date    ON manual_sales (date DESC);
 
 ALTER TABLE manual_sales ENABLE ROW LEVEL SECURITY;
+
+-- "Presjek" zarade/statistike ("kreni od nule od danas") — NE briše
+-- narudžbe ni kupce, samo pomjera ZADANU početnu tačku Dashboarda
+-- (zadano postaje "od zadnjeg presjeka" umjesto fiksnih "30 dana", vidi
+-- resolvePeriod u dashboard/page.tsx). Admin i dalje može birati stariji
+-- period (90 dana, prošli mjesec, datum od-do) — ništa staro nije
+-- nedostupno, samo je zadano drugo. Posebna stranica /admin/presjeci
+-- čuva istoriju presjeka i zaradu zatvorenu svakim od njih.
+CREATE TABLE IF NOT EXISTS business_cutoffs (
+  id          text PRIMARY KEY,
+  date        text NOT NULL,       -- YYYY-MM-DD, kalendarski dan (Europe/Sarajevo)
+  note        text NOT NULL DEFAULT '',
+  created_at  text NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_business_cutoffs_date ON business_cutoffs (date DESC);
+ALTER TABLE business_cutoffs ENABLE ROW LEVEL SECURITY;
+

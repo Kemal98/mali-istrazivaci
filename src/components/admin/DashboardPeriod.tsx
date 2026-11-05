@@ -12,10 +12,12 @@ const PRESETS = [
   { key: "lastmonth", label: "Prošli mjesec" },
 ];
 
-export default function DashboardPeriod() {
+export default function DashboardPeriod({ cutoffDate }: { cutoffDate?: string | null }) {
   const router = useRouter();
   const params = useSearchParams();
-  const active = params.get("period") ?? "30d";
+  // Zadano (bez ?period u URL-u) je "od presjeka" ako presjek postoji,
+  // inače "30 dana" — isto pravilo kao resolvePeriod u dashboard/page.tsx.
+  const active = params.get("period") ?? (cutoffDate ? "cutoff" : "30d");
   const [custom, setCustom] = useState(
     Boolean(params.get("from") && !params.get("period"))
   );
@@ -32,6 +34,20 @@ export default function DashboardPeriod() {
   return (
     <>
       <div className="adm-chips">
+        {cutoffDate ? (
+          <button
+            type="button"
+            className="adm-chip"
+            data-active={!custom && active === "cutoff"}
+            onClick={() => {
+              setCustom(false);
+              set({ period: "cutoff", from: undefined, to: undefined });
+            }}
+            title={`Od zadnjeg presjeka (${cutoffDate.split("-").reverse().join(".")}.)`}
+          >
+            📐 Od presjeka
+          </button>
+        ) : null}
         {PRESETS.map((p) => (
           <button
             key={p.key}
