@@ -31,10 +31,6 @@ export const BOOK_ORDERS_ENABLED = true;
 // nazad (isti fizički proizvod/aplikator, samo nova ponuda/ime).
 export const BLINGER_ORDERS_ENABLED = true;
 
-// Rotirajuće zvečke — uključeno na izričit zahtjev. Cijena i slika su
-// stvarne.
-export const RATTLE_ORDERS_ENABLED = true;
-
 // Projektor za crtanje — nova podstranica. Isključeno dok se ne potvrde
 // stvarne fotografije proizvoda, tvoja prodajna cijena (26/35 KM je uzeto
 // s referentne stranice, nije potvrđeno da je to tvoja cijena) i zalihe.

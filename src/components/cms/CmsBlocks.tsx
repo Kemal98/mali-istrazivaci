@@ -109,7 +109,7 @@ function StoryInner({ block }: { block: Block }) {
   switch (block.type) {
     case "naslov":
       return (
-        <p
+        <div
           className="dawn-story-stmt"
           style={{
             fontSize: H_SIZE[s("velicina", "L")] ?? H_SIZE.L,
@@ -120,13 +120,13 @@ function StoryInner({ block }: { block: Block }) {
           <span style={highlightStyle(s("istaknutoBoja"))}>
             <RichText text={s("tekst")} />
           </span>
-        </p>
+        </div>
       );
 
     case "tekst": {
       const velicina = s("velicina");
       return (
-        <p
+        <div
           className="dawn-story-text"
           style={{
             textAlign: (s("align", "center") || "center") as "center",
@@ -142,22 +142,22 @@ function StoryInner({ block }: { block: Block }) {
               <RichText text={s("tekst")} />
             )}
           </span>
-        </p>
+        </div>
       );
     }
 
     case "naslov_tekst":
       return (
         <>
-          <p
+          <div
             className="dawn-story-stmt"
             style={{ textAlign: (s("align", "center") || "center") as "center" }}
           >
             <span style={highlightStyle(s("istaknutoBoja"))}>
               <RichText text={s("naslov")} />
             </span>
-          </p>
-          <p
+          </div>
+          <div
             className="dawn-story-text"
             style={{ textAlign: (s("align", "center") || "center") as "center" }}
           >
@@ -170,7 +170,7 @@ function StoryInner({ block }: { block: Block }) {
                 <RichText text={s("tekst")} />
               )}
             </span>
-          </p>
+          </div>
         </>
       );
 
@@ -189,9 +189,9 @@ function StoryInner({ block }: { block: Block }) {
             style={imgRadius(bo("radius", true))}
           />
           {s("caption") ? (
-            <p className="dawn-story-text">
+            <div className="dawn-story-text">
               <span>{s("caption")}</span>
-            </p>
+            </div>
           ) : null}
         </>
       );
@@ -233,20 +233,20 @@ function StoryInner({ block }: { block: Block }) {
         />
       ) : null;
       const copy = s("tekst") ? (
-        <p className="dawn-story-text">
+        <div className="dawn-story-text">
           <span>
             <RichText text={s("tekst")} />
           </span>
-        </p>
+        </div>
       ) : null;
       return (
         <>
           {s("naslov") ? (
-            <p className="dawn-story-stmt">
+            <div className="dawn-story-stmt">
               <span>
                 <RichText text={s("naslov")} />
               </span>
-            </p>
+            </div>
           ) : null}
           {layout === "text-top" ? (
             <>
@@ -309,14 +309,14 @@ function renderSolo({ block, reviews }: { block: Block; reviews: Review[] }) {
       const copy = (
         <div>
           {s("naslov") ? (
-            <p className="dawn-story-stmt">
+            <div className="dawn-story-stmt">
               <RichText text={s("naslov")} />
-            </p>
+            </div>
           ) : null}
           {s("tekst") ? (
-            <p className="dawn-story-text">
+            <div className="dawn-story-text">
               <RichText text={s("tekst")} />
-            </p>
+            </div>
           ) : null}
         </div>
       );
@@ -542,9 +542,9 @@ function renderSolo({ block, reviews }: { block: Block; reviews: Review[] }) {
                   <div>
                     {k.naslov ? <h3>{k.naslov}</h3> : null}
                     {k.tekst ? (
-                      <p>
+                      <div>
                         <RichText text={k.tekst} />
-                      </p>
+                      </div>
                     ) : null}
                   </div>
                 </div>
@@ -569,9 +569,9 @@ function renderSolo({ block, reviews }: { block: Block; reviews: Review[] }) {
                 <details key={i} open={i === 0}>
                   <summary>{q.pitanje}</summary>
                   {q.odgovor ? (
-                    <p>
+                    <div className="cms-faq-answer">
                       <RichText text={q.odgovor} />
-                    </p>
+                    </div>
                   ) : null}
                 </details>
               ))}
@@ -595,9 +595,9 @@ function renderSolo({ block, reviews }: { block: Block; reviews: Review[] }) {
                 <div className="cms-isticanje" key={i}>
                   {it.naslov ? <b>{it.naslov}</b> : null}
                   {it.tekst ? (
-                    <p>
+                    <div className="cms-isticanje-tekst">
                       <RichText text={it.tekst} />
-                    </p>
+                    </div>
                   ) : null}
                 </div>
               ))}
