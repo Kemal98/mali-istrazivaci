@@ -29,6 +29,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
   if (body.datum !== undefined) patch.datum = str(body.datum, 40);
   if (body.status !== undefined)
     patch.status = body.status === "hidden" ? "hidden" : "published";
+  if (body.featuredHomepage !== undefined) patch.featuredHomepage = bool(body.featuredHomepage);
   await updateReview(id, patch);
   return NextResponse.json({ ok: true });
 }

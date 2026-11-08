@@ -18,6 +18,7 @@ import {
   sanitizeSections,
   str,
 } from "@/lib/cms/sanitize";
+import { CATEGORY_KEYS } from "@/lib/home/types";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -40,7 +41,9 @@ export async function PATCH(request: Request, { params }: Ctx) {
   if (body.kategorija !== undefined) patch.kategorija = str(body.kategorija, 60);
   if (body.shopKategorija !== undefined) {
     const v = str(body.shopKategorija, 20);
-    patch.shopKategorija = v === "bebe" || v === "djevojcice" || v === "edukativno" ? v : "";
+    patch.shopKategorija = (CATEGORY_KEYS as readonly string[]).includes(v)
+      ? (v as (typeof CATEGORY_KEYS)[number])
+      : "";
   }
   if (body.cijena !== undefined) patch.cijena = num(body.cijena);
   if (body.staraCijena !== undefined) patch.staraCijena = num(body.staraCijena);
@@ -51,6 +54,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
   if (body.sections !== undefined) patch.sections = sanitizeSections(body.sections);
   if (body.paketiAktivni !== undefined) patch.paketiAktivni = bool(body.paketiAktivni);
   if (body.paketi !== undefined) patch.paketi = sanitizeBundles(body.paketi);
+  if (body.prikaziNaPocetnoj !== undefined) patch.prikaziNaPocetnoj = bool(body.prikaziNaPocetnoj);
 
   const product = await updateProduct(id, patch);
   if (!product) return NextResponse.json({ error: "Nema proizvoda." }, { status: 404 });

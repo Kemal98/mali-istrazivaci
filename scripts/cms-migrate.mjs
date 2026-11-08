@@ -24,6 +24,8 @@ const schemaFiles = [
   path.join(process.cwd(), "src", "lib", "nabavke", "schema.sql"),
   path.join(process.cwd(), "src", "lib", "ads", "schema.sql"),
   path.join(process.cwd(), "src", "lib", "messenger", "schema.sql"),
+  // home_content nema FK, ali logično ide uz cms (proizvodi/recenzije)
+  path.join(process.cwd(), "src", "lib", "home", "schema.sql"),
 ];
 
 const sql = postgres(conn, { prepare: false, max: 1, onnotice: () => {} });
@@ -39,7 +41,7 @@ try {
        AND table_name IN ('products','media','reviews','templates','settings',
                           'orders','order_events','ad_spend','stock_purchases',
                           'nabavke_partije','nabavke_status_log',
-                          'nabavke_potrosnja','nabavke_korekcije')
+                          'nabavke_potrosnja','nabavke_korekcije','home_content')
      ORDER BY table_name`;
   console.log("Tabele u bazi:", tables.map((t) => t.table_name).join(", "));
   console.log("Migracija završena.");

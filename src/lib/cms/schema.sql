@@ -57,6 +57,15 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS paketi text NOT NULL DEFAULT '[]';
 ALTER TABLE products ADD COLUMN IF NOT EXISTS published_paketi_aktivni boolean NOT NULL DEFAULT false;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS published_paketi text;
 
+-- Redizajn početne (2026-11-08): admin prekidač da se proizvod isključi
+-- sa početne stranice (rasprodaje se i dalje normalno na svojoj
+-- stranici, samo se ne nudi na listama/rangiranju na početnoj).
+ALTER TABLE products ADD COLUMN IF NOT EXISTS prikazi_na_pocetnoj boolean NOT NULL DEFAULT true;
+
+-- Admin ručno bira koje STVARNE recenzije idu u traku na početnoj
+-- (ne sve objavljene — početna treba par najjačih, ne cijelu listu).
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS featured_homepage boolean NOT NULL DEFAULT false;
+
 CREATE INDEX IF NOT EXISTS idx_products_updated
   ON products (updated_at DESC);
 

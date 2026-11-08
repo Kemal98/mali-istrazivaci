@@ -39,6 +39,7 @@ function emptyReview(productId: string | null): Review {
     datum: "",
     status: "published",
     sortOrder: 0,
+    featuredHomepage: false,
   };
 }
 
@@ -48,12 +49,14 @@ function Row({
   onEdit,
   onDelete,
   onToggleStatus,
+  onToggleFeatured,
 }: {
   r: Review;
   products: ProductRef[];
   onEdit: () => void;
   onDelete: () => void;
   onToggleStatus: () => void;
+  onToggleFeatured: () => void;
 }) {
   const {
     attributes,
@@ -116,6 +119,9 @@ function Row({
           >
             {r.status === "published" ? "Objavljena" : "Skrivena"}
           </span>
+          {r.featuredHomepage ? (
+            <span className="adm-badge adm-badge-pub">★ Na početnoj</span>
+          ) : null}
           <button type="button" className="adm-btn adm-btn-sm" onClick={onEdit}>
             UREDI
           </button>
@@ -125,6 +131,14 @@ function Row({
             onClick={onToggleStatus}
           >
             {r.status === "published" ? "SAKRIJ" : "OBJAVI"}
+          </button>
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm"
+            onClick={onToggleFeatured}
+            title="Prikaži/skloni sa trake recenzija na početnoj stranici"
+          >
+            {r.featuredHomepage ? "SKLONI SA POČETNE" : "★ NA POČETNU"}
           </button>
           <button
             type="button"
@@ -214,6 +228,17 @@ export default function ReviewsPanel({
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
+    });
+  }
+
+  /** Ručno biranje koje STVARNE recenzije idu u traku na početnoj. */
+  async function toggleFeatured(r: Review) {
+    const featuredHomepage = !r.featuredHomepage;
+    setList((l) => l.map((x) => (x.id === r.id ? { ...x, featuredHomepage } : x)));
+    await fetch(`/api/admin/reviews/${r.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ featuredHomepage }),
     });
   }
 
@@ -310,6 +335,7 @@ export default function ReviewsPanel({
                   onEdit={() => setDraft(r)}
                   onDelete={() => setToDelete(r)}
                   onToggleStatus={() => toggleStatus(r)}
+                  onToggleFeatured={() => toggleFeatured(r)}
                 />
               ))}
             </SortableContext>
@@ -403,6 +429,12 @@ export default function ReviewsPanel({
               label="Prikaži oznaku „Verifikovano”"
               value={draft.verified}
               onChange={(v) => setDraft({ ...draft, verified: v })}
+            />
+
+            <Toggle
+              label="★ Prikaži na početnoj stranici"
+              value={draft.featuredHomepage}
+              onChange={(v) => setDraft({ ...draft, featuredHomepage: v })}
             />
 
             <div className="adm-modal-foot">

@@ -13,6 +13,7 @@ import {
   Template,
   defaultHero,
 } from "./types";
+import { CATEGORY_KEYS } from "../home/types";
 import { slugify, uniqueSlug } from "./slug";
 
 // Sve funkcije su async jer Postgres driver je async (SQLite je bio sinhron).
@@ -29,10 +30,10 @@ function rowToProduct(r: Row): Product {
     slug: String(r.slug ?? ""),
     sku: String(r.sku ?? ""),
     kategorija: String(r.kategorija ?? ""),
-    shopKategorija: (["bebe", "djevojcice", "edukativno"] as const).includes(
-      r.shop_kategorija as never
+    shopKategorija: (CATEGORY_KEYS as readonly string[]).includes(
+      r.shop_kategorija as string
     )
-      ? (r.shop_kategorija as "bebe" | "djevojcice" | "edukativno")
+      ? (r.shop_kategorija as Product["shopKategorija"])
       : "",
     status: (String(r.status) === "published" ? "published" : "draft") as ProductStatus,
     cijena: r.cijena === null || r.cijena === undefined ? null : Number(r.cijena),
@@ -63,6 +64,7 @@ function rowToProduct(r: Row): Product {
     publishedPaketi: r.published_paketi
       ? parseJson<ProductBundle[]>(r.published_paketi as string, [])
       : null,
+    prikaziNaPocetnoj: r.prikazi_na_pocetnoj !== false,
     createdAt: String(r.created_at),
     updatedAt: String(r.updated_at),
     publishedAt: r.published_at ? String(r.published_at) : null,
@@ -82,6 +84,7 @@ function rowToReview(r: Row): Review {
     datum: String(r.datum ?? ""),
     status: String(r.status) === "hidden" ? "hidden" : "published",
     sortOrder: Number(r.sort_order ?? 0),
+    featuredHomepage: Boolean(r.featured_homepage),
   };
 }
 
@@ -248,7 +251,7 @@ export interface UpdateProductInput {
   slug?: string;
   sku?: string;
   kategorija?: string;
-  shopKategorija?: "" | "bebe" | "djevojcice" | "edukativno";
+  shopKategorija?: Product["shopKategorija"];
   cijena?: number | null;
   staraCijena?: number | null;
   nabavnaCijena?: number | null;
@@ -258,6 +261,7 @@ export interface UpdateProductInput {
   sections?: Block[];
   paketiAktivni?: boolean;
   paketi?: ProductBundle[];
+  prikaziNaPocetnoj?: boolean;
 }
 
 /** Sprema NACRT. Nikad ne mijenja objavljenu verziju. */
@@ -291,6 +295,7 @@ export async function updateProduct(
     sections: patch.sections ?? cur.sections,
     paketiAktivni: patch.paketiAktivni ?? cur.paketiAktivni,
     paketi: patch.paketi ?? cur.paketi,
+    prikaziNaPocetnoj: patch.prikaziNaPocetnoj ?? cur.prikaziNaPocetnoj,
   };
 
   await sql()`
@@ -309,6 +314,7 @@ export async function updateProduct(
       sections = ${JSON.stringify(next.sections)},
       paketi_aktivni = ${next.paketiAktivni},
       paketi = ${JSON.stringify(next.paketi)},
+      prikazi_na_pocetnoj = ${next.prikaziNaPocetnoj},
       updated_at = ${nowIso()}
      WHERE id = ${id}`;
 
@@ -506,7 +512,7 @@ export async function createReview(
   await sql()`
     INSERT INTO reviews
       (id, product_id, ime, inicijal, rating, tekst, verified, slika, datum,
-       status, sort_order, created_at)
+       status, sort_order, created_at, featured_homepage)
     VALUES (
       ${id},
       ${r.productId ?? null},
@@ -519,7 +525,8 @@ export async function createReview(
       ${r.datum ?? ""},
       ${r.status === "hidden" ? "hidden" : "published"},
       ${order},
-      ${nowIso()})`;
+      ${nowIso()},
+      ${r.featuredHomepage ?? false})`;
 
   const rows = await sql()<Row[]>`SELECT * FROM reviews WHERE id = ${id}`;
   return rowToReview(rows[0]);
@@ -540,7 +547,8 @@ export async function updateReview(id: string, r: Partial<Review>) {
       slika = ${r.slika ?? c.slika},
       datum = ${r.datum ?? c.datum},
       status = ${r.status ?? c.status},
-      sort_order = ${r.sortOrder ?? c.sortOrder}
+      sort_order = ${r.sortOrder ?? c.sortOrder},
+      featured_homepage = ${r.featuredHomepage !== undefined ? r.featuredHomepage : c.featuredHomepage}
      WHERE id = ${id}`;
 }
 

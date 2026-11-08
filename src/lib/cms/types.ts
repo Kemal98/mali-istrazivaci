@@ -119,7 +119,7 @@ export interface Product {
   sku: string;
   kategorija: string;
   /** Za "Kupuj po kategoriji" na početnoj — "" = ne prikazuje se ni u jednoj kategoriji. */
-  shopKategorija: "" | "bebe" | "djevojcice" | "edukativno";
+  shopKategorija: "" | "bebe" | "djevojcice" | "djecaci" | "edukativno" | "kreativno";
   status: ProductStatus;
   cijena: number | null;
   staraCijena: number | null;
@@ -139,6 +139,9 @@ export interface Product {
   /** Paketne ponude — OBJAVLJENO (ono što javna stranica stvarno prikazuje/prodaje). */
   publishedPaketiAktivni: boolean;
   publishedPaketi: ProductBundle[] | null;
+  /** Prekidač za početnu stranicu — proizvod se i dalje normalno prodaje
+   *  na svojoj stranici, samo se ne nudi na listama/rangiranju na početnoj. */
+  prikaziNaPocetnoj: boolean;
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
@@ -177,6 +180,8 @@ export interface Review {
   datum: string;
   status: "published" | "hidden";
   sortOrder: number;
+  /** Admin ručno bira koje STVARNE recenzije idu u traku na početnoj. */
+  featuredHomepage: boolean;
 }
 
 export interface Template {

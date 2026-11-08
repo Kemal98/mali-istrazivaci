@@ -19,6 +19,7 @@ import {
 } from "./fields";
 import { slugify } from "@/lib/cms/slug";
 import type { Block, GlobalSettings, Hero, Product, ProductBundle, Review, Seo } from "@/lib/cms/types";
+import { CATEGORY_KEYS, CATEGORY_LABELS } from "@/lib/home/types";
 
 type Tab = "osnovno" | "hero" | "sadrzaj" | "recenzije" | "seo";
 
@@ -35,7 +36,7 @@ interface Draft {
   slug: string;
   sku: string;
   kategorija: string;
-  shopKategorija: "" | "bebe" | "djevojcice" | "edukativno";
+  shopKategorija: Product["shopKategorija"];
   cijena: number | null;
   staraCijena: number | null;
   nabavnaCijena: number | null;
@@ -45,6 +46,7 @@ interface Draft {
   sections: Block[];
   paketiAktivni: boolean;
   paketi: ProductBundle[];
+  prikaziNaPocetnoj: boolean;
 }
 
 function toDraft(p: Product): Draft {
@@ -63,6 +65,7 @@ function toDraft(p: Product): Draft {
     sections: p.sections,
     paketiAktivni: p.paketiAktivni,
     paketi: p.paketi,
+    prikaziNaPocetnoj: p.prikaziNaPocetnoj,
   };
 }
 
@@ -451,10 +454,13 @@ export default function ProductEditor({
               }
               options={[
                 { value: "", label: "— ne prikazuj ni u jednoj kategoriji —" },
-                { value: "bebe", label: "Za bebe" },
-                { value: "djevojcice", label: "Za djevojčice" },
-                { value: "edukativno", label: "Edukativne" },
+                ...CATEGORY_KEYS.map((k) => ({ value: k, label: CATEGORY_LABELS[k] })),
               ]}
+            />
+            <Toggle
+              label="Prikaži na početnoj stranici"
+              value={draft.prikaziNaPocetnoj}
+              onChange={(v) => patch({ prikaziNaPocetnoj: v })}
             />
           </div>
 
