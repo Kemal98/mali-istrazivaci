@@ -20,6 +20,8 @@ if (!conn) {
 const schemaFiles = [
   path.join(process.cwd(), "src", "lib", "cms", "schema.sql"),
   path.join(process.cwd(), "src", "lib", "orders", "schema.sql"),
+  // nabavke ima FK i na products i na orders, pa ide nakon oboje
+  path.join(process.cwd(), "src", "lib", "nabavke", "schema.sql"),
   path.join(process.cwd(), "src", "lib", "ads", "schema.sql"),
   path.join(process.cwd(), "src", "lib", "messenger", "schema.sql"),
 ];
@@ -35,7 +37,9 @@ try {
     SELECT table_name FROM information_schema.tables
      WHERE table_schema = 'public'
        AND table_name IN ('products','media','reviews','templates','settings',
-                          'orders','order_events','ad_spend','stock_purchases')
+                          'orders','order_events','ad_spend','stock_purchases',
+                          'nabavke_partije','nabavke_status_log',
+                          'nabavke_potrosnja','nabavke_korekcije')
      ORDER BY table_name`;
   console.log("Tabele u bazi:", tables.map((t) => t.table_name).join(", "));
   console.log("Migracija završena.");
