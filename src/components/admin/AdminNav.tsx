@@ -15,7 +15,7 @@ const ITEMS = [
   // MESSENGER_INBOX_PAUSED u api/webhooks/messenger/route.ts.
   { href: "/admin/products", label: "PROIZVODI", ico: "▤" },
   { href: "/admin/troskovi", label: "TROŠKOVI REKLAMA", ico: "📣" },
-  { href: "/admin/nabavka", label: "NABAVKA ROBE", ico: "📦" },
+  { href: "/admin/nabavke", label: "ZALIHE I NABAVKE", ico: "📦" },
   { href: "/admin/presjeci", label: "PRESJECI ZARADE", ico: "📐" },
   { href: "/admin/media", label: "MEDIA LIBRARY", ico: "▣" },
   { href: "/admin/reviews", label: "RECENZIJE", ico: "★" },

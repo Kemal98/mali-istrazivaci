@@ -1,78 +1,10 @@
-import { listPurchases } from "@/lib/ads/repo";
-import { listProducts } from "@/lib/cms/repo";
-import { profitAsIfSold } from "@/lib/orders/profit";
-import NabavkaManager from "@/components/admin/NabavkaManager";
-import StockCutoffButton from "@/components/admin/StockCutoffButton";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function NabavkaPage() {
-  const items = await listPurchases();
-  const cms = await listProducts();
-  const all = await profitAsIfSold({}, "2000-01-01", "2100-01-01");
-  const stock = all.rows.filter((r) => r.stock !== null);
-
-  const products = [...new Set(cms.map((p) => p.naziv.trim()).filter(Boolean))].sort();
-
-  return (
-    <>
-      <div className="adm-head">
-        <div>
-          <h1>Nabavka robe</h1>
-          <p className="adm-hint">
-            Upiši koliko si komada kupio i koliko si ukupno platio. Iz toga se
-            računa stvarna nabavna cijena po komadu i stanje zaliha
-            (kupljeno − prodano; računaju se sve narudžbe).
-          </p>
-        </div>
-      </div>
-
-      {stock.length > 0 ? (
-        <div className="adm-card">
-          <div className="adm-card-title">Stanje zaliha</div>
-          <div className="adm-table-wrap" style={{ border: "none" }}>
-            <table className="adm-table">
-              <thead>
-                <tr>
-                  <th>Proizvod</th>
-                  <th style={{ textAlign: "right" }}>Kupljeno</th>
-                  <th style={{ textAlign: "right" }}>Prodano</th>
-                  <th style={{ textAlign: "right" }}>Na stanju</th>
-                  <th style={{ textAlign: "right" }}>Uloženo</th>
-                  <th style={{ textAlign: "right" }}>Po komadu</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stock.map((r) => (
-                  <tr key={r.productName}>
-                    <td>{r.productName}</td>
-                    <td style={{ textAlign: "right" }}>{r.purchasedQty}</td>
-                    <td style={{ textAlign: "right" }}>{r.soldQty}</td>
-                    <td style={{ textAlign: "right" }}>
-                      <b style={{ color: (r.stock ?? 0) < 0 ? "#b3261e" : undefined }}>
-                        {r.stock}
-                      </b>
-                    </td>
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                      {r.purchasedCost.toLocaleString("bs-BA")} KM
-                    </td>
-                    <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                      {r.purchasedQty > 0 ? `${(r.purchasedCost / r.purchasedQty).toFixed(2)} KM` : "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <StockCutoffButton
-            rows={stock
-              .filter((r) => (r.stock ?? 0) !== 0)
-              .map((r) => ({ productName: r.productName, stock: r.stock as number }))}
-          />
-        </div>
-      ) : null}
-
-      <NabavkaManager initial={items} products={products} />
-    </>
-  );
+// Stara stranica (flat ledger stock_purchases, bez dokumentacije/FIFO-a) je
+// zamijenjena sa /admin/nabavke (partije, status, dokumenti, korekcije).
+// Stari bookmark i dalje radi — samo preusmjeri. API ruta /api/admin/
+// nabavke (stock_purchases) i dalje postoji netaknuta, samo se više ne
+// koristi iz admin UI-a.
+export default function NabavkaRedirect() {
+  redirect("/admin/nabavke");
 }

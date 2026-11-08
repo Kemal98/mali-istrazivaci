@@ -1,11 +1,16 @@
-import { listBatches } from "@/lib/nabavke/repo";
+import { listBatches, stockSummaryByProduct } from "@/lib/nabavke/repo";
 import { listProducts } from "@/lib/cms/repo";
 import NabavkeManager from "@/components/admin/NabavkeManager";
+import NabavkeDashboard from "@/components/admin/NabavkeDashboard";
 
 export const dynamic = "force-dynamic";
 
 export default async function NabavkePage() {
-  const [items, productsRaw] = await Promise.all([listBatches(), listProducts()]);
+  const [items, productsRaw, summary] = await Promise.all([
+    listBatches(),
+    listProducts(),
+    stockSummaryByProduct(),
+  ]);
   const products = productsRaw
     .map((p) => ({ id: p.id, naziv: p.naziv.trim() }))
     .filter((p) => p.naziv)
@@ -28,6 +33,8 @@ export default async function NabavkePage() {
           </a>
         </div>
       </div>
+
+      <NabavkeDashboard items={summary} />
 
       <NabavkeManager initialBatches={items} products={products} />
     </>
