@@ -142,6 +142,8 @@ export interface Product {
   /** Prekidač za početnu stranicu — proizvod se i dalje normalno prodaje
    *  na svojoj stranici, samo se ne nudi na listama/rangiranju na početnoj. */
   prikaziNaPocetnoj: boolean;
+  /** Ručno "nema na stanju" — NE blokira narudžbu, samo prikaz na listama (vidi cms/schema.sql komentar). */
+  rasprodano: boolean;
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;

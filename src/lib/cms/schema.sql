@@ -66,6 +66,14 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS prikazi_na_pocetnoj boolean NOT NU
 -- (ne sve objavljene — početna treba par najjačih, ne cijelu listu).
 ALTER TABLE reviews ADD COLUMN IF NOT EXISTS featured_homepage boolean NOT NULL DEFAULT false;
 
+-- Ručni prekidač "nema na stanju" (2026-11-08) — NE blokira narudžbu
+-- (checkout/stranica proizvoda rade i dalje potpuno normalno), samo
+-- mijenja prikaz na listama (početna/kategorije): kartica se zatamni i
+-- prikaže "Rasprodano" umjesto cijene/dugmeta, i gura se na dno "Hit
+-- proizvoda" ranga. Odvojeno od pravog sistema zaliha (nabavke_partije)
+-- — ovo je brzi ručni prekidač za "sad nemam, javi se ako hoćeš".
+ALTER TABLE products ADD COLUMN IF NOT EXISTS rasprodano boolean NOT NULL DEFAULT false;
+
 CREATE INDEX IF NOT EXISTS idx_products_updated
   ON products (updated_at DESC);
 

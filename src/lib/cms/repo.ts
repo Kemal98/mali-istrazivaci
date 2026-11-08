@@ -65,6 +65,7 @@ function rowToProduct(r: Row): Product {
       ? parseJson<ProductBundle[]>(r.published_paketi as string, [])
       : null,
     prikaziNaPocetnoj: r.prikazi_na_pocetnoj !== false,
+    rasprodano: Boolean(r.rasprodano),
     createdAt: String(r.created_at),
     updatedAt: String(r.updated_at),
     publishedAt: r.published_at ? String(r.published_at) : null,
@@ -262,6 +263,7 @@ export interface UpdateProductInput {
   paketiAktivni?: boolean;
   paketi?: ProductBundle[];
   prikaziNaPocetnoj?: boolean;
+  rasprodano?: boolean;
 }
 
 /** Sprema NACRT. Nikad ne mijenja objavljenu verziju. */
@@ -296,6 +298,7 @@ export async function updateProduct(
     paketiAktivni: patch.paketiAktivni ?? cur.paketiAktivni,
     paketi: patch.paketi ?? cur.paketi,
     prikaziNaPocetnoj: patch.prikaziNaPocetnoj ?? cur.prikaziNaPocetnoj,
+    rasprodano: patch.rasprodano ?? cur.rasprodano,
   };
 
   await sql()`
@@ -315,6 +318,7 @@ export async function updateProduct(
       paketi_aktivni = ${next.paketiAktivni},
       paketi = ${JSON.stringify(next.paketi)},
       prikazi_na_pocetnoj = ${next.prikaziNaPocetnoj},
+      rasprodano = ${next.rasprodano},
       updated_at = ${nowIso()}
      WHERE id = ${id}`;
 

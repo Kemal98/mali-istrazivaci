@@ -47,6 +47,7 @@ interface Draft {
   paketiAktivni: boolean;
   paketi: ProductBundle[];
   prikaziNaPocetnoj: boolean;
+  rasprodano: boolean;
 }
 
 function toDraft(p: Product): Draft {
@@ -66,6 +67,7 @@ function toDraft(p: Product): Draft {
     paketiAktivni: p.paketiAktivni,
     paketi: p.paketi,
     prikaziNaPocetnoj: p.prikaziNaPocetnoj,
+    rasprodano: p.rasprodano,
   };
 }
 
@@ -462,6 +464,18 @@ export default function ProductEditor({
               value={draft.prikaziNaPocetnoj}
               onChange={(v) => patch({ prikaziNaPocetnoj: v })}
             />
+            <Toggle
+              label="Rasprodano (nema na stanju)"
+              value={draft.rasprodano}
+              onChange={(v) => patch({ rasprodano: v })}
+            />
+            {draft.rasprodano ? (
+              <p className="adm-hint" style={{ color: "var(--red)" }}>
+                Narudžba i dalje normalno radi na stranici proizvoda — ovo
+                samo zatamni karticu i prikaže "Rasprodano" na listama
+                (početna, kategorije), umjesto cijene i dugmeta.
+              </p>
+            ) : null}
           </div>
 
           <div className="adm-card">

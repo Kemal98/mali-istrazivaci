@@ -71,7 +71,9 @@ export async function getUnifiedProducts(): Promise<UnifiedProduct[]> {
         slike: [p.publishedHero!.slika],
         ocjena: avg,
         brojRecenzija: reviews.length,
-        naStanju: true,
+        // "rasprodano" je živo polje (kao prikaziNaPocetnoj/shopKategorija),
+        // ne čeka objavu — vlasnik treba da odmah djeluje kad stvarno nema robe.
+        naStanju: !p.rasprodano,
         link: `/${p.slug}`,
         resolvedId: p.id,
         paketiAktivni: p.publishedPaketiAktivni,
@@ -128,7 +130,8 @@ export interface HitProizvodiResult {
 /**
  * Odluka #15: proizvod BEZ ijedne partije u sistemu zaliha se NIKAD ne
  * tretira kao rasprodan (samo nepoznato) — kažnjava se samo onaj koji
- * IMA historiju partija I raspoloživo<=0.
+ * IMA historiju partija I raspoloživo<=0. Ručni prekidač "rasprodano"
+ * (p.naStanju===false) kažnjava odmah, nezavisno od sistema zaliha.
  */
 export async function computeHitProizvodi(products: UnifiedProduct[]): Promise<HitProizvodiResult> {
   const [qtyMap, stock] = await Promise.all([salesQty30d(), stockSummaryByProduct()]);
@@ -138,7 +141,8 @@ export async function computeHitProizvodi(products: UnifiedProduct[]): Promise<H
     const key = keyFor(p);
     const qty = qtyMap.get(key) ?? 0;
     const hasBatchHistory = p.resolvedId !== null && stockByProduct.has(p.resolvedId);
-    const soldOut = hasBatchHistory && (stockByProduct.get(p.resolvedId!) ?? 0) <= 0;
+    const soldOutByStock = hasBatchHistory && (stockByProduct.get(p.resolvedId!) ?? 0) <= 0;
+    const soldOut = !p.naStanju || soldOutByStock;
     return { p, qty, soldOut };
   });
 

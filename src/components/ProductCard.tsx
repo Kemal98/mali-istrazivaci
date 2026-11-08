@@ -17,7 +17,9 @@ export default function ProductCard({
       data-naziv={p.naziv.toLowerCase()}
     >
       <div className={styles.cardImgWrap}>
-        {bestseller && <span className={styles.cardBestseller}>🔥 BESTSELLER</span>}
+        {bestseller && !!p.naStanju && (
+          <span className={styles.cardBestseller}>🔥 BESTSELLER</span>
+        )}
         {p.slike[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -34,22 +36,30 @@ export default function ProductCard({
             </svg>
           </div>
         )}
-        {p.badge && <span className={styles.cardBadge}>{p.badge}</span>}
+        {p.badge && p.naStanju && <span className={styles.cardBadge}>{p.badge}</span>}
         {!p.naStanju && <div className={styles.cardSoldOut}>Rasprodano</div>}
       </div>
       <div className={styles.cardBody}>
         <div className={styles.cardName}>{p.naziv}</div>
-        <div className={styles.cardPriceRow}>
-          {p.staraCijena && (
-            <span className={styles.cardPriceOld}>
-              {p.staraCijena} {p.valuta}
+        {p.naStanju ? (
+          <div className={styles.cardPriceRow}>
+            {p.staraCijena && (
+              <span className={styles.cardPriceOld}>
+                {p.staraCijena} {p.valuta}
+              </span>
+            )}
+            <span className={styles.cardPrice}>
+              {p.cijena} {p.valuta}
             </span>
-          )}
-          <span className={styles.cardPrice}>
-            {p.cijena} {p.valuta}
-          </span>
-        </div>
-        {p.brojRecenzija > 0 ? (
+          </div>
+        ) : (
+          <div className={styles.cardPriceRow}>
+            <span className={styles.cardPrice} style={{ color: "var(--h-ink2)" }}>
+              Trenutno rasprodano
+            </span>
+          </div>
+        )}
+        {p.naStanju && p.brojRecenzija > 0 ? (
           <div className={styles.cardRating}>
             <span className={styles.cardHearts} aria-hidden="true">
               ♥♥♥♥♥
