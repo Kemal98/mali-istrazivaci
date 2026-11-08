@@ -1045,6 +1045,13 @@
 .adm-st-returned   { background: #fdeee0; color: #c2410c; }
 .adm-st-cancelled  { background: #f6e4e4; color: #b3261e; }
 
+/* status badge-ovi za partije nabavke — ista .adm-st baza, nove boje */
+.nab-st-ceka      { background: #fdf1dc; color: #b7791f; }
+.nab-st-dok       { background: #e4ecfb; color: #1d4ed8; }
+.nab-st-provjera  { background: #ede4fb; color: #6d28d9; }
+.nab-st-spremno   { background: #e4f6eb; color: #148a4b; }
+.nab-st-neaktivno { background: #f6e4e4; color: #b3261e; }
+
 /* select za brzu promjenu statusa direktno u tabeli */
 .adm-st-select {
   font: inherit;
