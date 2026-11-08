@@ -1,7 +1,14 @@
 import type { Product } from "@/lib/products";
 import styles from "./Home.module.css";
 
-export default function ProductCard({ product: p }: { product: Product }) {
+export default function ProductCard({
+  product: p,
+  bestseller = false,
+}: {
+  product: Product;
+  /** Odluka iz intervjua: top 5 po prodaji I min. 10 komada/30 dana — vidi src/lib/home/rank.ts. */
+  bestseller?: boolean;
+}) {
   return (
     <a
       href={p.link}
@@ -10,6 +17,7 @@ export default function ProductCard({ product: p }: { product: Product }) {
       data-naziv={p.naziv.toLowerCase()}
     >
       <div className={styles.cardImgWrap}>
+        {bestseller && <span className={styles.cardBestseller}>🔥 BESTSELLER</span>}
         {p.slike[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

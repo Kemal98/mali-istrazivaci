@@ -1,17 +1,7 @@
 import type { Metadata } from "next";
-import HomeHeader from "@/components/HomeHeader";
-import HomeHero from "@/components/HomeHero";
-import HomeShopCategories from "@/components/HomeShopCategories";
-import HomeMarquee from "@/components/HomeMarquee";
-import HomeProductGrid from "@/components/HomeProductGrid";
-import HomeWhyUs from "@/components/HomeWhyUs";
-import HomeOurStory from "@/components/HomeOurStory";
-import HomeUgcStrip from "@/components/HomeUgcStrip";
-import HomeReviews from "@/components/HomeReviews";
-import HomeNewsletter from "@/components/HomeNewsletter";
-import HomeFooter from "@/components/HomeFooter";
-import HomeStickyBar from "@/components/HomeStickyBar";
-import styles from "@/components/Home.module.css";
+import HomePageView from "@/components/HomePageView";
+import { getHomePublished } from "@/lib/home/repo";
+import { defaultHomeContent } from "@/lib/home/types";
 
 export const metadata: Metadata = {
   title: "Mali Istraživači – Igračke za djecu, dostava po cijeloj BiH",
@@ -25,21 +15,10 @@ export default async function HomePage({
   searchParams: Promise<{ kategorija?: string; sve?: string }>;
 }) {
   const { kategorija, sve } = await searchParams;
+  // Prije prve objave u /admin/pocetna, published je null — koristi se
+  // siguran default (stvarni tekstovi, sekcije bez fotografije se same
+  // sakriju) da "/" nikad ne bude prazna/pokvarena stranica.
+  const content = (await getHomePublished()) ?? defaultHomeContent();
 
-  return (
-    <div className={`${styles.root} home-page-root`}>
-      <HomeHeader />
-      <HomeHero />
-      <HomeShopCategories />
-      <HomeMarquee />
-      <HomeProductGrid kategorija={kategorija} sve={sve === "1"} />
-      <HomeWhyUs />
-      <HomeOurStory />
-      <HomeUgcStrip />
-      <HomeReviews />
-      <HomeNewsletter />
-      <HomeFooter />
-      <HomeStickyBar />
-    </div>
-  );
+  return <HomePageView content={content} kategorija={kategorija} sve={sve === "1"} />;
 }

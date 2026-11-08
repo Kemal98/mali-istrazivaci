@@ -13,6 +13,7 @@ const LINKS = [
 
 export default function HomeHeader() {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
 
   // Off-canvas meni: blokira scroll iza panela dok je otvoren, Escape ga
   // zatvara — obično ponašanje za ovakav meni.
@@ -27,10 +28,24 @@ export default function HomeHeader() {
     };
   }, [open]);
 
+  // Jednostavan klijentski filter (odluka iz intervjua) — bez nove
+  // rute/servera, samo sakrije kartice koje ne odgovaraju unosu, nad
+  // onim što je VEĆ renderovano (prvih 6 ili "sve", vidi HomeProductGrid).
+  // ProductCard nosi data-naziv za ovo.
+  useEffect(() => {
+    const q = query.trim().toLowerCase();
+    const cards = document.querySelectorAll<HTMLElement>("[data-product-card]");
+    cards.forEach((el) => {
+      const naziv = el.dataset.naziv ?? "";
+      el.style.display = !q || naziv.includes(q) ? "" : "none";
+    });
+    if (q) document.getElementById("proizvodi")?.scrollIntoView({ behavior: "smooth" });
+  }, [query]);
+
   return (
     <>
       <div className={styles.announce}>
-        Dostava po cijeloj BiH · Plaćanje pouzećem · 14 dana povrat
+        Dostava širom BiH (2–3 radna dana, 10 KM) · Plaćanje pouzećem · 14 dana povrat
       </div>
 
       <header className={styles.header}>
@@ -50,6 +65,14 @@ export default function HomeHeader() {
           </nav>
 
           <div className={styles.headerRight}>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Pretraži igračke"
+              placeholder="Pretraži igračke…"
+              className={styles.headerSearch}
+            />
             <a href="#proizvodi" className={styles.btnPrimary} style={{ padding: "11px 22px", fontSize: ".9rem" }}>
               Naruči
             </a>

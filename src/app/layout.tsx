@@ -11,11 +11,15 @@ import {
 } from "@/lib/constants";
 import "./globals.css";
 
+// Ovo je samo REZERVNI metadata (koristi se SAMO ako neka ruta nema svoj
+// sopstveni `metadata`/`generateMetadata` export) — ranije je ovdje
+// greškom stajao naslov jednog konkretnog proizvoda (SAT MIRA, iz doba
+// kad je on bio cijeli sajt), pa bi se taj naslov "iscurio" na svaku
+// stranicu koja ne postavi svoj.
 export const metadata: Metadata = {
-  title:
-    "SAT MIRA – Montessori set 3u1 na bosanskom jeziku | Mali Istraživači",
+  title: "Mali Istraživači — igračke za djecu",
   description:
-    "Jedini Montessori set na bosanskom jeziku. SAT MIRA: 3 igračke za djecu 2–6 godina – knjiga na čičak, drvena igračka i mozgalica. 29 KM, plaćanje pouzećem, dostava po BiH.",
+    "Pažljivo birane igračke za djecu svih uzrasta. Plaćanje pouzećem, dostava po cijeloj BiH.",
 };
 
 export default function RootLayout({

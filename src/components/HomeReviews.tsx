@@ -1,53 +1,44 @@
-import { RATING, REVIEWS_COUNT, FAMILIES_COUNT } from "@/lib/socialProof";
 import styles from "./Home.module.css";
+import type { Review } from "@/lib/cms/types";
 
-// Isti citati koje već koristi postojeća Reviews.tsx komponenta na
-// /sat-mira — nova forma, isti stvarni sadržaj ("Iskoristi postojeće").
-const REVIEWS = [
-  {
-    text: "Kupila za rođendan. Kći (4 god.) je prvo sat vremena slagala mozgalicu, pa prešla na knjigu. Nije ni pitala za tablet cijelo popodne.",
-    initial: "A",
-    name: "Amina H.",
-    city: "Sarajevo",
-  },
-  {
-    text: "Ponijeli smo set na put. Sin je mirno prošao cijelu vožnju do mora. Tri različite igre znače da se ne dosadi brzo – to je razlika.",
-    initial: "M",
-    name: "Merima K.",
-    city: "Tuzla",
-  },
-  {
-    text: "Stiglo u lijepoj kutiji, nisam morala ništa pakovati. Sin je počeo prepoznavati slova kroz knjigu – sami smo se iznenadili.",
-    initial: "D",
-    name: "Dženan P.",
-    city: "Zenica",
-  },
-];
+/**
+ * Prima SAMO stvarne recenzije koje je admin ručno istakao (★ Na
+ * početnoj, vidi ReviewsPanel) — ne sve objavljene. Sekcija se sakrije
+ * ako nema ni jedne (nikad izmišljen citat).
+ */
+export default function HomeReviews({
+  reviews,
+}: {
+  reviews: (Review & { productNaziv: string })[];
+}) {
+  if (reviews.length === 0) return null;
 
-export default function HomeReviews() {
+  const avg =
+    Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10;
+
   return (
     <section id="recenzije">
       <div className={styles.wrap}>
         <span className={styles.kicker}>Šta kažu roditelji</span>
         <h2 className={styles.sectionTitle}>Porodice iz cijele BiH nam vjeruju</h2>
         <div className={styles.reviewsScore}>
-          <span className={styles.reviewsScoreNum}>{RATING}</span>
+          <span className={styles.reviewsScoreNum}>{avg}</span>
           <div className={styles.reviewsScoreMeta}>
-            ★★★★★
+            {"★".repeat(Math.round(avg))}
             <br />
-            {REVIEWS_COUNT} ocjena · {FAMILIES_COUNT}+ porodica
+            {reviews.length} {reviews.length === 1 ? "recenzija" : "recenzija"}
           </div>
         </div>
         <div className={styles.reviewsGrid}>
-          {REVIEWS.map((r) => (
-            <div className={styles.reviewCard} key={r.name}>
-              <div className={styles.reviewStars}>★★★★★</div>
-              <p className={styles.reviewText}>{r.text}</p>
+          {reviews.map((r) => (
+            <div className={styles.reviewCard} key={r.id}>
+              <div className={styles.reviewStars}>{"★".repeat(r.rating)}</div>
+              <p className={styles.reviewText}>{r.tekst}</p>
               <div className={styles.reviewWho}>
-                <div className={styles.reviewAv}>{r.initial}</div>
+                <div className={styles.reviewAv}>{r.inicijal || r.ime.charAt(0)}</div>
                 <div>
-                  <b>{r.name}</b>
-                  <small>{r.city}</small>
+                  <b>{r.ime}</b>
+                  {r.productNaziv ? <small>{r.productNaziv}</small> : null}
                 </div>
               </div>
             </div>

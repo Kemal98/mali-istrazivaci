@@ -13,6 +13,7 @@ const ITEMS = [
   // "Poruke" (Messenger/Instagram inbox) pauzirano na zahtjev 24.10.2026
   // — stranica i webhook i dalje postoje, samo nije u meniju. Vidi
   // MESSENGER_INBOX_PAUSED u api/webhooks/messenger/route.ts.
+  { href: "/admin/pocetna", label: "POČETNA STRANICA", ico: "🏠" },
   { href: "/admin/products", label: "PROIZVODI", ico: "▤" },
   { href: "/admin/troskovi", label: "TROŠKOVI REKLAMA", ico: "📣" },
   { href: "/admin/nabavke", label: "ZALIHE I NABAVKE", ico: "📦" },
