@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getProductCostPrice, getPublishedProductBundle } from "@/lib/cms/repo";
+import { consumeFifo } from "@/lib/nabavke/consume";
 import {
   getOrderByIdempotencyKey,
   insertOrder,
@@ -200,6 +201,13 @@ export async function createOrder(
     source: "web",
   });
 
+  // FIFO povlačenje iz spremnih partija — isto best-effort kao lookup
+  // nabavne cijene iznad: AWAIT-uje se (da se transakcija stvarno završi
+  // prije nego serverless funkcija vrati odgovor — "fire and forget" bi na
+  // Vercelu mogao biti ubijen na pola), ali consumeFifo nikad ne baca
+  // dalje, pa ako padne, narudžba je VEĆ upisana i ostaje takva.
+  if (productId) await consumeFifo(productId, order.id, quantity);
+
   // Sheet sync NE ide ovdje — radi se poslije odgovora kupcu.
   return { ok: true, order, duplicate: false, sheetSynced: false };
 }
@@ -299,6 +307,8 @@ export async function createManualOrder(
     clientIp: "",
     source: "manual",
   });
+
+  if (productId) await consumeFifo(productId, order.id, quantity);
 
   return { ok: true, order, duplicate: false, sheetSynced: false };
 }

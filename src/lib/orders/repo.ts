@@ -1,4 +1,5 @@
 import { newId, nowIso, sql } from "@/lib/cms/db";
+import { consumeFifo, reassignConsumption, reverseConsumption } from "@/lib/nabavke/consume";
 import { normalizePhone } from "./phone";
 import {
   isOrderStatus,
@@ -736,6 +737,19 @@ export async function setStatus(
     actor,
   });
 
+  // FIFO zalihe prate isto "što se računa kao prodano" kao profitAsIfSold
+  // (sve osim CANCELLED/RETURNED): ulazak u jedan od ta dva statusa
+  // vraća povučenu robu u partiju, izlazak iz njih (reotvaranje) je
+  // povlači ponovo. Best-effort, nikad ne baca dalje (vidi consume.ts).
+  const CLOSED: OrderStatus[] = ["CANCELLED", "RETURNED"];
+  const wasClosed = CLOSED.includes(cur.status);
+  const isClosed = CLOSED.includes(status);
+  if (!wasClosed && isClosed) {
+    await reverseConsumption(id);
+  } else if (wasClosed && !isClosed && cur.productId) {
+    await consumeFifo(cur.productId, id, cur.quantity);
+  }
+
   return getOrder(id);
 }
 
@@ -777,6 +791,11 @@ export async function deleteOrder(
     actor,
   });
 
+  // profitAsIfSold izbacuje deleted_at IS NOT NULL iz "prodano" — FIFO
+  // zalihe moraju pratiti isto, inače obrisana narudžba ostaje "trajno
+  // prodana" iz partije dok niko zapravo nije ni primijetio.
+  await reverseConsumption(id);
+
   return cur;
 }
 
@@ -813,6 +832,13 @@ export async function restoreOrder(
      WHERE id = ${id}`;
 
   await addEvent(id, { kind: "restored", actor });
+
+  const restored = rows[0];
+  const productId = restored.product_id ? String(restored.product_id) : null;
+  const CLOSED: OrderStatus[] = ["CANCELLED", "RETURNED"];
+  if (productId && !CLOSED.includes(String(restored.status) as OrderStatus)) {
+    await consumeFifo(productId, id, n(restored.quantity));
+  }
 
   return getOrder(id);
 }
@@ -874,6 +900,13 @@ export async function mergeOrders(
   });
 
   for (const o of rest) {
+    // VAŽNO: preusmjeri ledger potrošnje PRIJE deleteOrder-a. Spajanje
+    // može kombinovati RAZLIČITE proizvode (vidi komentar iznad), pa se
+    // ništa od stvarno prodate robe ne smije "vratiti na stanje" samo
+    // zato što je narudžba promijenila broj — deleteOrder ispod i dalje
+    // zove reverseConsumption(o.id), ali tad ledger za o.id već ne
+    // postoji (preknjižen je pod primary.id), pa je to no-op.
+    await reassignConsumption(o.id, primary.id);
     await deleteOrder(o.id, actor);
     await addEvent(o.id, {
       kind: "merged_into",

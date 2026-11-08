@@ -131,7 +131,15 @@ export async function setBatchDocument(
      WHERE id = ${id}`;
 }
 
-/** Briše partiju — SAMO ako ništa iz nje nije potrošeno (ništa se tiho ne pokvari u ledgeru). */
+/**
+ * Briše partiju — SAMO ako NIKAD nije bila dotaknuta narudžbom ili
+ * korekcijom (ni u historiji, ni poslije otkazivanja/vraćanja). Provjera
+ * preostalo === nabavljenoKolicina NIJE dovoljna: reversed potrošnja
+ * vrati količinu, ali red u ledgeru ostaje (revizijski trag), pa bi
+ * DELETE i tad pao na FK (nabavke_potrosnja/nabavke_korekcije i dalje
+ * referenciraju batch_id). Umjesto da se to otkrije kao 500 greška,
+ * provjerava se ovdje unaprijed, s jasnom porukom.
+ */
 export async function deleteBatch(id: string): Promise<{ ok: boolean; error?: string }> {
   const cur = await getBatch(id);
   if (!cur) return { ok: false, error: "Partija ne postoji." };
@@ -139,6 +147,17 @@ export async function deleteBatch(id: string): Promise<{ ok: boolean; error?: st
     return {
       ok: false,
       error: "Ne može se obrisati — iz ove partije je već nešto potrošeno ili korigovano.",
+    };
+  }
+  const [pot, kor] = await Promise.all([
+    sql()<Row[]>`SELECT 1 FROM nabavke_potrosnja WHERE batch_id = ${id} LIMIT 1`,
+    sql()<Row[]>`SELECT 1 FROM nabavke_korekcije WHERE batch_id = ${id} LIMIT 1`,
+  ]);
+  if (pot.length > 0 || kor.length > 0) {
+    return {
+      ok: false,
+      error:
+        "Ne može se obrisati — partija je u prošlosti bila dio narudžbe ili korekcije (čak i ako je poništena). Promijeni status u 'neaktivno' umjesto brisanja.",
     };
   }
   await sql()`DELETE FROM nabavke_partije WHERE id = ${id}`;
