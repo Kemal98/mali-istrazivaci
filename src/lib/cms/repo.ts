@@ -499,6 +499,22 @@ export async function listPublishedReviews(productId: string): Promise<Review[]>
   return rows.filter((r) => r.status === "published");
 }
 
+/**
+ * Ručno izabrana šaka STVARNIH recenzija za traku na početnoj (vidi
+ * Review.featuredHomepage) — ne sve objavljene, samo one koje je admin
+ * istakao. productNaziv je samo za prikaz ("recenzija za X").
+ */
+export async function listFeaturedHomepageReviews(): Promise<
+  (Review & { productNaziv: string })[]
+> {
+  const rows = await sql()<Row[]>`
+    SELECT r.*, p.naziv AS product_naziv FROM reviews r
+    LEFT JOIN products p ON p.id = r.product_id
+     WHERE r.deleted_at IS NULL AND r.status = 'published' AND r.featured_homepage = true
+     ORDER BY r.sort_order ASC, r.created_at ASC`;
+  return rows.map((r) => ({ ...rowToReview(r), productNaziv: String(r.product_naziv ?? "") }));
+}
+
 export async function createReview(
   r: Partial<Review> & { id?: string | undefined }
 ): Promise<Review> {

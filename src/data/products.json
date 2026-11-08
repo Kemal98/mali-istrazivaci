@@ -6,12 +6,12 @@
     "cijena": 29,
     "staraCijena": 56,
     "valuta": "KM",
-    "badge": "BESTSELLER",
+    "badge": null,
     "uzrast": ["2-3", "4-6"],
     "kategorije": ["montessori", "setovi", "edukativno"],
     "slike": ["/img/set_hero2.png", "/img/knjiga_proizvod2.png"],
-    "ocjena": 4.9,
-    "brojRecenzija": 87,
+    "ocjena": 0,
+    "brojRecenzija": 0,
     "naStanju": true,
     "link": "/sat-mira"
   },
@@ -26,25 +26,9 @@
     "uzrast": ["4-6"],
     "kategorije": ["igracke", "djevojcice"],
     "slike": ["/img/blinger/sparkling-hero.png"],
-    "ocjena": 4.9,
-    "brojRecenzija": 87,
+    "ocjena": 0,
+    "brojRecenzija": 0,
     "naStanju": true,
     "link": "/blinger-aparat-za-kosu"
-  },
-  {
-    "id": "rotirajuce-zvecke",
-    "naziv": "Vesele rotirajuće zvečke za bebe (3 komada)",
-    "podnaslov": "Zvečke sa vakuum osnovom",
-    "cijena": 19,
-    "staraCijena": 39,
-    "valuta": "KM",
-    "badge": "SNIŽENO",
-    "uzrast": ["2-3"],
-    "kategorije": ["igracke", "bebe"],
-    "slike": ["/img/rotirajuce-zvecke/hero.png"],
-    "ocjena": 4.9,
-    "brojRecenzija": 87,
-    "naStanju": true,
-    "link": "/rotirajuce-zvecke"
   }
 ]

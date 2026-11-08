@@ -6,6 +6,8 @@ export default function ProductCard({ product: p }: { product: Product }) {
     <a
       href={p.link}
       className={`${styles.card} ${!p.naStanju ? styles.cardMuted : ""}`}
+      data-product-card
+      data-naziv={p.naziv.toLowerCase()}
     >
       <div className={styles.cardImgWrap}>
         {p.slike[0] ? (
@@ -39,12 +41,14 @@ export default function ProductCard({ product: p }: { product: Product }) {
             {p.cijena} {p.valuta}
           </span>
         </div>
-        <div className={styles.cardRating}>
-          <span className={styles.cardHearts} aria-hidden="true">
-            ♥♥♥♥♥
-          </span>
-          {p.ocjena}({p.brojRecenzija} ocjena)
-        </div>
+        {p.brojRecenzija > 0 ? (
+          <div className={styles.cardRating}>
+            <span className={styles.cardHearts} aria-hidden="true">
+              ♥♥♥♥♥
+            </span>
+            {p.ocjena}({p.brojRecenzija} ocjena)
+          </div>
+        ) : null}
       </div>
     </a>
   );
