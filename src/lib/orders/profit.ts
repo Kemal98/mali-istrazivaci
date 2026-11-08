@@ -32,6 +32,14 @@ export interface ProfitRow {
   soldQty: number;
   /** (kupljeno + presjeci zaliha) − prodano, sve vrijeme; null ako nema unesenih nabavki ni presjeka. */
   stock: number | null;
+  /**
+   * true = trošak dolazi iz stvarne FIFO partije (nabavke_partije/
+   * nabavke_potrosnja) za BAREM jednu narudžbu u ovom redu, a ne iz
+   * procjene (prosjek iz stare Nabavka robe, ili trenutna nabavna_cijena).
+   * Vidi profitAsIfSold — ledger IMA prioritet samo kad stari prosjek ne
+   * postoji za taj proizvod, da se historijski brojevi ne mijenjaju.
+   */
+  costFromLedger: boolean;
 }
 
 export interface ProfitSummary {
@@ -57,18 +65,27 @@ export async function profitAsIfSold(
   if (p.from) w = db`${w} AND o.created_at >= ${p.from}`;
   if (p.to) w = db`${w} AND o.created_at <= ${p.to}`;
 
+  // Ledger stvarne FIFO potrošnje (nabavke_partije/nabavke_potrosnja) —
+  // kad postoji za narudžbu, ima prioritet nad procjenom (trenutna
+  // nabavna_cijena). Spoji se PO NARUDŽBI prije agregacije, pa SUM ispod
+  // za svaku narudžbu uzme ledger cost ako postoji, inače stari default.
   const orderRows = await db<Row[]>`
     SELECT COALESCE(pr.naziv, o.product_name) AS name,
            COUNT(*) AS orders,
            COALESCE(SUM(o.quantity), 0) AS qty,
            COALESCE(SUM(o.subtotal), 0) AS revenue,
-           COALESCE(SUM(o.quantity * pr.nabavna_cijena), 0) AS cost,
-           BOOL_OR(pr.nabavna_cijena IS NULL) AS missing
+           COALESCE(SUM(COALESCE(lg.cost, o.quantity * pr.nabavna_cijena)), 0) AS cost,
+           BOOL_OR(lg.cost IS NULL AND pr.nabavna_cijena IS NULL) AS missing,
+           BOOL_OR(lg.cost IS NOT NULL) AS any_ledger
       FROM orders o
       LEFT JOIN products pr
         ON pr.deleted_at IS NULL
        AND (pr.id = o.product_id
             OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
+      LEFT JOIN (
+        SELECT order_id, SUM(quantity * unit_cost) AS cost
+          FROM nabavke_potrosnja WHERE reversed_at IS NULL GROUP BY order_id
+      ) lg ON lg.order_id = o.id
      WHERE ${w}
      GROUP BY 1`;
 
@@ -122,6 +139,7 @@ export async function profitAsIfSold(
     purchasedCost: 0,
     soldQty: 0,
     stock: null,
+    costFromLedger: false,
   });
 
   for (const r of orderRows) {
@@ -132,6 +150,7 @@ export async function profitAsIfSold(
     row.revenue += n(r.revenue);
     row.cost += n(r.cost);
     row.missingCost = row.missingCost || Boolean(r.missing);
+    row.costFromLedger = row.costFromLedger || Boolean(r.any_ledger);
     map.set(norm(name), row);
   }
 
@@ -193,11 +212,15 @@ export async function profitAsIfSold(
     row.soldQty = soldAll.get(key) ?? 0;
     const pu = purchased.get(key);
     if (pu && pu.qty > 0) {
-      // Ima stvarno plaćenih nabavki: prosječna cijena po komadu (plaćeno / kupljeno)
+      // Stari prosjek (stock_purchases) i dalje ima prioritet kad postoji
+      // — ne mijenjaj historijske brojeve dok se proizvod stvarno ne
+      // "iseli" iz starog sistema. Ledger cost gore (any_ledger) ostaje
+      // bez efekta za ovaj proizvod dok ovo vrijedi.
       row.cost = row.quantity * (pu.cost / pu.qty);
       row.missingCost = false;
       row.purchasedQty = pu.qty;
       row.purchasedCost = pu.cost;
+      row.costFromLedger = false;
     }
     const sq = stockQty.get(key);
     if (sq !== undefined) row.stock = sq - row.soldQty;
@@ -262,18 +285,24 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
     if (qty > 0) avgCost.set(norm(String(r.product_name)), n(r.cost) / qty);
   }
 
+  // lg = ledger stvarne FIFO potrošnje po narudžbi, ima prioritet nad
+  // nabavna_cijena kad postoji (vidi profitAsIfSold za potpuni komentar).
   const orderRows = await db<Row[]>`
     SELECT to_char((o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo', 'YYYY-MM-DD') AS day,
            COALESCE(pr.naziv, o.product_name) AS name,
            COUNT(*) AS orders,
            COALESCE(SUM(o.quantity), 0) AS qty,
            COALESCE(SUM(o.subtotal), 0) AS revenue,
-           COALESCE(SUM(o.quantity * pr.nabavna_cijena), 0) AS cost_default
+           COALESCE(SUM(COALESCE(lg.cost, o.quantity * pr.nabavna_cijena)), 0) AS cost_default
       FROM orders o
       LEFT JOIN products pr
         ON pr.deleted_at IS NULL
        AND (pr.id = o.product_id
             OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
+      LEFT JOIN (
+        SELECT order_id, SUM(quantity * unit_cost) AS cost
+          FROM nabavke_potrosnja WHERE reversed_at IS NULL GROUP BY order_id
+      ) lg ON lg.order_id = o.id
      WHERE o.deleted_at IS NULL AND o.product_name <> '' AND o.status NOT IN ('CANCELLED', 'RETURNED')
        AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' >= ${fromDate}::date
        AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' < (${toDate}::date + 1)
@@ -361,18 +390,24 @@ export async function profitByProductDay(
     if (qty > 0) avgCost.set(norm(String(r.product_name)), n(r.cost) / qty);
   }
 
+  // lg = ledger stvarne FIFO potrošnje po narudžbi, ima prioritet nad
+  // nabavna_cijena kad postoji (vidi profitAsIfSold za potpuni komentar).
   const orderRows = await db<Row[]>`
     SELECT to_char((o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo', 'YYYY-MM-DD') AS day,
            COALESCE(pr.naziv, o.product_name) AS name,
            COUNT(*) AS orders,
            COALESCE(SUM(o.quantity), 0) AS qty,
            COALESCE(SUM(o.subtotal), 0) AS revenue,
-           COALESCE(SUM(o.quantity * pr.nabavna_cijena), 0) AS cost_default
+           COALESCE(SUM(COALESCE(lg.cost, o.quantity * pr.nabavna_cijena)), 0) AS cost_default
       FROM orders o
       LEFT JOIN products pr
         ON pr.deleted_at IS NULL
        AND (pr.id = o.product_id
             OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
+      LEFT JOIN (
+        SELECT order_id, SUM(quantity * unit_cost) AS cost
+          FROM nabavke_potrosnja WHERE reversed_at IS NULL GROUP BY order_id
+      ) lg ON lg.order_id = o.id
      WHERE o.deleted_at IS NULL AND o.product_name <> '' AND o.status NOT IN ('CANCELLED', 'RETURNED')
        AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' >= ${fromDate}::date
        AND (o.created_at::timestamptz) AT TIME ZONE 'Europe/Sarajevo' < (${toDate}::date + 1)
