@@ -342,6 +342,12 @@ export default async function DashboardPage({
           <span>Reklame danas</span>
           <b>−{km(profitToday.adSpend)}</b>
         </div>
+        {profitToday.otherCosts > 0 ? (
+          <div className="adm-kpi">
+            <span>Ostali troškovi danas</span>
+            <b>−{km(profitToday.otherCosts)}</b>
+          </div>
+        ) : null}
         <div className="adm-kpi">
           <span>ČISTA ZARADA DANAS</span>
           <b style={{ color: profitToday.profit >= 0 ? "#148a4b" : "#b3261e" }}>
@@ -373,8 +379,8 @@ export default async function DashboardPage({
             <b>{km(danProfit.revenue)}</b>
           </div>
           <div className="adm-kpi">
-            <span>Nabavna + reklame</span>
-            <b>−{km(danProfit.cost + danProfit.adSpend)}</b>
+            <span>Nabavna + reklame + ostalo</span>
+            <b>−{km(danProfit.cost + danProfit.adSpend + danProfit.otherCosts)}</b>
           </div>
           <div className="adm-kpi">
             <span>ZARADA TOG DANA</span>
@@ -400,6 +406,7 @@ export default async function DashboardPage({
               <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Prihod</th>
               <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Nabavna</th>
               <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Reklame</th>
+              <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Ostalo</th>
               <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Zarada</th>
               <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>Marža</th>
             </tr>
@@ -417,6 +424,9 @@ export default async function DashboardPage({
                 </td>
                 <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
                   {d.adSpend > 0 ? `−${km(d.adSpend)}` : "—"}
+                </td>
+                <td style={{ textAlign: "right", whiteSpace: "nowrap" }} className="adm-hint">
+                  {d.otherCosts > 0 ? `−${km(d.otherCosts)}` : "—"}
                 </td>
                 <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
                   <b style={{ color: d.profit >= 0 ? "#148a4b" : "#b3261e" }}>{km(d.profit)}</b>
@@ -618,6 +628,12 @@ export default async function DashboardPage({
             <span>Reklame</span>
             <b>−{km(profit.adSpend)}</b>
           </div>
+          {profit.otherCosts > 0 ? (
+            <div className="adm-kpi">
+              <span>Ostali troškovi</span>
+              <b>−{km(profit.otherCosts)}</b>
+            </div>
+          ) : null}
           <div className="adm-kpi">
             <span>ZARADA</span>
             <b style={{ color: profit.profit >= 0 ? "#148a4b" : "#b3261e" }}>

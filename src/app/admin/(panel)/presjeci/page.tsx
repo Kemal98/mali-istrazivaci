@@ -85,6 +85,12 @@ export default async function PresjeciPage() {
             <span>Reklame</span>
             <b>−{km(current.adSpend)}</b>
           </div>
+          {current.otherCosts > 0 ? (
+            <div className="adm-kpi">
+              <span>Ostali troškovi</span>
+              <b>−{km(current.otherCosts)}</b>
+            </div>
+          ) : null}
           <div className="adm-kpi">
             <span>ZARADA</span>
             <b style={{ color: current.profit >= 0 ? "#148a4b" : "#b3261e" }}>

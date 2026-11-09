@@ -1,5 +1,6 @@
 import { sql } from "@/lib/cms/db";
 import { META_USD_TO_KM } from "@/lib/ads/currency";
+import { sumOtherCosts, sumOtherCostsByDay } from "@/lib/ads/repo";
 import type { Period } from "./stats";
 
 // "Kao da je sve prodano": računaju se SVE narudžbe iz perioda OSIM
@@ -52,6 +53,8 @@ export interface ProfitSummary {
   profit: number;
   /** Ukupno uloženo u kupljenu robu (sve vrijeme). */
   purchasedCost: number;
+  /** Opšti troškovi van reklama/nabavke (ambalaža, naknade i sl.) — vidi ads/repo.ts sumOtherCosts. */
+  otherCosts: number;
 }
 
 export async function profitAsIfSold(
@@ -229,6 +232,8 @@ export async function profitAsIfSold(
   const rows = [...map.values()];
   if (unmappedRow.adSpend > 0) rows.push(unmappedRow);
 
+  const otherCostsTotal = await sumOtherCosts(fromDate, toDate);
+
   let orders = 0, quantity = 0, revenue = 0, cost = 0, adSpend = 0, purchasedCost = 0;
   for (const row of rows) {
     row.revenue = r2(row.revenue);
@@ -251,8 +256,9 @@ export async function profitAsIfSold(
     revenue: r2(revenue),
     cost: r2(cost),
     adSpend: r2(adSpend),
-    profit: r2(revenue - cost - adSpend),
+    profit: r2(revenue - cost - adSpend - otherCostsTotal),
     purchasedCost: r2(purchasedCost),
+    otherCosts: r2(otherCostsTotal),
   };
 }
 
@@ -265,6 +271,8 @@ export interface DayProfit {
   cost: number;
   adSpend: number;
   profit: number;
+  /** Opšti troškovi van reklama/nabavke (ambalaža, naknade i sl.), vidi ProfitSummary.otherCosts. */
+  otherCosts: number;
 }
 
 /**
@@ -325,11 +333,13 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
      WHERE ms.date >= ${fromDate} AND ms.date <= ${toDate}
      GROUP BY 1, 2`;
 
+  const otherCostRows = await sumOtherCostsByDay(fromDate, toDate);
+
   const map = new Map<string, DayProfit>();
   const get = (day: string) => {
     let row = map.get(day);
     if (!row) {
-      row = { day, orders: 0, revenue: 0, cost: 0, adSpend: 0, profit: 0 };
+      row = { day, orders: 0, revenue: 0, cost: 0, adSpend: 0, profit: 0, otherCosts: 0 };
       map.set(day, row);
     }
     return row;
@@ -354,13 +364,17 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
   for (const r of spendRows) {
     get(String(r.date)).adSpend += n(r.total);
   }
+  for (const [day, total] of otherCostRows) {
+    get(day).otherCosts += total;
+  }
 
   const rows = [...map.values()].map((r) => ({
     ...r,
     revenue: r2(r.revenue),
     cost: r2(r.cost),
     adSpend: r2(r.adSpend),
-    profit: r2(r.revenue - r.cost - r.adSpend),
+    otherCosts: r2(r.otherCosts),
+    profit: r2(r.revenue - r.cost - r.adSpend - r.otherCosts),
   }));
   rows.sort((a, b) => b.day.localeCompare(a.day));
   return rows;
@@ -443,7 +457,9 @@ export async function profitByProductDay(
     }
     let row = days.get(day);
     if (!row) {
-      row = { day, orders: 0, revenue: 0, cost: 0, adSpend: 0, profit: 0 };
+      // otherCosts nije po proizvodu (vidi komentar uz ProfitSummary.otherCosts)
+      // — ovdje je uvijek 0, samo da zadovolji deljeni DayProfit oblik.
+      row = { day, orders: 0, revenue: 0, cost: 0, adSpend: 0, profit: 0, otherCosts: 0 };
       days.set(day, row);
     }
     return row;

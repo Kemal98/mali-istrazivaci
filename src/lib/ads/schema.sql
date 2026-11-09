@@ -65,3 +65,18 @@ ALTER TABLE stock_purchases ENABLE ROW LEVEL SECURITY;
 -- "Uloženo" prikaza — ulazi SAMO u računanje "Na stanju". Ništa se ne briše:
 -- stare nabavke i narudžbe ostaju, presjek je dodatni red u istoj tabeli.
 ALTER TABLE stock_purchases ADD COLUMN IF NOT EXISTS is_adjustment boolean NOT NULL DEFAULT false;
+
+-- Opšti poslovni troškovi koji NISU reklame ni nabavka robe (ambalaža,
+-- naknade za kurirski nalog, itd.) — nisu vezani za proizvod, samo se
+-- oduzimaju od UKUPNE zarade (Dashboard, Presjeci zarade), ne ulaze u
+-- razradu po proizvodu (profitByProductDay) jer se ne mogu pravedno
+-- raspodijeliti na jedan konkretan proizvod.
+CREATE TABLE IF NOT EXISTS other_costs (
+  id          text PRIMARY KEY,
+  date        text NOT NULL,              -- YYYY-MM-DD, kalendarski dan (Europe/Sarajevo)
+  amount      double precision NOT NULL DEFAULT 0,
+  note        text NOT NULL DEFAULT '',
+  created_at  text NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_other_costs_date ON other_costs (date DESC);
+ALTER TABLE other_costs ENABLE ROW LEVEL SECURITY;

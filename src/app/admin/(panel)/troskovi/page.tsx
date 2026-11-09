@@ -1,4 +1,4 @@
-import { listAdSpend, listCampaignMap } from "@/lib/ads/repo";
+import { listAdSpend, listCampaignMap, listOtherCosts } from "@/lib/ads/repo";
 import { metaConfigured } from "@/lib/ads/meta";
 import { campaignAnalysis } from "@/lib/ads/analysis";
 import { listProducts } from "@/lib/cms/repo";
@@ -6,6 +6,7 @@ import { listFilterOptions } from "@/lib/orders/repo";
 import AdSpendManager from "@/components/admin/AdSpendManager";
 import MetaAdsPanel from "@/components/admin/MetaAdsPanel";
 import CampaignAnalysisCard from "@/components/admin/CampaignAnalysisCard";
+import OtherCostsManager from "@/components/admin/OtherCostsManager";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export default async function TroskoviPage() {
   const cmsProducts = await listProducts();
   const campaigns = await listCampaignMap();
   const analysis = await campaignAnalysis();
+  const otherCosts = await listOtherCosts();
 
   // Spoj imena iz stvarnih narudžbi (već poznata, tačan pravopis) i CMS
   // proizvoda (uključi i nove bez ijedne narudžbe još) — bez duplikata.
@@ -41,6 +43,7 @@ export default async function TroskoviPage() {
         products={productNames}
       />
       <AdSpendManager initial={items} products={productNames} />
+      <OtherCostsManager initial={otherCosts} />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { newId, nowIso, sql } from "@/lib/cms/db";
-import type { AdSpend, CampaignMapping, StockPurchase } from "./types";
+import type { AdSpend, CampaignMapping, OtherCost, StockPurchase } from "./types";
 import { META_USD_TO_KM, adAmountKm } from "./currency";
 
 type Row = Record<string, unknown>;
@@ -45,6 +45,60 @@ export async function listAdSpend(limit = 200): Promise<AdSpend[]> {
   const rows = await sql()<Row[]>`
     SELECT * FROM ad_spend ORDER BY date DESC, created_at DESC LIMIT ${limit}`;
   return rows.map(rowToAdSpend);
+}
+
+/* ------------------------------ opšti troškovi (van reklama/proizvoda) ------------------------------ */
+
+function rowToOtherCost(r: Row): OtherCost {
+  return {
+    id: s(r.id),
+    date: s(r.date),
+    amount: n(r.amount),
+    note: s(r.note),
+    createdAt: s(r.created_at),
+  };
+}
+
+export async function insertOtherCost(input: {
+  date: string;
+  amount: number;
+  note?: string;
+}): Promise<OtherCost> {
+  const id = newId("oc");
+  const rows = await sql()<Row[]>`
+    INSERT INTO other_costs (id, date, amount, note, created_at)
+    VALUES (${id}, ${input.date}, ${input.amount}, ${input.note ?? ""}, ${nowIso()})
+    RETURNING *`;
+  return rowToOtherCost(rows[0]);
+}
+
+export async function deleteOtherCost(id: string): Promise<void> {
+  await sql()`DELETE FROM other_costs WHERE id = ${id}`;
+}
+
+export async function listOtherCosts(limit = 200): Promise<OtherCost[]> {
+  const rows = await sql()<Row[]>`
+    SELECT * FROM other_costs ORDER BY date DESC, created_at DESC LIMIT ${limit}`;
+  return rows.map(rowToOtherCost);
+}
+
+/** Ukupno za period (uključivo) — za profit.ts; bez argumenata = sve vrijeme. */
+export async function sumOtherCosts(from?: string, to?: string): Promise<number> {
+  const db = sql();
+  let w = db`1 = 1`;
+  if (from) w = db`${w} AND date >= ${from}`;
+  if (to) w = db`${w} AND date <= ${to}`;
+  const rows = await db<Row[]>`SELECT COALESCE(SUM(amount), 0) AS total FROM other_costs WHERE ${w}`;
+  return n(rows[0]?.total);
+}
+
+/** Po danu, za period — za profitByDay. */
+export async function sumOtherCostsByDay(from: string, to: string): Promise<Map<string, number>> {
+  const rows = await sql()<Row[]>`
+    SELECT date, COALESCE(SUM(amount), 0) AS total FROM other_costs
+     WHERE date >= ${from} AND date <= ${to}
+     GROUP BY 1`;
+  return new Map(rows.map((r) => [s(r.date), n(r.total)]));
 }
 
 /**

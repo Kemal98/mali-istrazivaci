@@ -41,7 +41,8 @@ try {
        AND table_name IN ('products','media','reviews','templates','settings',
                           'orders','order_events','ad_spend','stock_purchases',
                           'nabavke_partije','nabavke_status_log',
-                          'nabavke_potrosnja','nabavke_korekcije','home_content')
+                          'nabavke_potrosnja','nabavke_korekcije','home_content',
+                          'other_costs')
      ORDER BY table_name`;
   console.log("Tabele u bazi:", tables.map((t) => t.table_name).join(", "));
   console.log("Migracija završena.");

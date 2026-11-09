@@ -17,6 +17,15 @@ export interface CampaignMapping {
   updatedAt: string;
 }
 
+/** Opšti poslovni trošak (ambalaža, naknada za kurirski nalog i sl.) — nije vezan za proizvod. */
+export interface OtherCost {
+  id: string;
+  date: string; // YYYY-MM-DD
+  amount: number;
+  note: string;
+  createdAt: string;
+}
+
 export interface StockPurchase {
   id: string;
   date: string;
