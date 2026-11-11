@@ -54,9 +54,16 @@ export default function CmsCheckout({
   // ne iz običnog birača količine — server ionako preračuna iz baze
   // (vidi createOrder u service.ts), ovo je samo za prikaz kupcu.
   const aktivanPaket = paketi.length > 0 ? bundle : null;
+  // prikazCijena je cijena PO KOMADU (prikazuje se iznad birača količine,
+  // uz precrtanu staru cijenu) — total ispod MORA pomnožiti sa stvarnom
+  // količinom kad paket nije aktivan, inače dugme/fbq/ "/hvala" pokazuju
+  // cijenu kao da je naručen samo 1 komad bez obzira na birač (bug
+  // prijavljen 2026-11-11 — total nikad nije množio sa qty).
   const prikazCijena = aktivanPaket ? aktivanPaket.cijena : cijena;
   const efektivnaKolicina = aktivanPaket ? aktivanPaket.kolicina : qty;
-  const total = prikazCijena + DELIVERY;
+  const total = aktivanPaket
+    ? aktivanPaket.cijena + DELIVERY
+    : cijena * qty + DELIVERY;
 
   useEffect(() => {
     if (!open) return;
