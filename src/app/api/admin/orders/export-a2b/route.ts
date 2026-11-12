@@ -9,17 +9,15 @@ import { setStatusBulk } from "@/lib/orders/repo";
  * body-ju) — vidi resolveExportOrders. Prazno znači sve narudžbe sa
  * statusom "Nova" ili "Potvrđena", bez obzira kad su primljene.
  *
- * Izvoz SAM po sebi NE mijenja status narudžbi (ranije je automatski
- * prebacivao u "Potvrđena" — admin to eksplicitno nije htio). Umjesto
- * da se ta stara, neželjena automatika vrati, dodano je POSEBNO,
- * eksplicitno opt-in: `?markShipped=1` u query-ju (zove ga drugo dugme
- * u OrdersTable.tsx, "A2B TABELA + OZNAČI POSLANO") — tek TADA se
- * izvezene narudžbe prebace u "Poslana" (setStatusBulk, ista funkcija
- * koja se koristi i za ručnu promjenu statusa — idempotentna, ima
- * revizijski trag).
+ * Izvoz ODMAH prebacuje izvezene narudžbe u status "Dostavljena"
+ * (setStatusBulk, ista funkcija kao i za ručnu promjenu statusa —
+ * idempotentna, ima revizijski trag). Namjerno (admin odluka
+ * 2026-11-12): izvoz za A2B/Brzu poštu = gotovo, računa se kao
+ * prodano/zarađeno odmah. Ako nešto zakasni/vrati se, admin to ručno
+ * vrati na "Vraćeno"/"Otkazano" (uklanja se iz zarade) preko dugmića
+ * u tabeli — nema zasebnog "opt-in" dugmeta, ovo je zadano ponašanje.
  */
 export async function POST(request: Request) {
-  const markShipped = new URL(request.url).searchParams.get("markShipped") === "1";
   const orders = await resolveExportOrders(request);
 
   if (!orders.length) {
@@ -28,9 +26,7 @@ export async function POST(request: Request) {
 
   const { buffer, missingPostal } = await buildA2bWorkbook(orders);
 
-  if (markShipped) {
-    await setStatusBulk(orders.map((o) => o.id), "SHIPPED");
-  }
+  await setStatusBulk(orders.map((o) => o.id), "DELIVERED");
 
   const stamp = new Date().toISOString().slice(0, 10);
   // Buffer/BlobPart tipovi se ovdje sudare zbog Node vs DOM lib definicija

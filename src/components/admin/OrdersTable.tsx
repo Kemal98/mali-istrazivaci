@@ -231,8 +231,9 @@ export default function OrdersTable({
 
   /**
    * A2B tabela SAMO za ručno označene narudžbe (checkbox u tabeli), bez
-   * obzira na status/datum filter koji trenutno piše na listi. Ne mijenja
-   * status narudžbi — samo generiše xlsx za masovni import kod kurira.
+   * obzira na status/datum filter koji trenutno piše na listi. Izvoz
+   * ODMAH prebacuje izvezene narudžbe u "Dostavljena" (vidi route.ts) —
+   * admin to po potrebi ručno vrati na "Vraćeno"/"Otkazano".
    */
   async function exportSelected(endpoint: string, fallbackName: string) {
     setBusy(true);
@@ -266,11 +267,6 @@ export default function OrdersTable({
 
   const exportSelectedA2b = () =>
     exportSelected("/api/admin/orders/export-a2b", "a2b-masovni-import.xlsx");
-  // Posebno dugme (ne mijenja ponašanje postojećeg "A2B TABELA") — ovo
-  // izvezene narudžbe ODMAH prebaci u status "Poslana", vidi komentar u
-  // export-a2b/route.ts zašto je to opt-in, ne zadano ponašanje.
-  const exportSelectedA2bShipped = () =>
-    exportSelected("/api/admin/orders/export-a2b?markShipped=1", "a2b-masovni-import.xlsx");
   const exportSelectedPacking = () =>
     exportSelected("/api/admin/orders/export-packing", "za-pakovanje.xlsx");
 
@@ -370,22 +366,6 @@ export default function OrdersTable({
             onClick={exportSelectedA2b}
           >
             📦 A2B TABELA ({selected.length})
-          </button>
-          <button
-            type="button"
-            className="adm-btn adm-btn-sm"
-            disabled={busy}
-            onClick={() => {
-              if (
-                window.confirm(
-                  `Izvezi A2B tabelu I odmah prebaci ${selected.length} narudžbi u status "Poslana"?`
-                )
-              ) {
-                exportSelectedA2bShipped();
-              }
-            }}
-          >
-            📦 A2B + OZNAČI POSLANO ({selected.length})
           </button>
           <button
             type="button"
