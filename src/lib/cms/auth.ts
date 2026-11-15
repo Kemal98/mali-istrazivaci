@@ -7,7 +7,11 @@
 //   proxy.ts (Edge runtime) i u server komponentama (Node).
 
 export const SESSION_COOKIE = "mi_admin_session";
-const SESSION_TTL_SECONDS = 60 * 60 * 12; // 12h
+// Admin treba da ostane prijavljen dok se sam ne odjavi (nema automatskog
+// isteka) — 10 godina je u praksi "zauvijek", a zadržava isti
+// potpisan-token-sa-rokom mehanizam (jednostavnije nego posebna "bez roka"
+// grana koda).
+const SESSION_TTL_SECONDS = 60 * 60 * 24 * 365 * 10; // 10 godina
 
 function secret(): string {
   const s = process.env.ADMIN_SESSION_SECRET;
