@@ -9,7 +9,7 @@ import CmsHero from "./CmsHero";
 import { CmsBlocks, IntroDescription, splitIntroSections } from "./CmsBlocks";
 import CmsCheckout from "./CmsCheckout";
 import CmsPixel from "./CmsPixel";
-import type { Block, Hero, ProductBundle, ProductUpsell, Review } from "@/lib/cms/types";
+import type { Block, Hero, ProductBundle, ResolvedUpsell, Review } from "@/lib/cms/types";
 import { getSettings } from "@/lib/cms/repo";
 
 // Renderer stranice proizvoda: uzme HERO + NIZ SEKCIJA i prođe kroz njih
@@ -40,8 +40,8 @@ export default async function CmsProductPage({
   /** Paketna ponuda — kad je isključena ili lista prazna, stranica se ponaša potpuno kao do sad. */
   paketiAktivni?: boolean;
   paketi?: ProductBundle[];
-  /** Cross-sell checkbox u checkoutu — null/aktivan=false = stranica se ponaša potpuno kao do sad. */
-  upsell?: ProductUpsell | null;
+  /** Cross-sell checkbox u checkoutu — null = stranica se ponaša potpuno kao do sad. */
+  upsell?: ResolvedUpsell | null;
   preview?: boolean;
 }) {
   const { lead, rest } = splitIntroSections(sections);
@@ -82,7 +82,7 @@ export default async function CmsProductPage({
                 podnaslov={hero.naslovLinija2}
                 productId={productId}
                 paketi={aktivniPaketi}
-                upsell={upsell?.aktivan && upsell.targetId ? upsell : null}
+                upsell={upsell}
               />
             ) : null}
             <DawnFooter />

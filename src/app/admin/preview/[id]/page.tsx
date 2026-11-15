@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import CmsProductPage from "@/components/cms/CmsProductPage";
-import { getProduct, listReviews } from "@/lib/cms/repo";
+import { getProduct, listReviews, resolveUpsellDisplay } from "@/lib/cms/repo";
 
 // Pregled NACRTA (draft) — vidi se tačno kako će izgledati nakon objave,
 // ali javna stranica još prikazuje staru objavljenu verziju.
@@ -18,6 +18,7 @@ export default async function PreviewPage({
   const { bare } = await searchParams;
   const p = await getProduct(id);
   if (!p) notFound();
+  const upsell = await resolveUpsellDisplay(p.upsell, { preview: true });
 
   return (
     <>
@@ -49,7 +50,7 @@ export default async function PreviewPage({
         productId={p.id}
         paketiAktivni={p.paketiAktivni}
         paketi={p.paketi}
-        upsell={p.upsell}
+        upsell={upsell}
         preview
       />
     </>

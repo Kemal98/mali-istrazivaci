@@ -5,6 +5,7 @@ import {
   getPublishedBySlug,
   listPublishedReviews,
   listPublishedSlugs,
+  resolveUpsellDisplay,
 } from "@/lib/cms/repo";
 
 // Javna stranica CMS proizvoda. Postojeće statične rute (/sat-mira,
@@ -66,7 +67,10 @@ export default async function CmsSlugPage({ params }: Props) {
   if (!p || !p.publishedHero || !p.publishedSections) notFound();
 
   const d = p.publishedData;
-  const reviews = await listPublishedReviews(p.id);
+  const [reviews, upsell] = await Promise.all([
+    listPublishedReviews(p.id),
+    resolveUpsellDisplay(p.publishedUpsell, { preview: false }),
+  ]);
 
   return (
     <CmsProductPage
@@ -80,7 +84,7 @@ export default async function CmsSlugPage({ params }: Props) {
       productId={p.id}
       paketiAktivni={p.publishedPaketiAktivni}
       paketi={p.publishedPaketi ?? []}
-      upsell={p.publishedUpsell}
+      upsell={upsell}
     />
   );
 }

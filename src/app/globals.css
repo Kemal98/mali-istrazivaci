@@ -266,6 +266,8 @@ section{padding:66px 0}
   margin:14px 0;font-size:.85rem;font-weight:600;color:var(--ink);cursor:pointer}
 .upsell input{margin-top:3px;flex-shrink:0;width:16px;height:16px;cursor:pointer}
 .upsell small{display:block;font-weight:500;color:var(--ink3);margin-top:2px}
+.upsell-img{width:44px;height:44px;flex-shrink:0;object-fit:cover;border-radius:8px;
+  border:1px solid var(--line)}
 
 /* AGE STAGES */
 .stages-list{display:flex;flex-direction:column;border:1px solid var(--line);

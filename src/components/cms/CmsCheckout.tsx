@@ -6,7 +6,7 @@ import { markHvalaPurchaseAllowed, newIdempotencyKey, submitOrder } from "@/lib/
 import { useDawnQty } from "@/components/DawnQtyContext";
 import { useBookCheckoutModal } from "@/components/BookCheckoutModalContext";
 import { useBundle } from "@/components/BundleContext";
-import type { ProductBundle, ProductUpsell } from "@/lib/cms/types";
+import type { ProductBundle, ResolvedUpsell } from "@/lib/cms/types";
 
 declare global {
   interface Window {
@@ -40,7 +40,7 @@ export default function CmsCheckout({
   /** Paketna ponuda — kad ima stavki, zamjenjuje birač količine (vidi BundleContext). */
   paketi?: ProductBundle[];
   /** Cross-sell checkbox "Dodaj i X za +Y KM" — null = ne prikazuje se ništa, kao do sad. */
-  upsell?: ProductUpsell | null;
+  upsell?: ResolvedUpsell | null;
 }) {
   const router = useRouter();
   const { qty, setQty } = useDawnQty();
@@ -227,7 +227,11 @@ export default function CmsCheckout({
                     checked={upsellChecked}
                     onChange={(e) => setUpsellChecked(e.target.checked)}
                   />
-                  <span>{upsell.tekst || `Dodaj za +${upsell.cijena} KM`}</span>
+                  {upsell.slika ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img className="upsell-img" src={upsell.slika} alt={upsell.targetNaziv} />
+                  ) : null}
+                  <span>{upsell.tekst || `Dodaj ${upsell.targetNaziv} za +${upsell.cijena} KM`}</span>
                 </label>
               ) : null}
 

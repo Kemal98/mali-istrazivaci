@@ -9,6 +9,7 @@ import {
   ProductStatus,
   ProductUpsell,
   PublishedData,
+  ResolvedUpsell,
   Review,
   Seo,
   Template,
@@ -203,6 +204,33 @@ export async function getPublishedUpsell(
   };
 }
 
+/**
+ * Razrješava sliku/naziv ciljnog proizvoda za prikaz cross-sell checkbox-a
+ * u checkoutu (vidi CmsCheckout.tsx). `preview: true` (nacrt editora) čita
+ * draft podatke ciljnog proizvoda; inače (javna stranica) čita SAMO
+ * objavljene — ako ciljni proizvod nije (više) objavljen, vraća `null` i
+ * checkout jednostavno ne prikazuje cross-sell, umjesto da pokaže praznu
+ * sliku.
+ */
+export async function resolveUpsellDisplay(
+  upsell: ProductUpsell | null,
+  opts: { preview: boolean }
+): Promise<ResolvedUpsell | null> {
+  if (!upsell || !upsell.aktivan || !upsell.targetId) return null;
+  const target = await getProduct(upsell.targetId);
+  if (!target) return null;
+
+  if (opts.preview) {
+    return { ...upsell, slika: target.hero.slika, targetNaziv: target.naziv };
+  }
+  if (target.status !== "published" || !target.publishedHero) return null;
+  return {
+    ...upsell,
+    slika: target.publishedHero.slika,
+    targetNaziv: target.publishedData?.naziv ?? target.naziv,
+  };
+}
+
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const rows = await sql()<Row[]>`
     SELECT * FROM products WHERE slug = ${slug} AND deleted_at IS NULL`;
@@ -388,6 +416,26 @@ export async function updateProduct(
      WHERE id = ${id}`;
 
   return getProduct(id);
+}
+
+/**
+ * Jednim klikom (admin dugme na listi proizvoda): popuni PRIJEDLOG paketa
+ * (1/2/3 kom, isti -10%/-21% kao rotirajuće zvečke) za SVAKI proizvod koji
+ * već ima cijenu, ali nema ni jedan paket — bez obzira je li cijenu dobio
+ * prije ili nakon što je ovaj sistem napravljen (zato se ovo ne pokriva
+ * samo "prvi put dobija cijenu" granom gore, koja hvata samo nove
+ * proizvode). Ugašeno (paketiAktivni ostaje false) — admin i dalje sam
+ * pregleda i uključuje svaki, kao i do sad; ovo samo štedi kucanje.
+ */
+export async function suggestPaketiForAllProducts(): Promise<number> {
+  const products = await listProducts();
+  const kandidati = products.filter(
+    (p) => p.cijena !== null && p.paketi.length === 0
+  );
+  for (const p of kandidati) {
+    await updateProduct(p.id, { paketi: suggestPaketi(p.cijena as number) });
+  }
+  return kandidati.length;
 }
 
 export async function validateForPublish(p: Product): Promise<string[]> {

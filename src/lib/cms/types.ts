@@ -129,6 +129,17 @@ export function defaultUpsell(): ProductUpsell {
   return { aktivan: false, targetId: null, cijena: 0, tekst: "" };
 }
 
+/**
+ * `ProductUpsell` + ciljni proizvod već razrješen (slika/naziv) za prikaz
+ * u checkoutu — vidi `resolveUpsellDisplay` u repo.ts. Ako se ciljni
+ * proizvod ne može razrješiti (obrisan/nije objavljen), checkout dobija
+ * `null` umjesto ovog tipa i cross-sell se jednostavno ne prikazuje.
+ */
+export interface ResolvedUpsell extends ProductUpsell {
+  slika: string;
+  targetNaziv: string;
+}
+
 export interface Product {
   id: string;
   naziv: string;
