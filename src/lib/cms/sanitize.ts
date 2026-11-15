@@ -1,4 +1,4 @@
-import { Block, BlockType, BLOCK_LABELS, Hero, ProductBundle, Seo, defaultHero } from "./types";
+import { Block, BlockType, BLOCK_LABELS, Hero, ProductBundle, ProductUpsell, Seo, defaultHero } from "./types";
 import { publicUrlPrefix } from "./storage";
 
 // Server-side sanitizacija. Podacima iz admin UI-a se NE VJERUJE —
@@ -158,6 +158,17 @@ export function sanitizeBundles(v: unknown): ProductBundle[] {
     });
   }
   return out;
+}
+
+export function sanitizeUpsell(v: unknown): ProductUpsell {
+  const raw = (v ?? {}) as Record<string, unknown>;
+  const targetId = str(raw.targetId, 64);
+  return {
+    aktivan: bool(raw.aktivan),
+    targetId: targetId || null,
+    cijena: Math.max(0, num(raw.cijena) ?? 0),
+    tekst: str(raw.tekst, 140),
+  };
 }
 
 export function sanitizeSections(v: unknown): Block[] {

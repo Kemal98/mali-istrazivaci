@@ -6,7 +6,7 @@ import { markHvalaPurchaseAllowed, newIdempotencyKey, submitOrder } from "@/lib/
 import { useDawnQty } from "@/components/DawnQtyContext";
 import { useBookCheckoutModal } from "@/components/BookCheckoutModalContext";
 import { useBundle } from "@/components/BundleContext";
-import type { ProductBundle } from "@/lib/cms/types";
+import type { ProductBundle, ProductUpsell } from "@/lib/cms/types";
 
 declare global {
   interface Window {
@@ -29,6 +29,7 @@ export default function CmsCheckout({
   staraCijena,
   productId,
   paketi = [],
+  upsell = null,
 }: {
   naziv: string;
   cijena: number;
@@ -38,6 +39,8 @@ export default function CmsCheckout({
   productId?: string | null;
   /** Paketna ponuda — kad ima stavki, zamjenjuje birač količine (vidi BundleContext). */
   paketi?: ProductBundle[];
+  /** Cross-sell checkbox "Dodaj i X za +Y KM" — null = ne prikazuje se ništa, kao do sad. */
+  upsell?: ProductUpsell | null;
 }) {
   const router = useRouter();
   const { qty, setQty } = useDawnQty();
@@ -45,6 +48,7 @@ export default function CmsCheckout({
   const { bundle } = useBundle();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(false);
+  const [upsellChecked, setUpsellChecked] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   // Jedan ključ po otvorenoj formi: dupli klik ili retry šalju isti
   // ključ, pa backend vrati postojeću narudžbu umjesto da napravi drugu.
@@ -61,9 +65,9 @@ export default function CmsCheckout({
   // prijavljen 2026-11-11 — total nikad nije množio sa qty).
   const prikazCijena = aktivanPaket ? aktivanPaket.cijena : cijena;
   const efektivnaKolicina = aktivanPaket ? aktivanPaket.kolicina : qty;
-  const total = aktivanPaket
-    ? aktivanPaket.cijena + DELIVERY
-    : cijena * qty + DELIVERY;
+  const upsellDodatak = upsell && upsellChecked ? upsell.cijena : 0;
+  const total =
+    (aktivanPaket ? aktivanPaket.cijena : cijena * qty) + DELIVERY + upsellDodatak;
 
   useEffect(() => {
     if (!open) return;
@@ -110,6 +114,7 @@ export default function CmsCheckout({
       quantity: efektivnaKolicina,
       unitPrice: aktivanPaket ? Math.round((aktivanPaket.cijena / aktivanPaket.kolicina) * 100) / 100 : cijena,
       bundleId: aktivanPaket?.id,
+      upsellChecked: Boolean(upsell && upsellChecked),
       shippingPrice: DELIVERY,
     });
 
@@ -214,6 +219,17 @@ export default function CmsCheckout({
                 <label htmlFor="grad">Mjesto *</label>
                 <input type="text" id="grad" name="grad" required placeholder="Sarajevo" />
               </div>
+
+              {upsell ? (
+                <label className="upsell">
+                  <input
+                    type="checkbox"
+                    checked={upsellChecked}
+                    onChange={(e) => setUpsellChecked(e.target.checked)}
+                  />
+                  <span>{upsell.tekst || `Dodaj za +${upsell.cijena} KM`}</span>
+                </label>
+              ) : null}
 
               <div className="dawn-modal-delivery">
                 <span className="dawn-modal-delivery-dot" aria-hidden="true" />

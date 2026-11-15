@@ -1,5 +1,5 @@
 import "server-only";
-import { listOrdersByIds, listOrdersForExport } from "./repo";
+import { listLinkedOrders, listOrdersByIds, listOrdersForExport } from "./repo";
 import { isOrderStatus, type Order, type OrderStatus } from "./types";
 import { sarajevoStartOfDay } from "@/lib/cms/datum";
 import { str } from "@/lib/cms/sanitize";
@@ -29,6 +29,33 @@ function sarajevoDayEnd(dateStr: string): string {
 // izvezu.
 const DEFAULT_STATUSES: OrderStatus[] = ["NEW", "CONFIRMED"];
 
+/**
+ * Glavna narudžba + njen cross-sell dodatak (vidi orders.linked_order_id)
+ * MORAJU putovati zajedno u izvoz — a2bExport.ts spaja njihovu otkupninu
+ * u JEDNU pošiljku, pa ako jedan od njih nedostaje, kurir bi naplatio
+ * manje (ili više) nego što je kutija stvarno vrijedi. Bez obzira kako
+ * je skup izabran (checkbox, datum, status filter), ovdje se taj par
+ * uvijek upotpuni pre nego što se vrati pozivaocu.
+ */
+async function upotpuniParove(orders: Order[]): Promise<Order[]> {
+  const byId = new Map(orders.map((o) => [o.id, o]));
+  const nedostajuGlavne = new Set<string>();
+  for (const o of orders) {
+    if (o.linkedOrderId && !byId.has(o.linkedOrderId)) nedostajuGlavne.add(o.linkedOrderId);
+  }
+  const glavneIds = orders.filter((o) => !o.linkedOrderId).map((o) => o.id);
+
+  const [glavne, dodaci] = await Promise.all([
+    nedostajuGlavne.size ? listOrdersByIds([...nedostajuGlavne]) : Promise.resolve([]),
+    glavneIds.length ? listLinkedOrders(glavneIds) : Promise.resolve([]),
+  ]);
+
+  for (const o of [...glavne, ...dodaci]) {
+    if (!byId.has(o.id)) byId.set(o.id, o);
+  }
+  return [...byId.values()];
+}
+
 export async function resolveExportOrders(request: Request): Promise<Order[]> {
   const p = new URL(request.url).searchParams;
 
@@ -40,7 +67,7 @@ export async function resolveExportOrders(request: Request): Promise<Order[]> {
     ? body.ids.slice(0, 500).map((x: unknown) => str(x, 64)).filter(Boolean)
     : [];
 
-  if (ids.length) return listOrdersByIds(ids);
+  if (ids.length) return upotpuniParove(await listOrdersByIds(ids));
 
   const statusRaw = p.get("status") ?? "";
   const dateStr = p.get("date") ?? "";
@@ -57,7 +84,7 @@ export async function resolveExportOrders(request: Request): Promise<Order[]> {
     if (/^\d{4}-\d{2}-\d{2}$/.test(toStr)) to = sarajevoDayEnd(toStr);
   }
 
-  return listOrdersForExport({
+  const resolved = await listOrdersForExport({
     search: p.get("q") ?? undefined,
     status: isOrderStatus(statusRaw) ? statusRaw : "ALL",
     statusIn: isOrderStatus(statusRaw) ? undefined : DEFAULT_STATUSES,
@@ -67,4 +94,5 @@ export async function resolveExportOrders(request: Request): Promise<Order[]> {
     city: p.get("city") ?? undefined,
     unsyncedOnly: p.get("unsynced") === "1",
   });
+  return upotpuniParove(resolved);
 }

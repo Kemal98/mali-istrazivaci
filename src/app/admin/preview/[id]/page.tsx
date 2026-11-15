@@ -49,6 +49,7 @@ export default async function PreviewPage({
         productId={p.id}
         paketiAktivni={p.paketiAktivni}
         paketi={p.paketi}
+        upsell={p.upsell}
         preview
       />
     </>

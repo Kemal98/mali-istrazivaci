@@ -10,6 +10,12 @@ import { noviPaket, type ProductBundle } from "@/lib/cms/types";
  * direktno (nije CMS blok). "Istaknut" je RADIO ponašanje (klikom na
  * jedan se ugase svi ostali) — tačno jedan unaprijed označen paket,
  * nikad nijedan ili više njih (sanitizeBundles na serveru ovo i provjeri).
+ *
+ * Lista paketa se prikazuje BEZ OBZIRA na `aktivni` (vidi
+ * updateProduct() u repo.ts — automatski upiše prijedlog od 1/2/3 kom
+ * čim proizvod prvi put dobije cijenu, dok je `aktivni` još uvijek
+ * isključen) — admin mora moći pregledati/izmijeniti prijedlog PRIJE
+ * nego ga uključi.
  */
 export default function PaketiEditor({
   aktivni,
@@ -50,8 +56,14 @@ export default function PaketiEditor({
       <div className="adm-card-title">Paketne ponude</div>
       <Toggle label="Uključi paketne ponude za ovaj proizvod" value={aktivni} onChange={onChangeAktivni} />
 
-      {aktivni ? (
-        <>
+      {!aktivni && paketi.length > 0 ? (
+        <div className="adm-note adm-note-ok" style={{ margin: "10px 0" }}>
+          Automatski predlog (kupci ga još ne vide) — pregledaj/izmijeni
+          ispod, pa uključi prekidač gore kad želiš da ide uživo.
+        </div>
+      ) : null}
+
+      <>
           <p className="adm-hint" style={{ margin: "10px 0" }}>
             Kupac na stranici bira TAČNO JEDAN paket — on zamjenjuje običnu
             cijenu. Npr. „1 set (3 zvečke) – 19 KM“, „2 seta (6 zvečki) – 34
@@ -154,13 +166,12 @@ export default function PaketiEditor({
 
           {paketi.length === 0 ? (
             <div className="adm-note adm-note-warn" style={{ marginTop: 10 }}>
-              Paketne ponude su uključene, ali nema nijednog paketa — dok ne
-              dodaš bar jedan, stranica se prikazuje potpuno kao bez ove
-              funkcije.
+              {aktivni
+                ? "Paketne ponude su uključene, ali nema nijednog paketa — dok ne dodaš bar jedan, stranica se prikazuje potpuno kao bez ove funkcije."
+                : "Nema nijednog paketa — dodaj bar jedan, pa uključi prekidač gore kad želiš da ide uživo."}
             </div>
           ) : null}
         </>
-      ) : null}
     </div>
   );
 }

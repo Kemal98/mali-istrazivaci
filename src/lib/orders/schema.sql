@@ -163,3 +163,13 @@ ALTER TABLE business_cutoffs ENABLE ROW LEVEL SECURITY;
 -- kupac izabrao na narudžbi, čisto za prikaz u detaljima narudžbe i izvoz.
 -- "" = narudžba nije iz paketne ponude (standardna kupovina, kao i do sad).
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS bundle_label text NOT NULL DEFAULT '';
+
+-- Cross-sell/upsell (2026-11-15, vidi products.upsell_* u cms/schema.sql):
+-- kad kupac čekira "dodaj i X", pravi se DRUGA narudžba za taj drugi
+-- proizvod (svoj product_id/quantity/unit_price — zalihe/zarada po
+-- proizvodu ostaju tačne), sa linked_order_id = id GLAVNE narudžbe.
+-- "" = standardna narudžba, nije dodatak. A2B izvoz (a2bExport.ts) ove
+-- dvije spaja u JEDNU pošiljku/otkupninu — kurir fizički vidi samo jedan
+-- paket, nikad dvije naplate za jednu kutiju.
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS linked_order_id text NOT NULL DEFAULT '';
+CREATE INDEX IF NOT EXISTS idx_orders_linked ON orders (linked_order_id) WHERE linked_order_id <> '';

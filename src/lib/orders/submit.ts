@@ -23,6 +23,8 @@ export interface SubmitOrderInput {
   unitPrice: number;
   /** Izabrani paket (vidi CreateOrderInput u orders/types.ts) — server ignoriše unitPrice/quantity gore kad je ovo poslano. */
   bundleId?: string;
+  /** Cross-sell checkbox čekiran (vidi ProductUpsell) — server ponovo pročita ponudu iz baze, ne vjeruje browseru. */
+  upsellChecked?: boolean;
   shippingPrice: number;
   /** Polja koja postojeći Apps Script koristi za Meta CAPI (eventId itd.). */
   sheetExtras?: Record<string, unknown>;

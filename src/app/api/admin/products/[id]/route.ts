@@ -16,6 +16,7 @@ import {
   sanitizeHero,
   sanitizeSeo,
   sanitizeSections,
+  sanitizeUpsell,
   str,
 } from "@/lib/cms/sanitize";
 import { CATEGORY_KEYS } from "@/lib/home/types";
@@ -56,6 +57,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
   if (body.paketi !== undefined) patch.paketi = sanitizeBundles(body.paketi);
   if (body.prikaziNaPocetnoj !== undefined) patch.prikaziNaPocetnoj = bool(body.prikaziNaPocetnoj);
   if (body.rasprodano !== undefined) patch.rasprodano = bool(body.rasprodano);
+  if (body.upsell !== undefined) patch.upsell = sanitizeUpsell(body.upsell);
 
   const product = await updateProduct(id, patch);
   if (!product) return NextResponse.json({ error: "Nema proizvoda." }, { status: 404 });

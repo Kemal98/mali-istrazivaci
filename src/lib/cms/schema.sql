@@ -74,6 +74,22 @@ ALTER TABLE reviews ADD COLUMN IF NOT EXISTS featured_homepage boolean NOT NULL 
 -- — ovo je brzi ručni prekidač za "sad nemam, javi se ako hoćeš".
 ALTER TABLE products ADD COLUMN IF NOT EXISTS rasprodano boolean NOT NULL DEFAULT false;
 
+-- Cross-sell/upsell u checkoutu (2026-11-15): checkbox "Dodaj i X za +Y KM"
+-- koji nudi DRUGI proizvod (upsell_target_id) uz ovaj. Isti draft/published
+-- obrazac kao paketi gore — javna stranica čita SAMO published_* kolone.
+-- Kad je kupac kvači, ide DRUGA (povezana, linked_order_id) narudžba za
+-- upsell_target_id — vidi orders/schema.sql i checkout.ts. Cijena/tekst su
+-- slobodni (dogovor admina s kupcem kroz ponudu), ne moraju pratiti
+-- redovnu cijenu tog proizvoda.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS upsell_aktivan boolean NOT NULL DEFAULT false;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS upsell_target_id text;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS upsell_cijena double precision NOT NULL DEFAULT 0;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS upsell_tekst text NOT NULL DEFAULT '';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS published_upsell_aktivan boolean NOT NULL DEFAULT false;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS published_upsell_target_id text;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS published_upsell_cijena double precision NOT NULL DEFAULT 0;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS published_upsell_tekst text NOT NULL DEFAULT '';
+
 CREATE INDEX IF NOT EXISTS idx_products_updated
   ON products (updated_at DESC);
 

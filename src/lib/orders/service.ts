@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getProductCostPrice, getPublishedProductBundle } from "@/lib/cms/repo";
+import { getProductCostPrice, getPublishedProductBundle, getPublishedUpsell } from "@/lib/cms/repo";
 import { consumeFifo } from "@/lib/nabavke/consume";
 import {
   getOrderByIdempotencyKey,
@@ -47,7 +47,14 @@ function clean(v: unknown, max = MAX_TEXT): string {
 }
 
 export type CreateOrderResult =
-  | { ok: true; order: Order; duplicate: boolean; sheetSynced: boolean }
+  | {
+      ok: true;
+      order: Order;
+      duplicate: boolean;
+      sheetSynced: boolean;
+      /** Cross-sell dodatak (vidi upsellChecked) — druga, povezana narudžba, ako je napravljena. */
+      linkedOrder?: Order;
+    }
   | { ok: false; status: number; error: string };
 
 export async function createOrder(
@@ -208,8 +215,64 @@ export async function createOrder(
   // dalje, pa ako padne, narudžba je VEĆ upisana i ostaje takva.
   if (productId) await consumeFifo(productId, order.id, quantity);
 
+  /* ---------- 5. cross-sell dodatak (opciono) ---------- */
+
+  // Isti princip kao paketna ponuda gore: NIKAD se ne vjeruje cijeni/
+  // proizvodu koju šalje browser, čita se iz baze šta je stranica stvarno
+  // prikazala u trenutku narudžbe. Best-effort — ako ponuda u međuvremenu
+  // nije više aktivna, dodatak se tiho ne pravi, GLAVNA narudžba i dalje
+  // uspijeva (kupac ništa od toga ne vidi).
+  let linkedOrder: Order | undefined;
+  if (raw.upsellChecked && productId) {
+    try {
+      const upsell = await getPublishedUpsell(productId);
+      if (upsell) {
+        let upsellCostPrice = 0;
+        try {
+          upsellCostPrice = (await getProductCostPrice(upsell.targetId)) ?? 0;
+        } catch (e) {
+          console.error("[orders] lookup nabavne cijene (cross-sell) pao:", e);
+        }
+        linkedOrder = await insertOrder({
+          customerName,
+          phone,
+          email: clean(raw.email, 200),
+          city,
+          address,
+          postalCode: clean(raw.postalCode, 20),
+          note: clean(raw.note, MAX_NOTE),
+          productId: upsell.targetId,
+          productName: upsell.targetNaziv,
+          quantity: 1,
+          unitPrice: upsell.cijena,
+          subtotal: upsell.cijena,
+          // Dostava je već naplaćena na glavnoj narudžbi — ne duplo za dodatak.
+          shippingPrice: 0,
+          totalPrice: upsell.cijena,
+          costPrice: upsellCostPrice,
+          costTotal: upsellCostPrice,
+          utmSource: clean(a.utmSource, 120),
+          utmMedium: clean(a.utmMedium, 120),
+          utmCampaign: clean(a.utmCampaign, 200),
+          utmContent: clean(a.utmContent, 200),
+          utmTerm: clean(a.utmTerm, 200),
+          fbclid: clean(a.fbclid, 300),
+          landingPage: clean(a.landingPage, 400),
+          referrer: clean(a.referrer, 400),
+          idempotencyKey: `${idempotencyKey}_upsell`,
+          clientIp,
+          source: "web",
+          linkedOrderId: order.id,
+        });
+        await consumeFifo(upsell.targetId, linkedOrder.id, 1);
+      }
+    } catch (e) {
+      console.error("[orders] cross-sell dodatak pao:", e);
+    }
+  }
+
   // Sheet sync NE ide ovdje — radi se poslije odgovora kupcu.
-  return { ok: true, order, duplicate: false, sheetSynced: false };
+  return { ok: true, order, duplicate: false, sheetSynced: false, linkedOrder };
 }
 
 /**

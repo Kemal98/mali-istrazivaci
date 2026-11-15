@@ -80,6 +80,7 @@ export default async function CmsSlugPage({ params }: Props) {
       productId={p.id}
       paketiAktivni={p.publishedPaketiAktivni}
       paketi={p.publishedPaketi ?? []}
+      upsell={p.publishedUpsell}
     />
   );
 }

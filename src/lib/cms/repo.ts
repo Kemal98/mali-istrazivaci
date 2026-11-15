@@ -7,11 +7,13 @@ import {
   Product,
   ProductBundle,
   ProductStatus,
+  ProductUpsell,
   PublishedData,
   Review,
   Seo,
   Template,
   defaultHero,
+  suggestPaketi,
 } from "./types";
 import { CATEGORY_KEYS } from "../home/types";
 import { slugify, uniqueSlug } from "./slug";
@@ -66,6 +68,20 @@ function rowToProduct(r: Row): Product {
       : null,
     prikaziNaPocetnoj: r.prikazi_na_pocetnoj !== false,
     rasprodano: Boolean(r.rasprodano),
+    upsell: {
+      aktivan: Boolean(r.upsell_aktivan),
+      targetId: r.upsell_target_id ? String(r.upsell_target_id) : null,
+      cijena: Number(r.upsell_cijena ?? 0),
+      tekst: String(r.upsell_tekst ?? ""),
+    },
+    publishedUpsell: r.published_upsell_aktivan || r.published_upsell_target_id
+      ? {
+          aktivan: Boolean(r.published_upsell_aktivan),
+          targetId: r.published_upsell_target_id ? String(r.published_upsell_target_id) : null,
+          cijena: Number(r.published_upsell_cijena ?? 0),
+          tekst: String(r.published_upsell_tekst ?? ""),
+        }
+      : null,
     createdAt: String(r.created_at),
     updatedAt: String(r.updated_at),
     publishedAt: r.published_at ? String(r.published_at) : null,
@@ -153,6 +169,38 @@ export async function getPublishedProductBundle(
   if (!r || !r.published_paketi_aktivni || !r.published_paketi) return null;
   const list = parseJson<ProductBundle[]>(r.published_paketi, []);
   return list.find((b) => b.id === bundleId) ?? null;
+}
+
+/**
+ * Server-side provjera cross-sell/upsell ponude pri narudžbi — isti
+ * razlog kao getPublishedProductBundle: NIKAD se ne vjeruje cijeni/tekstu
+ * koju pošalje browser. Vraća i naziv/cijenu CILJNOG proizvoda (za drugu,
+ * povezanu narudžbu — vidi orders/service.ts) — target MORA biti CMS
+ * proizvod (ima red u products), legacy stranice (SAT MIRA i sl.) nisu
+ * podržane ni kao izvor ni kao cilj ove ponude.
+ */
+export async function getPublishedUpsell(
+  productId: string
+): Promise<{ targetId: string; targetNaziv: string; cijena: number; tekst: string } | null> {
+  const rows = await sql()<
+    { published_upsell_aktivan: boolean; published_upsell_target_id: string | null; published_upsell_cijena: number; published_upsell_tekst: string }[]
+  >`
+    SELECT published_upsell_aktivan, published_upsell_target_id, published_upsell_cijena, published_upsell_tekst
+      FROM products WHERE id = ${productId} AND deleted_at IS NULL AND status = 'published'`;
+  const r = rows[0];
+  if (!r || !r.published_upsell_aktivan || !r.published_upsell_target_id) return null;
+
+  const target = await sql()<{ naziv: string }[]>`
+    SELECT naziv FROM products
+     WHERE id = ${r.published_upsell_target_id} AND deleted_at IS NULL AND status = 'published'`;
+  if (!target[0]) return null;
+
+  return {
+    targetId: r.published_upsell_target_id,
+    targetNaziv: target[0].naziv,
+    cijena: Number(r.published_upsell_cijena ?? 0),
+    tekst: String(r.published_upsell_tekst ?? ""),
+  };
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -264,6 +312,7 @@ export interface UpdateProductInput {
   paketi?: ProductBundle[];
   prikaziNaPocetnoj?: boolean;
   rasprodano?: boolean;
+  upsell?: ProductUpsell;
 }
 
 /** Sprema NACRT. Nikad ne mijenja objavljenu verziju. */
@@ -273,6 +322,17 @@ export async function updateProduct(
 ): Promise<Product | null> {
   const cur = await getProduct(id);
   if (!cur) return null;
+
+  // Prvi put kad proizvod dobije cijenu (bio null), a nikad nije imao
+  // paket — automatski upiši PRIJEDLOG (1/2/3 kom), ugašen (paketiAktivni
+  // ostaje false dok admin sam ne uključi). NAPOMENA: klijent (ProductEditor)
+  // šalje CIJELI nacrt pri autosave-u, pa patch.paketi NIJE undefined nego
+  // "[]" (još netaknut) — zato se ovdje gleda cur.paketi, ne patch.paketi.
+  const dobijaCijenuPrviPut =
+    cur.cijena === null && patch.cijena != null && cur.paketi.length === 0;
+  if (dobijaCijenuPrviPut) {
+    patch = { ...patch, paketi: suggestPaketi(patch.cijena as number) };
+  }
 
   let slug = cur.slug;
   if (patch.slug !== undefined) {
@@ -299,6 +359,7 @@ export async function updateProduct(
     paketi: patch.paketi ?? cur.paketi,
     prikaziNaPocetnoj: patch.prikaziNaPocetnoj ?? cur.prikaziNaPocetnoj,
     rasprodano: patch.rasprodano ?? cur.rasprodano,
+    upsell: patch.upsell ?? cur.upsell,
   };
 
   await sql()`
@@ -319,6 +380,10 @@ export async function updateProduct(
       paketi = ${JSON.stringify(next.paketi)},
       prikazi_na_pocetnoj = ${next.prikaziNaPocetnoj},
       rasprodano = ${next.rasprodano},
+      upsell_aktivan = ${next.upsell.aktivan},
+      upsell_target_id = ${next.upsell.targetId},
+      upsell_cijena = ${next.upsell.cijena},
+      upsell_tekst = ${next.upsell.tekst},
       updated_at = ${nowIso()}
      WHERE id = ${id}`;
 
@@ -334,6 +399,16 @@ export async function validateForPublish(p: Product): Promise<string[]> {
   if (!p.hero.slika) errors.push("Dodajte glavnu fotografiju prije objave.");
   if (await slugTaken(p.slug, p.id))
     errors.push("Taj URL (slug) već koristi drugi proizvod.");
+  if (p.upsell.aktivan) {
+    if (!p.upsell.targetId) {
+      errors.push("Cross-sell je uključen, ali nije izabran proizvod koji se nudi.");
+    } else {
+      const target = await getProduct(p.upsell.targetId);
+      if (!target || target.status !== "published") {
+        errors.push("Proizvod izabran za cross-sell ponudu ne postoji ili nije objavljen.");
+      }
+    }
+  }
   return errors;
 }
 
@@ -364,6 +439,10 @@ export async function publishProduct(
       published_data = ${JSON.stringify(pub)},
       published_paketi_aktivni = ${p.paketiAktivni},
       published_paketi = ${JSON.stringify(p.paketi)},
+      published_upsell_aktivan = ${p.upsell.aktivan},
+      published_upsell_target_id = ${p.upsell.targetId},
+      published_upsell_cijena = ${p.upsell.cijena},
+      published_upsell_tekst = ${p.upsell.tekst},
       published_at = ${ts},
       updated_at = ${ts}
      WHERE id = ${id}`;

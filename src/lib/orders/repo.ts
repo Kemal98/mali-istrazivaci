@@ -72,6 +72,8 @@ function rowToOrder(r: Row): Order {
     sheetAttempts: n(r.sheet_attempts),
 
     source: s(r.source),
+
+    linkedOrderId: s(r.linked_order_id),
   };
 }
 
@@ -133,6 +135,8 @@ export interface InsertOrderRow {
    * lažno upozorenje "N narudžbi nije sinhronizovano".
    */
   sheetSynced?: boolean;
+  /** id GLAVNE narudžbe ako je ovo cross-sell dodatak uz nju (vidi createOrder u service.ts). */
+  linkedOrderId?: string;
 }
 
 export async function getOrderByIdempotencyKey(
@@ -173,7 +177,7 @@ export async function insertOrder(input: InsertOrderRow): Promise<Order> {
       utm_source, utm_medium, utm_campaign, utm_content, utm_term,
       fbclid, landing_page, referrer,
       idempotency_key, import_hash, client_ip, source,
-      sheet_synced, sheet_synced_at
+      sheet_synced, sheet_synced_at, linked_order_id
     ) VALUES (
       ${id},
       'MI-' || lpad(nextval('orders_number_seq')::text, 6, '0'),
@@ -194,7 +198,8 @@ export async function insertOrder(input: InsertOrderRow): Promise<Order> {
       ${input.idempotencyKey ?? null}, ${input.importHash ?? null},
       ${input.clientIp ?? ""}, ${input.source ?? "web"},
       ${input.sheetSynced ?? false},
-      ${input.sheetSynced ? ts : null}
+      ${input.sheetSynced ? ts : null},
+      ${input.linkedOrderId ?? ""}
     )
     ON CONFLICT DO NOTHING
     RETURNING *`;
@@ -438,6 +443,21 @@ export async function listOrdersByIds(ids: string[]): Promise<Order[]> {
   const db = sql();
   const rows = await db<Row[]>`
     SELECT * FROM orders WHERE deleted_at IS NULL AND id IN ${db(ids)}
+     ORDER BY created_at ASC`;
+  return rows.map(rowToOrder);
+}
+
+/**
+ * Cross-sell dodaci (vidi products.upsell_* u cms/schema.sql) koji su
+ * vezani za neku od ovih GLAVNIH narudžbi — za exportSelection.ts, da se
+ * par glavna+dodatak uvijek izvozi zajedno (vidi a2bExport.ts, zašto je
+ * to bitno za otkupninu).
+ */
+export async function listLinkedOrders(primaryIds: string[]): Promise<Order[]> {
+  if (!primaryIds.length) return [];
+  const db = sql();
+  const rows = await db<Row[]>`
+    SELECT * FROM orders WHERE deleted_at IS NULL AND linked_order_id IN ${db(primaryIds)}
      ORDER BY created_at ASC`;
   return rows.map(rowToOrder);
 }

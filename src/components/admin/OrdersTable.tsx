@@ -459,6 +459,15 @@ export default function OrdersTable({
                   <Link href={`/admin/orders/${o.id}`}>
                     <b>{o.orderNumber}</b>
                   </Link>
+                  {o.linkedOrderId ? (
+                    <div
+                      className="adm-hint"
+                      style={{ fontSize: "0.72rem" }}
+                      title="Cross-sell dodatak uz drugu narudžbu — A2B izvoz ih spaja u jednu pošiljku."
+                    >
+                      🔗 dodatak
+                    </div>
+                  ) : null}
                 </td>
                 <td className="adm-hint" style={{ whiteSpace: "nowrap" }}>
                   {datum(o.createdAt)}

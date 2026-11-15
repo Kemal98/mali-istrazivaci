@@ -112,6 +112,23 @@ export interface ProductBundle {
   istaknut: boolean;
 }
 
+/**
+ * Cross-sell/upsell checkbox u checkoutu — "Dodaj i X za +Y KM". `targetId`
+ * je id DRUGOG proizvoda (CMS ili legacy, vidi home/rank.ts LEGACY_PRODUCT_ID)
+ * koji se nudi. Cijena/tekst su slobodni, ne moraju pratiti redovnu cijenu
+ * ciljnog proizvoda — admin sam odlučuje šta je dobra ponuda.
+ */
+export interface ProductUpsell {
+  aktivan: boolean;
+  targetId: string | null;
+  cijena: number;
+  tekst: string;
+}
+
+export function defaultUpsell(): ProductUpsell {
+  return { aktivan: false, targetId: null, cijena: 0, tekst: "" };
+}
+
 export interface Product {
   id: string;
   naziv: string;
@@ -144,6 +161,10 @@ export interface Product {
   prikaziNaPocetnoj: boolean;
   /** Ručno "nema na stanju" — NE blokira narudžbu, samo prikaz na listama (vidi cms/schema.sql komentar). */
   rasprodano: boolean;
+  /** Cross-sell/upsell — NACRT. */
+  upsell: ProductUpsell;
+  /** Cross-sell/upsell — OBJAVLJENO (ono što checkout stvarno nudi). */
+  publishedUpsell: ProductUpsell | null;
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
@@ -237,6 +258,25 @@ export function noviPaket(): ProductBundle {
     oznaka: "",
     istaknut: false,
   };
+}
+
+/**
+ * Automatski PRIJEDLOG paketa (1/2/3 komada) kad admin prvi put upiše
+ * cijenu novog proizvoda — vidi updateProduct() u repo.ts. Formula
+ * (-10%/kom za 2, -21%/kom za 3, zaokruženo na cijeli KM) je ista koja
+ * se već stvarno koristi i prodaje na rotirajućim zvečkama (19/34/45
+ * za cijenu=19) — nije izmišljena, admin odluka 2026-11-15. Samo
+ * PRIJEDLOG: `paketiAktivni` ostaje isključen, admin sam uključi kad
+ * pregleda/izmijeni.
+ */
+export function suggestPaketi(cijena: number): ProductBundle[] {
+  const tier2 = Math.round(cijena * 2 * 0.9);
+  const tier3 = Math.round(cijena * 3 * 0.79);
+  return [
+    { id: `pkt_${Math.random().toString(36).slice(2, 10)}`, naziv: "1 komad", kolicina: 1, cijena, staraCijena: null, oznaka: "", istaknut: true },
+    { id: `pkt_${Math.random().toString(36).slice(2, 10)}`, naziv: "2 komada", kolicina: 2, cijena: tier2, staraCijena: null, oznaka: "NAJPOPULARNIJE", istaknut: false },
+    { id: `pkt_${Math.random().toString(36).slice(2, 10)}`, naziv: "3 komada", kolicina: 3, cijena: tier3, staraCijena: null, oznaka: "NAJBOLJA PONUDA", istaknut: false },
+  ];
 }
 
 // Prazna "kostur" vrijednost za svaki tip bloka kad se doda u builder

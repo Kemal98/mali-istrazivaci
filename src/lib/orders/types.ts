@@ -142,6 +142,9 @@ export interface Order {
   sheetAttempts: number;
 
   source: string;
+
+  /** id GLAVNE narudžbe ako je ovo cross-sell dodatak uz nju — "" = standardna narudžba. */
+  linkedOrderId: string;
 }
 
 /**
@@ -250,6 +253,14 @@ export interface CreateOrderInput {
    * može cijenu paketa promijeniti kroz browser.
    */
   bundleId?: string;
+
+  /**
+   * Cross-sell checkbox (vidi ProductUpsell u cms/types.ts) — kad je true,
+   * server NIKAD ne vjeruje browseru koji je proizvod/cijena: ponovo pročita
+   * ponudu iz baze (getPublishedUpsell) i napravi DRUGU, povezanu narudžbu
+   * (vidi createOrder u service.ts). Ignoriše se ako productId nedostaje.
+   */
+  upsellChecked?: boolean;
 
   /** Dodatna polja koja postojeći Apps Script očekuje — prolaze kroz. */
   sheetExtras?: Record<string, unknown>;

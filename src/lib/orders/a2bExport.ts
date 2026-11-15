@@ -56,7 +56,31 @@ export async function buildA2bWorkbook(orders: Order[]): Promise<A2bExportResult
 
   const missingPostal: string[] = [];
 
+  // Cross-sell dodaci (linked_order_id — vidi products.upsell_* u
+  // cms/schema.sql) NISU zasebna pošiljka: kurir fizički nosi JEDNU
+  // kutiju za glavnu narudžbu + dodatak, pa se njihov iznos spaja u
+  // otkupninu GLAVNE narudžbe, a sami se NE prikazuju kao svoj red. Ako
+  // je admin izvezao SAMO dodatak (glavna narudžba nije u istom izvozu —
+  // rijedak, ručni slučaj), tretira se kao obična samostalna pošiljka,
+  // bolje nego da se tiho izgubi iz izvoza.
+  const byId = new Map(orders.map((o) => [o.id, o]));
+  const dodaciZaGlavnu = new Map<string, Order[]>();
+  const preskociKaoDodatak = new Set<string>();
   for (const o of orders) {
+    if (o.linkedOrderId && byId.has(o.linkedOrderId)) {
+      preskociKaoDodatak.add(o.id);
+      const lista = dodaciZaGlavnu.get(o.linkedOrderId) ?? [];
+      lista.push(o);
+      dodaciZaGlavnu.set(o.linkedOrderId, lista);
+    }
+  }
+
+  for (const o of orders) {
+    if (preskociKaoDodatak.has(o.id)) continue;
+    const dodaci = dodaciZaGlavnu.get(o.id) ?? [];
+    const otkupnina = o.totalPrice + dodaci.reduce((sum, d) => sum + d.totalPrice, 0);
+    const internaReferenca = [o.orderNumber, ...dodaci.map((d) => d.orderNumber)].join("+");
+
     const { ulica, broj } = splitAddress(o.address);
     const { city, postalCode } = extractPostalCode(o.city, o.postalCode);
     if (!postalCode) missingPostal.push(o.orderNumber);
@@ -72,8 +96,8 @@ export async function buildA2bWorkbook(orders: Order[]): Promise<A2bExportResult
       phoneForA2B(o.phone),
       1, // Broj koleta
       formatWeight(undefined), // težina nije poznata ni za jedan proizvod -> uvijek "1,000"
-      formatMoney(o.totalPrice), // Otkupnina = proizvod + dostava (plaća kupac kuriru)
-      o.orderNumber, // Interna referenca — da se nazad prepozna narudžba
+      formatMoney(otkupnina), // Otkupnina = proizvod (+ cross-sell dodatak) + dostava
+      internaReferenca, // Interna referenca — da se nazad prepozna narudžba(e)
       "", // Dodatna referenca
       "", // Parent Package ID
       "", // Placa

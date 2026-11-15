@@ -8,6 +8,7 @@ import PageBuilder from "./PageBuilder";
 import PaketiEditor from "./PaketiEditor";
 import PopuniIzClaudea from "./PopuniIzClaudea";
 import ReviewsPanel from "./ReviewsPanel";
+import UpsellEditor from "./UpsellEditor";
 import {
   NumberField,
   RichTextArea,
@@ -18,7 +19,7 @@ import {
   Toggle,
 } from "./fields";
 import { slugify } from "@/lib/cms/slug";
-import type { Block, GlobalSettings, Hero, Product, ProductBundle, Review, Seo } from "@/lib/cms/types";
+import type { Block, GlobalSettings, Hero, Product, ProductBundle, ProductUpsell, Review, Seo } from "@/lib/cms/types";
 import { CATEGORY_KEYS, CATEGORY_LABELS } from "@/lib/home/types";
 
 type Tab = "osnovno" | "hero" | "sadrzaj" | "recenzije" | "seo";
@@ -48,6 +49,7 @@ interface Draft {
   paketi: ProductBundle[];
   prikaziNaPocetnoj: boolean;
   rasprodano: boolean;
+  upsell: ProductUpsell;
 }
 
 function toDraft(p: Product): Draft {
@@ -68,6 +70,7 @@ function toDraft(p: Product): Draft {
     paketi: p.paketi,
     prikaziNaPocetnoj: p.prikaziNaPocetnoj,
     rasprodano: p.rasprodano,
+    upsell: p.upsell,
   };
 }
 
@@ -523,6 +526,12 @@ export default function ProductEditor({
             paketi={draft.paketi}
             onChangeAktivni={(v) => patch({ paketiAktivni: v })}
             onChangePaketi={(items) => patch({ paketi: items })}
+          />
+
+          <UpsellEditor
+            upsell={draft.upsell}
+            products={products.filter((p) => p.id !== product.id)}
+            onChange={(upsell) => patch({ upsell })}
           />
 
           <div className="adm-card">

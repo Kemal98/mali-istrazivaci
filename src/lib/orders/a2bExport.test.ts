@@ -48,6 +48,7 @@ function fakeOrder(patch: Partial<Order>): Order {
     sheetError: "",
     sheetAttempts: 0,
     source: "web",
+    linkedOrderId: "",
     ...patch,
   };
 }
@@ -96,9 +97,54 @@ describe("buildA2bWorkbook", () => {
 
   it("vraća brojeve narudžbi kojima fali poštanski broj", async () => {
     const { missingPostal } = await buildA2bWorkbook([
-      fakeOrder({ orderNumber: "MI-000251", city: "Sarajevo", postalCode: "" }),
-      fakeOrder({ orderNumber: "MI-000252", city: "Doboj 74000", postalCode: "" }),
+      fakeOrder({ id: "ord_a", orderNumber: "MI-000251", city: "Sarajevo", postalCode: "" }),
+      fakeOrder({ id: "ord_b", orderNumber: "MI-000252", city: "Doboj 74000", postalCode: "" }),
     ]);
     expect(missingPostal).toEqual(["MI-000251"]);
+  });
+
+  it("cross-sell dodatak (linked_order_id) se spaja u JEDAN red sa glavnom narudžbom", async () => {
+    const glavna = fakeOrder({
+      id: "ord_glavna",
+      orderNumber: "MI-000251",
+      totalPrice: 39,
+      linkedOrderId: "",
+    });
+    const dodatak = fakeOrder({
+      id: "ord_dodatak",
+      orderNumber: "MI-000252",
+      totalPrice: 15,
+      shippingPrice: 0,
+      linkedOrderId: "ord_glavna",
+    });
+    const { buffer } = await buildA2bWorkbook([glavna, dodatak]);
+    const wb = new ExcelJS.Workbook();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await wb.xlsx.load(buffer as any);
+    const sheet = wb.getWorksheet("Report")!;
+
+    // Samo JEDAN red narudžbe (red 3) — dodatak se NE pojavljuje kao svoj red.
+    expect(sheet.getRow(4).values).toEqual([]);
+
+    const row = sheet.getRow(3).values as unknown[];
+    expect(row[11]).toBe("54,00"); // Otkupnina = 39 (glavna) + 15 (dodatak)
+    expect(row[12]).toBe("MI-000251+MI-000252"); // Interna referenca spaja oba broja
+  });
+
+  it("dodatak bez glavne narudžbe u istom izvozu ide kao samostalna pošiljka", async () => {
+    const dodatak = fakeOrder({
+      id: "ord_dodatak",
+      orderNumber: "MI-000252",
+      totalPrice: 15,
+      linkedOrderId: "ord_ne_postoji_u_ovom_izvozu",
+    });
+    const { buffer } = await buildA2bWorkbook([dodatak]);
+    const wb = new ExcelJS.Workbook();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await wb.xlsx.load(buffer as any);
+    const sheet = wb.getWorksheet("Report")!;
+    const row = sheet.getRow(3).values as unknown[];
+    expect(row[11]).toBe("15,00");
+    expect(row[12]).toBe("MI-000252");
   });
 });

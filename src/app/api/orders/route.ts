@@ -50,6 +50,7 @@ export async function POST(request: Request) {
       quantity: Number(body.quantity ?? 1),
       unitPrice: Number(body.unitPrice ?? 0),
       bundleId: body.bundleId ? String(body.bundleId) : undefined,
+      upsellChecked: Boolean(body.upsellChecked),
       shippingPrice: Number(body.shippingPrice ?? 0),
       // prolazi kroz do Apps Scripta nepromijenjeno (Meta CAPI dedup)
       sheetExtras:
@@ -76,9 +77,11 @@ export async function POST(request: Request) {
         body.sheetExtras && typeof body.sheetExtras === "object"
           ? (body.sheetExtras as Record<string, unknown>)
           : {};
+      const linkedOrder = res.linkedOrder;
       after(async () => {
         try {
           await syncOrderToSheet(order, extras);
+          if (linkedOrder) await syncOrderToSheet(linkedOrder, extras);
         } catch (e) {
           console.error("[orders] after() sync pao:", e);
         }
