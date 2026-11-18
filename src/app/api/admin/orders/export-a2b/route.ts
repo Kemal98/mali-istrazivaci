@@ -1,4 +1,4 @@
-import { resolveExportOrders } from "@/lib/orders/exportSelection";
+import { resolveA2bOrders } from "@/lib/orders/exportSelection";
 import { buildA2bWorkbook } from "@/lib/orders/a2bExport";
 import { setStatusBulk } from "@/lib/orders/repo";
 
@@ -18,7 +18,7 @@ import { setStatusBulk } from "@/lib/orders/repo";
  * u tabeli — nema zasebnog "opt-in" dugmeta, ovo je zadano ponašanje.
  */
 export async function POST(request: Request) {
-  const orders = await resolveExportOrders(request);
+  const orders = await resolveA2bOrders(request);
 
   if (!orders.length) {
     return Response.json({ error: "Nema narudžbi po ovim filterima." }, { status: 400 });

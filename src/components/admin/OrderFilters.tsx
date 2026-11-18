@@ -81,7 +81,11 @@ export default function OrderFilters({
   // POST, ne obični <a href>: treba fetch + blob download da bi se mogao
   // pročitati Content-Disposition (ime fajla) i prikazati greška ako
   // nema narudžbi, što plain <a href> ne može.
-  async function downloadExport(endpoint: string, fallbackName: string) {
+  async function downloadExport(
+    endpoint: string,
+    fallbackName: string,
+    includeDelivered = false
+  ) {
     setA2bBusy(true);
     setMissingPostal([]);
     try {
@@ -93,6 +97,7 @@ export default function OrderFilters({
       // problem kao ranije na dashboardu ako bismo to računali ovdje.
       if (exportFrom) qs.set("from", exportFrom);
       if (exportTo) qs.set("to", exportTo);
+      if (includeDelivered) qs.set("includeDelivered", "1");
       // Proizvod SE prenosi iz filtera iznad — ako je admin izabrao samo
       // jedan proizvod na listi, izvoz za A2B/pakovanje treba da sadrži
       // samo taj proizvod, ne sve. (Status se namjerno NE prenosi — A2B
@@ -124,6 +129,24 @@ export default function OrderFilters({
 
   const exportA2b = () =>
     downloadExport("/api/admin/orders/export-a2b", "a2b-masovni-import.xlsx");
+  const reexportA2b = () => {
+    if (!exportFrom && !exportTo) {
+      alert("Za ponovni A2B izvoz odaberi barem početni ili završni datum.");
+      return;
+    }
+    if (
+      !window.confirm(
+        "Ovaj izvoz uključuje i narudžbe već označene kao Dostavljena. Ako ih ponovo pošalješ kuriru, mogu nastati duple pošiljke. Nastaviti?"
+      )
+    ) {
+      return;
+    }
+    return downloadExport(
+      "/api/admin/orders/export-a2b",
+      "a2b-masovni-import.xlsx",
+      true
+    );
+  };
   const exportPacking = () =>
     downloadExport("/api/admin/orders/export-packing", "za-pakovanje.xlsx");
 
@@ -388,6 +411,14 @@ export default function OrderFilters({
           onClick={exportA2b}
         >
           {a2bBusy ? "Izvozim…" : "⤓ IZVEZI ZA A2B"}
+        </button>
+        <button
+          type="button"
+          className="adm-btn"
+          disabled={a2bBusy}
+          onClick={reexportA2b}
+        >
+          ⤓ PONOVI A2B IZVOZ (DOSTAVLJENE)
         </button>
         <button
           type="button"

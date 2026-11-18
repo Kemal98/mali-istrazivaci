@@ -37,6 +37,7 @@ const PACKING_EXPORT_STATUSES: OrderStatus[] = [
   "PACKING",
   "DELIVERED",
 ];
+const A2B_REEXPORT_STATUSES: OrderStatus[] = ["NEW", "CONFIRMED", "DELIVERED"];
 
 /**
  * Glavna narudžba + njen cross-sell dodatak (vidi orders.linked_order_id)
@@ -112,4 +113,19 @@ export async function resolveExportOrders(
 /** Izvoz pakovanja uključuje i narudžbe koje je prethodni A2B izvoz označio kao dostavljene. */
 export function resolvePackingOrders(request: Request): Promise<Order[]> {
   return resolveExportOrders(request, PACKING_EXPORT_STATUSES);
+}
+
+/** Ponovni A2B izvoz dostavljenih narudžbi traži eksplicitnu potvrdu iz UI-ja. */
+export function resolveA2bOrders(request: Request): Promise<Order[]> {
+  const url = new URL(request.url);
+  const p = url.searchParams;
+  const hasDateRange = ["date", "from", "to"].some((key) =>
+    /^\d{4}-\d{2}-\d{2}$/.test(p.get(key) ?? "")
+  );
+  const includeDelivered =
+    p.get("includeDelivered") === "1" && hasDateRange;
+  return resolveExportOrders(
+    request,
+    includeDelivered ? A2B_REEXPORT_STATUSES : DEFAULT_STATUSES
+  );
 }
