@@ -29,6 +29,15 @@ function sarajevoDayEnd(dateStr: string): string {
 // izvezu.
 const DEFAULT_STATUSES: OrderStatus[] = ["NEW", "CONFIRMED"];
 
+// Lista za pakovanje obuhvata i "Dostavljena": A2B izvoz namjerno prebaci
+// izvezene narudžbe u taj status, ali ih paker i dalje mora imati u Excelu.
+const PACKING_EXPORT_STATUSES: OrderStatus[] = [
+  "NEW",
+  "CONFIRMED",
+  "PACKING",
+  "DELIVERED",
+];
+
 /**
  * Glavna narudžba + njen cross-sell dodatak (vidi orders.linked_order_id)
  * MORAJU putovati zajedno u izvoz — a2bExport.ts spaja njihovu otkupninu
@@ -56,7 +65,10 @@ async function upotpuniParove(orders: Order[]): Promise<Order[]> {
   return [...byId.values()];
 }
 
-export async function resolveExportOrders(request: Request): Promise<Order[]> {
+export async function resolveExportOrders(
+  request: Request,
+  defaultStatuses: OrderStatus[] = DEFAULT_STATUSES
+): Promise<Order[]> {
   const p = new URL(request.url).searchParams;
 
   // Ručno označene narudžbe (checkbox u tabeli) idu u body, ne u query —
@@ -87,7 +99,7 @@ export async function resolveExportOrders(request: Request): Promise<Order[]> {
   const resolved = await listOrdersForExport({
     search: p.get("q") ?? undefined,
     status: isOrderStatus(statusRaw) ? statusRaw : "ALL",
-    statusIn: isOrderStatus(statusRaw) ? undefined : DEFAULT_STATUSES,
+    statusIn: isOrderStatus(statusRaw) ? undefined : defaultStatuses,
     from,
     to,
     product: p.get("product") ?? undefined,
@@ -95,4 +107,9 @@ export async function resolveExportOrders(request: Request): Promise<Order[]> {
     unsyncedOnly: p.get("unsynced") === "1",
   });
   return upotpuniParove(resolved);
+}
+
+/** Izvoz pakovanja uključuje i narudžbe koje je prethodni A2B izvoz označio kao dostavljene. */
+export function resolvePackingOrders(request: Request): Promise<Order[]> {
+  return resolveExportOrders(request, PACKING_EXPORT_STATUSES);
 }

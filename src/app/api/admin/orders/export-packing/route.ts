@@ -1,14 +1,14 @@
-import { resolveExportOrders } from "@/lib/orders/exportSelection";
+import { resolvePackingOrders } from "@/lib/orders/exportSelection";
 import { buildPackingWorkbook } from "@/lib/orders/a2bExport";
 
 /**
  * Fajl za OSOBE KOJE PAKUJU — ISTA selekcija narudžbi kao A2B izvoz
- * (resolveExportOrders: checkbox ili datum), ali druga tabela: A2B
+ * (checkbox ili datum), ali druga tabela: A2B
  * tabela nema nikakav podatak o proizvodu (kurira ne zanima šta je u
  * paketu), a paker treba tačno to — vidi buildPackingWorkbook.
  */
 export async function POST(request: Request) {
-  const orders = await resolveExportOrders(request);
+  const orders = await resolvePackingOrders(request);
 
   if (!orders.length) {
     return Response.json({ error: "Nema narudžbi po ovim filterima." }, { status: 400 });
