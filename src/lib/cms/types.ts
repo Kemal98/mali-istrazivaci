@@ -110,6 +110,8 @@ export interface ProductBundle {
   oznaka: string;
   /** Unaprijed označen paket na stranici (tačno jedan po proizvodu). */
   istaknut: boolean;
+  /** Mala slika uz naziv (npr. gratis poklon uz paket) — "" = bez slike. */
+  bonusSlika: string;
 }
 
 /**
@@ -268,6 +270,7 @@ export function noviPaket(): ProductBundle {
     staraCijena: null,
     oznaka: "",
     istaknut: false,
+    bonusSlika: "",
   };
 }
 
@@ -284,9 +287,9 @@ export function suggestPaketi(cijena: number): ProductBundle[] {
   const tier2 = Math.round(cijena * 2 * 0.9);
   const tier3 = Math.round(cijena * 3 * 0.79);
   return [
-    { id: `pkt_${Math.random().toString(36).slice(2, 10)}`, naziv: "1 komad", kolicina: 1, cijena, staraCijena: null, oznaka: "", istaknut: true },
-    { id: `pkt_${Math.random().toString(36).slice(2, 10)}`, naziv: "2 komada", kolicina: 2, cijena: tier2, staraCijena: null, oznaka: "NAJPOPULARNIJE", istaknut: false },
-    { id: `pkt_${Math.random().toString(36).slice(2, 10)}`, naziv: "3 komada", kolicina: 3, cijena: tier3, staraCijena: null, oznaka: "NAJBOLJA PONUDA", istaknut: false },
+    { id: `pkt_${Math.random().toString(36).slice(2, 10)}`, naziv: "1 komad", kolicina: 1, cijena, staraCijena: null, oznaka: "", istaknut: true, bonusSlika: "" },
+    { id: `pkt_${Math.random().toString(36).slice(2, 10)}`, naziv: "2 komada", kolicina: 2, cijena: tier2, staraCijena: null, oznaka: "NAJPOPULARNIJE", istaknut: false, bonusSlika: "" },
+    { id: `pkt_${Math.random().toString(36).slice(2, 10)}`, naziv: "3 komada", kolicina: 3, cijena: tier3, staraCijena: null, oznaka: "NAJBOLJA PONUDA", istaknut: false, bonusSlika: "" },
   ];
 }
 

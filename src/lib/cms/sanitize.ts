@@ -155,6 +155,7 @@ export function sanitizeBundles(v: unknown): ProductBundle[] {
       staraCijena: num(raw.staraCijena),
       oznaka: str(raw.oznaka, 40),
       istaknut,
+      bonusSlika: mediaUrl(raw.bonusSlika),
     });
   }
   return out;

@@ -1,6 +1,7 @@
 "use client";
 
 import { NumberField, TextField, Toggle } from "./fields";
+import MediaField from "./MediaField";
 import { declaredPackQuantity } from "@/lib/cms/bundles";
 import { noviPaket, type ProductBundle } from "@/lib/cms/types";
 
@@ -159,6 +160,14 @@ export default function PaketiEditor({
                   />
                   Unaprijed označen
                 </label>
+              </div>
+              <div style={{ marginTop: 10 }}>
+                <MediaField
+                  label="Slika poklona/bonusa (opcionalno)"
+                  value={p.bonusSlika}
+                  accept="image"
+                  onChange={(url) => setItem(i, { bonusSlika: url })}
+                />
               </div>
             </div>
           );})}
