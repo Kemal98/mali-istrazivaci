@@ -77,16 +77,23 @@ export async function profitAsIfSold(
            COUNT(*) AS orders,
            COALESCE(SUM(o.quantity), 0) AS qty,
            COALESCE(SUM(o.subtotal), 0) AS revenue,
-           COALESCE(SUM(COALESCE(lg.cost, o.quantity * pr.nabavna_cijena)), 0) AS cost,
-           BOOL_OR(lg.cost IS NULL AND pr.nabavna_cijena IS NULL) AS missing,
-           BOOL_OR(lg.cost IS NOT NULL) AS any_ledger
+           COALESCE(SUM(
+             COALESCE(lg.cost, 0) +
+             GREATEST(o.quantity - COALESCE(lg.consumed_qty, 0), 0) * COALESCE(pr.nabavna_cijena, 0)
+           ), 0) AS cost,
+           BOOL_OR(
+             GREATEST(o.quantity - COALESCE(lg.consumed_qty, 0), 0) > 0 AND
+             pr.nabavna_cijena IS NULL
+           ) AS missing,
+           BOOL_OR(COALESCE(lg.consumed_qty, 0) > 0) AS any_ledger
       FROM orders o
       LEFT JOIN products pr
         ON pr.deleted_at IS NULL
        AND (pr.id = o.product_id
             OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
       LEFT JOIN (
-        SELECT order_id, SUM(quantity * unit_cost) AS cost
+         SELECT order_id, SUM(quantity) AS consumed_qty,
+           SUM(quantity * unit_cost) AS cost
           FROM nabavke_potrosnja WHERE reversed_at IS NULL GROUP BY order_id
       ) lg ON lg.order_id = o.id
      WHERE ${w}
@@ -104,7 +111,9 @@ export async function profitAsIfSold(
   // (uključujući presjeke) za "Na stanju", i ukupno prodano po proizvodu.
   const purchaseRows = await db<Row[]>`
     SELECT product_name, SUM(quantity) AS qty, SUM(total_cost) AS cost
-      FROM stock_purchases WHERE is_adjustment = false GROUP BY 1`;
+      FROM stock_purchases
+     WHERE is_adjustment = false
+     GROUP BY 1`;
   const stockRows = await db<Row[]>`
     SELECT product_name, SUM(quantity) AS qty
       FROM stock_purchases GROUP BY 1`;
@@ -273,6 +282,8 @@ export interface DayProfit {
   profit: number;
   /** Opšti troškovi van reklama/nabavke (ambalaža, naknade i sl.), vidi ProfitSummary.otherCosts. */
   otherCosts: number;
+  /** true = za bar jednu narudžbu tog dana nema nabavne cijene ni prosjeka ni FIFO zapisa — cost je potcijenjen. Samo profitByProductDay postavlja ovo. */
+  missingCost?: boolean;
 }
 
 /**
@@ -286,7 +297,9 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
 
   const purchaseRows = await db<Row[]>`
     SELECT product_name, SUM(quantity) AS qty, SUM(total_cost) AS cost
-      FROM stock_purchases GROUP BY 1`;
+      FROM stock_purchases
+     WHERE is_adjustment = false
+     GROUP BY 1`;
   const avgCost = new Map<string, number>();
   for (const r of purchaseRows) {
     const qty = n(r.qty);
@@ -301,14 +314,18 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
            COUNT(*) AS orders,
            COALESCE(SUM(o.quantity), 0) AS qty,
            COALESCE(SUM(o.subtotal), 0) AS revenue,
-           COALESCE(SUM(COALESCE(lg.cost, o.quantity * pr.nabavna_cijena)), 0) AS cost_default
+           COALESCE(SUM(
+             COALESCE(lg.cost, 0) +
+             GREATEST(o.quantity - COALESCE(lg.consumed_qty, 0), 0) * COALESCE(pr.nabavna_cijena, 0)
+           ), 0) AS cost_default
       FROM orders o
       LEFT JOIN products pr
         ON pr.deleted_at IS NULL
        AND (pr.id = o.product_id
             OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
       LEFT JOIN (
-        SELECT order_id, SUM(quantity * unit_cost) AS cost
+         SELECT order_id, SUM(quantity) AS consumed_qty,
+           SUM(quantity * unit_cost) AS cost
           FROM nabavke_potrosnja WHERE reversed_at IS NULL GROUP BY order_id
       ) lg ON lg.order_id = o.id
      WHERE o.deleted_at IS NULL AND o.product_name <> '' AND o.status NOT IN ('CANCELLED', 'RETURNED')
@@ -356,10 +373,14 @@ export async function profitByDay(fromDate: string, toDate: string): Promise<Day
     row.cost += cost;
   }
   for (const r of manualRows) {
+    const name = String(r.name);
+    const qty = n(r.qty);
+    const perUnit = avgCost.get(norm(name));
+    const cost = perUnit !== undefined ? perUnit * qty : n(r.cost);
     const row = get(String(r.date));
-    row.orders += n(r.qty);
+    row.orders += qty;
     row.revenue += n(r.revenue);
-    row.cost += n(r.cost);
+    row.cost += cost;
   }
   for (const r of spendRows) {
     get(String(r.date)).adSpend += n(r.total);
@@ -397,7 +418,9 @@ export async function profitByProductDay(
 
   const purchaseRows = await db<Row[]>`
     SELECT product_name, SUM(quantity) AS qty, SUM(total_cost) AS cost
-      FROM stock_purchases GROUP BY 1`;
+      FROM stock_purchases
+     WHERE is_adjustment = false
+     GROUP BY 1`;
   const avgCost = new Map<string, number>();
   for (const r of purchaseRows) {
     const qty = n(r.qty);
@@ -412,14 +435,22 @@ export async function profitByProductDay(
            COUNT(*) AS orders,
            COALESCE(SUM(o.quantity), 0) AS qty,
            COALESCE(SUM(o.subtotal), 0) AS revenue,
-           COALESCE(SUM(COALESCE(lg.cost, o.quantity * pr.nabavna_cijena)), 0) AS cost_default
+           COALESCE(SUM(
+             COALESCE(lg.cost, 0) +
+             GREATEST(o.quantity - COALESCE(lg.consumed_qty, 0), 0) * COALESCE(pr.nabavna_cijena, 0)
+           ), 0) AS cost_default,
+           BOOL_OR(
+             GREATEST(o.quantity - COALESCE(lg.consumed_qty, 0), 0) > 0 AND
+             pr.nabavna_cijena IS NULL
+           ) AS missing
       FROM orders o
       LEFT JOIN products pr
         ON pr.deleted_at IS NULL
        AND (pr.id = o.product_id
             OR (o.product_id IS NULL AND lower(trim(pr.naziv)) = lower(trim(o.product_name))))
       LEFT JOIN (
-        SELECT order_id, SUM(quantity * unit_cost) AS cost
+         SELECT order_id, SUM(quantity) AS consumed_qty,
+           SUM(quantity * unit_cost) AS cost
           FROM nabavke_potrosnja WHERE reversed_at IS NULL GROUP BY order_id
       ) lg ON lg.order_id = o.id
      WHERE o.deleted_at IS NULL AND o.product_name <> '' AND o.status NOT IN ('CANCELLED', 'RETURNED')
@@ -459,7 +490,7 @@ export async function profitByProductDay(
     if (!row) {
       // otherCosts nije po proizvodu (vidi komentar uz ProfitSummary.otherCosts)
       // — ovdje je uvijek 0, samo da zadovolji deljeni DayProfit oblik.
-      row = { day, orders: 0, revenue: 0, cost: 0, adSpend: 0, profit: 0, otherCosts: 0 };
+      row = { day, orders: 0, revenue: 0, cost: 0, adSpend: 0, profit: 0, otherCosts: 0, missingCost: false };
       days.set(day, row);
     }
     return row;
@@ -482,14 +513,18 @@ export async function profitByProductDay(
     row.orders += n(r.orders);
     row.revenue += n(r.revenue);
     row.cost += cost;
+    if (perUnit === undefined && r.missing) row.missingCost = true;
   }
   for (const r of manualRows) {
     const name = String(r.name);
     noteName(name);
+    const qty = n(r.qty);
+    const perUnit = avgCost.get(norm(name));
+    const cost = perUnit !== undefined ? perUnit * qty : n(r.cost);
     const row = get(name, String(r.date));
-    row.orders += n(r.qty);
+    row.orders += qty;
     row.revenue += n(r.revenue);
-    row.cost += n(r.cost);
+    row.cost += cost;
   }
   for (const r of spendRows) {
     const name = String(r.product_name);

@@ -103,6 +103,7 @@ export default function ProductProfitTable({
                             <th>Dan</th>
                             <th style={{ textAlign: "right" }}>Narudž.</th>
                             <th style={{ textAlign: "right" }}>Prihod</th>
+                            <th style={{ textAlign: "right" }}>Nabavna</th>
                             <th style={{ textAlign: "right" }}>Reklame</th>
                             <th style={{ textAlign: "right" }}>Zarada</th>
                           </tr>
@@ -110,11 +111,21 @@ export default function ProductProfitTable({
                         <tbody>
                           {days.map((d) => (
                             <tr key={d.day}>
-                              <td>{d.day}</td>
+                              <td>
+                                {d.day}
+                                {d.missingCost ? (
+                                  <span className="adm-hint" title="Nema unesene nabavne cijene za ovaj proizvod — trošak je potcijenjen">
+                                    {" "}⚠️
+                                  </span>
+                                ) : null}
+                              </td>
                               <td style={{ textAlign: "right" }}>
                                 {d.orders || "—"}
                               </td>
                               <td style={{ textAlign: "right" }}>{km(d.revenue)}</td>
+                              <td style={{ textAlign: "right" }} className="adm-hint">
+                                {d.cost > 0 ? `−${km(d.cost)}` : "—"}
+                              </td>
                               <td style={{ textAlign: "right" }} className="adm-hint">
                                 {d.adSpend > 0 ? `−${km(d.adSpend)}` : "—"}
                               </td>

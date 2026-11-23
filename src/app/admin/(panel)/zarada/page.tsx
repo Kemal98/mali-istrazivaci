@@ -81,12 +81,14 @@ export default async function ZaradaPoProizvoduPage({
         (a, d) => ({
           orders: a.orders + d.orders,
           revenue: a.revenue + d.revenue,
+          cost: a.cost + d.cost,
           adSpend: a.adSpend + d.adSpend,
           profit: a.profit + d.profit,
         }),
-        { orders: 0, revenue: 0, adSpend: 0, profit: 0 }
+        { orders: 0, revenue: 0, cost: 0, adSpend: 0, profit: 0 }
       );
-      return { name, days, totals };
+      const missingCost = days.some((d) => d.missingCost);
+      return { name, days, totals, missingCost };
     })
     .sort((a, b) => b.totals.revenue + b.totals.adSpend - (a.totals.revenue + a.totals.adSpend));
 
@@ -117,15 +119,21 @@ export default async function ZaradaPoProizvoduPage({
           Nema narudžbi ni potrošnje na reklame u ovom periodu.
         </p>
       ) : (
-        entries.map(({ name, days, totals }) => (
+        entries.map(({ name, days, totals, missingCost }) => (
           <div className="adm-card" key={name} style={{ marginTop: 14 }}>
             <div
               className="adm-card-title"
               style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}
             >
-              <span>{name}</span>
+              <span>
+                {name}
+                {missingCost ? (
+                  <span className="adm-hint"> · fali nabavna cijena</span>
+                ) : null}
+              </span>
               <span className="adm-hint" style={{ fontWeight: 500 }}>
                 ukupno: {totals.orders} nar. · {km(totals.revenue)} prihod ·{" "}
+                {totals.cost > 0 ? `−${km(totals.cost)} nabavna · ` : ""}
                 {totals.adSpend > 0 ? `−${km(totals.adSpend)} reklame · ` : ""}
                 <b style={{ color: totals.profit >= 0 ? "#148a4b" : "#b3261e" }}>
                   {km(totals.profit)} zarada
@@ -139,6 +147,7 @@ export default async function ZaradaPoProizvoduPage({
                     <th>Dan</th>
                     <th style={{ textAlign: "right" }}>Narudž.</th>
                     <th style={{ textAlign: "right" }}>Prihod</th>
+                    <th style={{ textAlign: "right" }}>Nabavna</th>
                     <th style={{ textAlign: "right" }}>Reklame</th>
                     <th style={{ textAlign: "right" }}>Zarada</th>
                   </tr>
@@ -146,7 +155,14 @@ export default async function ZaradaPoProizvoduPage({
                 <tbody>
                   {days.map((d) => (
                     <tr key={d.day}>
-                      <td>{d.day}</td>
+                      <td>
+                        {d.day}
+                        {d.missingCost ? (
+                          <span className="adm-hint" title="Nema unesene nabavne cijene za ovaj proizvod — trošak je potcijenjen">
+                            {" "}⚠️
+                          </span>
+                        ) : null}
+                      </td>
                       <td style={{ textAlign: "right" }}>
                         {d.orders > 0 ? (
                           <b>{d.orders}</b>
@@ -155,6 +171,9 @@ export default async function ZaradaPoProizvoduPage({
                         )}
                       </td>
                       <td style={{ textAlign: "right" }}>{km(d.revenue)}</td>
+                      <td style={{ textAlign: "right" }} className="adm-hint">
+                        {d.cost > 0 ? `−${km(d.cost)}` : "—"}
+                      </td>
                       <td style={{ textAlign: "right" }} className="adm-hint">
                         {d.adSpend > 0 ? `−${km(d.adSpend)}` : "—"}
                       </td>
