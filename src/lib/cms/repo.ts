@@ -18,6 +18,7 @@ import {
 } from "./types";
 import { CATEGORY_KEYS } from "../home/types";
 import { slugify, uniqueSlug } from "./slug";
+import { withCorrectBundleQuantity } from "./bundles";
 
 // Sve funkcije su async jer Postgres driver je async (SQLite je bio sinhron).
 // Pozivaoci (API rute i server komponente) rade `await`.
@@ -169,7 +170,8 @@ export async function getPublishedProductBundle(
   const r = rows[0];
   if (!r || !r.published_paketi_aktivni || !r.published_paketi) return null;
   const list = parseJson<ProductBundle[]>(r.published_paketi, []);
-  return list.find((b) => b.id === bundleId) ?? null;
+  const bundle = list.find((b) => b.id === bundleId);
+  return bundle ? withCorrectBundleQuantity(bundle) : null;
 }
 
 /**

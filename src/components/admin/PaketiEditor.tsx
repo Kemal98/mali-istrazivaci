@@ -1,6 +1,7 @@
 "use client";
 
 import { NumberField, TextField, Toggle } from "./fields";
+import { declaredPackQuantity } from "@/lib/cms/bundles";
 import { noviPaket, type ProductBundle } from "@/lib/cms/types";
 
 /**
@@ -73,7 +74,10 @@ export default function PaketiEditor({
             komada u setu.
           </p>
 
-          {paketi.map((p, i) => (
+          {paketi.map((p, i) => {
+            const declaredQty = declaredPackQuantity(p.naziv);
+            const quantityMismatch = declaredQty !== null && declaredQty !== p.kolicina;
+            return (
             <div key={p.id} className="adm-subcard">
               <div className="adm-subcard-head">
                 <b>Paket {i + 1}{p.istaknut ? " · unaprijed označen" : ""}</b>
@@ -127,6 +131,13 @@ export default function PaketiEditor({
                   placeholder="npr. NAJBOLJA PONUDA"
                 />
               </div>
+              {quantityMismatch ? (
+                <div className="adm-note adm-note-warn" style={{ marginTop: 10 }}>
+                  Naziv paketa kaže {declaredQty} pakovanja/seta, ali je količina
+                  podešena na {p.kolicina}. Količina određuje obračun nabavne
+                  cijene i zalihe — ispravi je prije objave.
+                </div>
+              ) : null}
               <div className="adm-row-3 adm-row" style={{ marginTop: 10 }}>
                 <NumberField
                   label="Cijena paketa (KM)"
@@ -150,7 +161,7 @@ export default function PaketiEditor({
                 </label>
               </div>
             </div>
-          ))}
+          );})}
 
           <button
             type="button"
