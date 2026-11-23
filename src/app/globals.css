@@ -778,8 +778,8 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-paket-naziv{font-weight:700;font-size:.98rem;color:var(--ink)}
 .dawn-paket-oznaka{align-self:flex-start;background:var(--orange);color:#fff;
   font-weight:800;font-size:.64rem;padding:3px 8px;border-radius:3px;letter-spacing:.03em}
-.dawn-paket-bonus-img{width:28px;height:28px;object-fit:cover;border-radius:6px;
-  margin-left:6px;vertical-align:middle;border:1px solid var(--line)}
+.dawn-paket-bonus-img{flex:none;width:40px;height:40px;object-fit:cover;border-radius:8px;
+  border:1px solid var(--line)}
 .dawn-paket-cijena{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:1px}
 .dawn-paket-cijena-old{font-size:.8rem;color:#999;text-decoration:line-through;font-weight:600}
 .dawn-paket-cijena-new{font-size:1.25rem;font-weight:800;color:var(--ink)}
@@ -1019,6 +1019,7 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-paket{padding:12px 14px;gap:10px}
   .dawn-paket-cijena-new{font-size:1.1rem}
   .dawn-paket-naziv{font-size:.92rem}
+  .dawn-paket-bonus-img{width:32px;height:32px}
   .dawn-story-stmt{font-size:1.05rem}
   .dawn-rating{font-size:.92rem}
   /* malo niža hero slika na mobitelu (samo zvečke), da cijena/dugme

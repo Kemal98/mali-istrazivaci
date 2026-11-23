@@ -23,15 +23,13 @@ export default function PaketiPicker({ paketi }: { paketi: ProductBundle[] }) {
             />
             <span className="dawn-paket-radio" aria-hidden="true" />
             <span className="dawn-paket-info">
-              <span className="dawn-paket-naziv">
-                {p.naziv}
-                {p.bonusSlika ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img className="dawn-paket-bonus-img" src={p.bonusSlika} alt="" />
-                ) : null}
-              </span>
+              <span className="dawn-paket-naziv">{p.naziv}</span>
               {p.oznaka ? <span className="dawn-paket-oznaka">{p.oznaka}</span> : null}
             </span>
+            {p.bonusSlika ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img className="dawn-paket-bonus-img" src={p.bonusSlika} alt="" />
+            ) : null}
             <span className="dawn-paket-cijena">
               {p.staraCijena !== null ? (
                 <span className="dawn-paket-cijena-old">{p.staraCijena} KM</span>
