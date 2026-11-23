@@ -1,5 +1,6 @@
 import { newId, nowIso, sql } from "@/lib/cms/db";
 import { consumeFifo, reassignConsumption, reverseConsumption } from "@/lib/nabavke/consume";
+import { mergeCostSnapshots } from "./cost";
 import { normalizePhone } from "./phone";
 import {
   isOrderStatus,
@@ -897,6 +898,7 @@ export async function mergeOrders(
   const items = orders.map((o) => `${o.quantity}x ${o.productName}`).join(", ");
   const subtotal = r2(orders.reduce((s, o) => s + o.subtotal, 0));
   const quantity = orders.reduce((s, o) => s + o.quantity, 0);
+  const cost = mergeCostSnapshots(orders);
   const totalPrice = r2(subtotal + primary.shippingPrice);
   const mergedNote = [primary.note, `Spojeno u jedan paket: ${items}`]
     .filter(Boolean)
@@ -909,6 +911,8 @@ export async function mergeOrders(
       quantity = ${quantity},
       subtotal = ${subtotal},
       total_price = ${totalPrice},
+      cost_price = ${cost.costPrice},
+      cost_total = ${cost.costTotal},
       note = ${mergedNote},
       updated_at = ${ts}
      WHERE id = ${primary.id}`;
