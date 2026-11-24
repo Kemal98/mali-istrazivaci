@@ -84,6 +84,8 @@ function rowToProduct(r: Row): Product {
           tekst: String(r.published_upsell_tekst ?? ""),
         }
       : null,
+    socialProofAktivno: Boolean(r.social_proof_aktivno),
+    publishedSocialProofAktivno: Boolean(r.published_social_proof_aktivno),
     createdAt: String(r.created_at),
     updatedAt: String(r.updated_at),
     publishedAt: r.published_at ? String(r.published_at) : null,
@@ -104,6 +106,7 @@ function rowToReview(r: Row): Review {
     status: String(r.status) === "hidden" ? "hidden" : "published",
     sortOrder: Number(r.sort_order ?? 0),
     featuredHomepage: Boolean(r.featured_homepage),
+    featuredProductPage: Boolean(r.featured_product_page),
   };
 }
 
@@ -343,6 +346,7 @@ export interface UpdateProductInput {
   prikaziNaPocetnoj?: boolean;
   rasprodano?: boolean;
   upsell?: ProductUpsell;
+  socialProofAktivno?: boolean;
 }
 
 /** Sprema NACRT. Nikad ne mijenja objavljenu verziju. */
@@ -390,6 +394,7 @@ export async function updateProduct(
     prikaziNaPocetnoj: patch.prikaziNaPocetnoj ?? cur.prikaziNaPocetnoj,
     rasprodano: patch.rasprodano ?? cur.rasprodano,
     upsell: patch.upsell ?? cur.upsell,
+    socialProofAktivno: patch.socialProofAktivno ?? cur.socialProofAktivno,
   };
 
   await sql()`
@@ -414,6 +419,7 @@ export async function updateProduct(
       upsell_target_id = ${next.upsell.targetId},
       upsell_cijena = ${next.upsell.cijena},
       upsell_tekst = ${next.upsell.tekst},
+      social_proof_aktivno = ${next.socialProofAktivno},
       updated_at = ${nowIso()}
      WHERE id = ${id}`;
 
@@ -493,6 +499,7 @@ export async function publishProduct(
       published_upsell_target_id = ${p.upsell.targetId},
       published_upsell_cijena = ${p.upsell.cijena},
       published_upsell_tekst = ${p.upsell.tekst},
+      published_social_proof_aktivno = ${p.socialProofAktivno},
       published_at = ${ts},
       updated_at = ${ts}
      WHERE id = ${id}`;
@@ -661,7 +668,7 @@ export async function createReview(
   await sql()`
     INSERT INTO reviews
       (id, product_id, ime, inicijal, rating, tekst, verified, slika, datum,
-       status, sort_order, created_at, featured_homepage)
+       status, sort_order, created_at, featured_homepage, featured_product_page)
     VALUES (
       ${id},
       ${r.productId ?? null},
@@ -675,7 +682,8 @@ export async function createReview(
       ${r.status === "hidden" ? "hidden" : "published"},
       ${order},
       ${nowIso()},
-      ${r.featuredHomepage ?? false})`;
+      ${r.featuredHomepage ?? false},
+      ${r.featuredProductPage ?? false})`;
 
   const rows = await sql()<Row[]>`SELECT * FROM reviews WHERE id = ${id}`;
   return rowToReview(rows[0]);
@@ -697,7 +705,8 @@ export async function updateReview(id: string, r: Partial<Review>) {
       datum = ${r.datum ?? c.datum},
       status = ${r.status ?? c.status},
       sort_order = ${r.sortOrder ?? c.sortOrder},
-      featured_homepage = ${r.featuredHomepage !== undefined ? r.featuredHomepage : c.featuredHomepage}
+      featured_homepage = ${r.featuredHomepage !== undefined ? r.featuredHomepage : c.featuredHomepage},
+      featured_product_page = ${r.featuredProductPage !== undefined ? r.featuredProductPage : c.featuredProductPage}
      WHERE id = ${id}`;
 }
 

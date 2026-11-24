@@ -51,6 +51,7 @@ export default async function PreviewPage({
         paketiAktivni={p.paketiAktivni}
         paketi={p.paketi}
         upsell={upsell}
+        socialProofAktivno={p.socialProofAktivno}
         preview
       />
     </>

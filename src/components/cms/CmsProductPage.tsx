@@ -26,6 +26,7 @@ export default async function CmsProductPage({
   paketiAktivni = false,
   paketi = [],
   upsell = null,
+  socialProofAktivno = false,
   preview = false,
 }: {
   naziv: string;
@@ -42,6 +43,8 @@ export default async function CmsProductPage({
   paketi?: ProductBundle[];
   /** Cross-sell checkbox u checkoutu — null = stranica se ponaša potpuno kao do sad. */
   upsell?: ResolvedUpsell | null;
+  /** Traka sa recenzijama ispod naslova — kad je isključena, traka se ne prikazuje. */
+  socialProofAktivno?: boolean;
   preview?: boolean;
 }) {
   const { lead, rest } = splitIntroSections(sections);
@@ -52,6 +55,9 @@ export default async function CmsProductPage({
   const aktivniPaketi = paketiAktivni ? paketi : [];
   const pocetniPaket =
     aktivniPaketi.find((p) => p.istaknut) ?? aktivniPaketi[0] ?? null;
+  const socialProofReviews = socialProofAktivno
+    ? reviews.filter((r) => r.featuredProductPage)
+    : [];
   return (
     <div className="dawn-page">
       <DawnQtyProvider>
@@ -67,6 +73,7 @@ export default async function CmsProductPage({
                   badge={badge}
                   povjerenje={povjerenje}
                   paketi={aktivniPaketi}
+                  socialProofReviews={socialProofReviews}
                 />
               </div>
               <IntroDescription blocks={lead} />

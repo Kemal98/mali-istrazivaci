@@ -750,6 +750,28 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-rating-cta{font-size:1rem;font-weight:700;color:#555}
 .dawn-rating-sub{display:flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;color:#888}
 .dawn-stars{color:var(--orange);letter-spacing:1px;font-size:1.1rem}
+
+/* Social proof traka (ispod naslova, iznad cijene) — vidi SocialProofCard.tsx */
+.social-proof{display:flex;align-items:flex-start;gap:10px;text-align:left;
+  background:#F7F4EF;border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;margin-bottom:16px}
+.social-proof-nav{flex:none;align-self:center;width:22px;height:22px;
+  border:none;background:transparent;color:var(--ink3);font-size:1.3rem;
+  line-height:1;cursor:pointer;padding:0;border-radius:50%}
+.social-proof-nav:hover{background:#EEEAE2;color:var(--ink)}
+.social-proof-avatar{flex:none;width:44px;height:44px;border-radius:50%;
+  overflow:hidden;background:var(--orange-bg);color:var(--orange-d);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.95rem}
+.social-proof-avatar img{width:100%;height:100%;object-fit:cover}
+.social-proof-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.social-proof-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.social-proof-name{font-size:.88rem;color:var(--ink)}
+.social-proof-stars{color:var(--orange);font-size:.78rem;letter-spacing:1px}
+.social-proof-text{font-size:.85rem;color:var(--ink2s);line-height:1.35;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.social-proof-verified{font-size:.72rem;color:var(--ink3);font-weight:600}
+
 .dawn-price-row{display:flex;align-items:baseline;justify-content:center;
   gap:12px;margin-bottom:12px;flex-wrap:wrap}
 .dawn-price-old{font-size:1.35rem;color:#999;text-decoration:line-through;font-weight:600}
@@ -1020,6 +1042,9 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-paket-cijena-new{font-size:1.1rem}
   .dawn-paket-naziv{font-size:.92rem}
   .dawn-paket-bonus-img{width:46px;height:46px}
+  .social-proof{padding:8px 10px;gap:8px}
+  .social-proof-avatar{width:38px;height:38px;font-size:.85rem}
+  .social-proof-text{font-size:.82rem}
   .dawn-story-stmt{font-size:1.05rem}
   .dawn-rating{font-size:.92rem}
   /* malo niža hero slika na mobitelu (samo zvečke), da cijena/dugme

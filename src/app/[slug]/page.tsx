@@ -85,6 +85,7 @@ export default async function CmsSlugPage({ params }: Props) {
       paketiAktivni={p.publishedPaketiAktivni}
       paketi={p.publishedPaketi ?? []}
       upsell={upsell}
+      socialProofAktivno={p.publishedSocialProofAktivno}
     />
   );
 }

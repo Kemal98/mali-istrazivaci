@@ -50,6 +50,7 @@ interface Draft {
   prikaziNaPocetnoj: boolean;
   rasprodano: boolean;
   upsell: ProductUpsell;
+  socialProofAktivno: boolean;
 }
 
 function toDraft(p: Product): Draft {
@@ -71,6 +72,7 @@ function toDraft(p: Product): Draft {
     prikaziNaPocetnoj: p.prikaziNaPocetnoj,
     rasprodano: p.rasprodano,
     upsell: p.upsell,
+    socialProofAktivno: p.socialProofAktivno,
   };
 }
 
@@ -806,6 +808,16 @@ export default function ProductEditor({
           <div className="adm-card-title">
             Recenzije za ovaj proizvod
           </div>
+          <Toggle
+            label="Prikaži traku sa recenzijama iznad cijene (ispod naslova)"
+            value={draft.socialProofAktivno}
+            onChange={(v) => patch({ socialProofAktivno: v })}
+          />
+          <p className="adm-hint" style={{ margin: "6px 0 14px" }}>
+            Kad je uključeno, mala traka se automatski izmjenjuje sa
+            recenzijama koje su dolje označene dugmetom „★ IZNAD CIJENE”.
+            Ako nijedna nije označena, traka se ne prikazuje.
+          </p>
           <ReviewsPanel
             productId={product.id}
             products={products}

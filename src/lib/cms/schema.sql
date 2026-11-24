@@ -90,6 +90,19 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS published_upsell_target_id text;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS published_upsell_cijena double precision NOT NULL DEFAULT 0;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS published_upsell_tekst text NOT NULL DEFAULT '';
 
+-- Social proof traka (2026-11-24): mala traka sa recenzijama iznad cijene
+-- na stranici proizvoda (između naslova i cijene/dugmeta). Isti
+-- draft/published obrazac kao upsell/paketi gore. Koje KONKRETNE recenzije
+-- se prikazuju bira se po recenziji (reviews.featured_product_page), ne
+-- ovdje — ovo je samo prekidač uključeno/isključeno za cijelu traku.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS social_proof_aktivno boolean NOT NULL DEFAULT false;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS published_social_proof_aktivno boolean NOT NULL DEFAULT false;
+
+-- Admin ručno bira koje recenzije idu u social proof traku na stranici
+-- PROIZVODA (iznad cijene) — odvojeno od featured_homepage gore, jer su
+-- to dvije različite trake na dva različita mjesta.
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS featured_product_page boolean NOT NULL DEFAULT false;
+
 CREATE INDEX IF NOT EXISTS idx_products_updated
   ON products (updated_at DESC);
 

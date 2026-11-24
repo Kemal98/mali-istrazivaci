@@ -2,7 +2,8 @@ import BookOrderTrigger from "@/components/BookOrderTrigger";
 import HeroGallery from "./HeroGallery";
 import PaketiPicker from "./PaketiPicker";
 import RichText from "./RichText";
-import type { Hero, ProductBundle } from "@/lib/cms/types";
+import SocialProofCard from "./SocialProofCard";
+import type { Hero, ProductBundle, Review } from "@/lib/cms/types";
 import { ocjene } from "@/lib/cms/plural";
 
 /**
@@ -26,6 +27,7 @@ export default function CmsHero({
   badge,
   povjerenje = [],
   paketi = [],
+  socialProofReviews = [],
 }: {
   povjerenje?: string[];
   hero: Hero;
@@ -34,6 +36,8 @@ export default function CmsHero({
   badge: string;
   /** Paketna ponuda — kad ima stavki, PRIKAZUJE SE UMJESTO obične cijene. */
   paketi?: ProductBundle[];
+  /** Ručno istaknute recenzije za traku ispod naslova — prazno = traka se ne prikazuje. */
+  socialProofReviews?: Review[];
 }) {
   const oskudicaPoruka = currentOskudicaPoruka(hero.oskudicaPoruke);
   return (
@@ -83,6 +87,8 @@ export default function CmsHero({
             </a>
           )
         ) : null}
+
+        <SocialProofCard reviews={socialProofReviews} />
 
         {paketi.length > 0 ? (
           <PaketiPicker paketi={paketi} />

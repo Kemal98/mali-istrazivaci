@@ -40,6 +40,7 @@ function emptyReview(productId: string | null): Review {
     status: "published",
     sortOrder: 0,
     featuredHomepage: false,
+    featuredProductPage: false,
   };
 }
 
@@ -50,6 +51,7 @@ function Row({
   onDelete,
   onToggleStatus,
   onToggleFeatured,
+  onToggleFeaturedProduct,
 }: {
   r: Review;
   products: ProductRef[];
@@ -57,6 +59,7 @@ function Row({
   onDelete: () => void;
   onToggleStatus: () => void;
   onToggleFeatured: () => void;
+  onToggleFeaturedProduct: () => void;
 }) {
   const {
     attributes,
@@ -122,6 +125,9 @@ function Row({
           {r.featuredHomepage ? (
             <span className="adm-badge adm-badge-pub">★ Na početnoj</span>
           ) : null}
+          {r.featuredProductPage ? (
+            <span className="adm-badge adm-badge-pub">★ Iznad cijene</span>
+          ) : null}
           <button type="button" className="adm-btn adm-btn-sm" onClick={onEdit}>
             UREDI
           </button>
@@ -139,6 +145,14 @@ function Row({
             title="Prikaži/skloni sa trake recenzija na početnoj stranici"
           >
             {r.featuredHomepage ? "SKLONI SA POČETNE" : "★ NA POČETNU"}
+          </button>
+          <button
+            type="button"
+            className="adm-btn adm-btn-sm"
+            onClick={onToggleFeaturedProduct}
+            title="Prikaži/skloni sa trake iznad cijene na stranici ovog proizvoda"
+          >
+            {r.featuredProductPage ? "SKLONI IZNAD CIJENE" : "★ IZNAD CIJENE"}
           </button>
           <button
             type="button"
@@ -242,6 +256,17 @@ export default function ReviewsPanel({
     });
   }
 
+  /** Ručno biranje koje recenzije idu u social proof traku iznad cijene na stranici proizvoda. */
+  async function toggleFeaturedProduct(r: Review) {
+    const featuredProductPage = !r.featuredProductPage;
+    setList((l) => l.map((x) => (x.id === r.id ? { ...x, featuredProductPage } : x)));
+    await fetch(`/api/admin/reviews/${r.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ featuredProductPage }),
+    });
+  }
+
   async function doDelete(r: Review) {
     setBusy(true);
     await fetch(`/api/admin/reviews/${r.id}`, { method: "DELETE" });
@@ -336,6 +361,7 @@ export default function ReviewsPanel({
                   onDelete={() => setToDelete(r)}
                   onToggleStatus={() => toggleStatus(r)}
                   onToggleFeatured={() => toggleFeatured(r)}
+                  onToggleFeaturedProduct={() => toggleFeaturedProduct(r)}
                 />
               ))}
             </SortableContext>
@@ -435,6 +461,12 @@ export default function ReviewsPanel({
               label="★ Prikaži na početnoj stranici"
               value={draft.featuredHomepage}
               onChange={(v) => setDraft({ ...draft, featuredHomepage: v })}
+            />
+
+            <Toggle
+              label="★ Prikaži u traci iznad cijene (na stranici ovog proizvoda)"
+              value={draft.featuredProductPage}
+              onChange={(v) => setDraft({ ...draft, featuredProductPage: v })}
             />
 
             <div className="adm-modal-foot">

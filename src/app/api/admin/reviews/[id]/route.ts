@@ -30,6 +30,8 @@ export async function PATCH(request: Request, { params }: Ctx) {
   if (body.status !== undefined)
     patch.status = body.status === "hidden" ? "hidden" : "published";
   if (body.featuredHomepage !== undefined) patch.featuredHomepage = bool(body.featuredHomepage);
+  if (body.featuredProductPage !== undefined)
+    patch.featuredProductPage = bool(body.featuredProductPage);
   await updateReview(id, patch);
   return NextResponse.json({ ok: true });
 }

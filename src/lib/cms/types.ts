@@ -178,6 +178,10 @@ export interface Product {
   upsell: ProductUpsell;
   /** Cross-sell/upsell — OBJAVLJENO (ono što checkout stvarno nudi). */
   publishedUpsell: ProductUpsell | null;
+  /** Social proof traka iznad cijene — NACRT. Koje recenzije se prikazuju bira se po recenziji (Review.featuredProductPage). */
+  socialProofAktivno: boolean;
+  /** Social proof traka — OBJAVLJENO. */
+  publishedSocialProofAktivno: boolean;
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
@@ -218,6 +222,8 @@ export interface Review {
   sortOrder: number;
   /** Admin ručno bira koje STVARNE recenzije idu u traku na početnoj. */
   featuredHomepage: boolean;
+  /** Admin ručno bira koje recenzije idu u social proof traku na stranici proizvoda (iznad cijene). */
+  featuredProductPage: boolean;
 }
 
 export interface Template {
