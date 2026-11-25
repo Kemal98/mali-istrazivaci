@@ -751,22 +751,24 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-rating-sub{display:flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;color:#888}
 .dawn-stars{color:var(--orange);letter-spacing:1px;font-size:1.1rem}
 
-/* Social proof traka (ispod naslova, iznad cijene) — vidi SocialProofCard.tsx */
-.social-proof{display:flex;align-items:flex-start;gap:10px;text-align:left;
-  background:#F7F4EF;border:1px solid var(--line);border-radius:10px;
-  padding:10px 12px;margin-bottom:16px}
-.social-proof-nav{flex:none;align-self:center;width:22px;height:22px;
-  border:none;background:transparent;color:var(--ink3);font-size:1.3rem;
-  line-height:1;cursor:pointer;padding:0;border-radius:50%}
-.social-proof-nav:hover{background:#EEEAE2;color:var(--ink)}
-.social-proof-avatar{flex:none;width:44px;height:44px;border-radius:50%;
+/* Social proof traka (vrh stranice proizvoda) — vidi SocialProofCard.tsx.
+   Bez pozadine/kutije — samo utopljeno u stranicu, strelice na ivicama. */
+.social-proof{position:relative;display:flex;align-items:flex-start;gap:12px;
+  text-align:left;padding:4px 26px;margin-bottom:16px}
+.social-proof-nav{position:absolute;top:50%;transform:translateY(-50%);
+  width:22px;height:22px;border:none;background:transparent;color:var(--ink3);
+  font-size:1.4rem;line-height:1;cursor:pointer;padding:0}
+.social-proof-nav:hover{color:var(--ink)}
+.social-proof-nav-prev{left:-4px}
+.social-proof-nav-next{right:-4px}
+.social-proof-avatar{flex:none;width:52px;height:60px;border-radius:12px;
   overflow:hidden;background:var(--orange-bg);color:var(--orange-d);
   display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:.95rem}
+  font-weight:800;font-size:1rem}
 .social-proof-avatar img{width:100%;height:100%;object-fit:cover}
 .social-proof-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .social-proof-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.social-proof-name{font-size:.88rem;color:var(--ink)}
+.social-proof-name{font-size:.88rem;font-weight:700;color:var(--ink)}
 .social-proof-stars{color:var(--orange);font-size:.78rem;letter-spacing:1px}
 .social-proof-text{font-size:.85rem;color:var(--ink2s);line-height:1.35;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -1042,8 +1044,8 @@ body:has(.home-page-root){padding-bottom:0}
   .dawn-paket-cijena-new{font-size:1.1rem}
   .dawn-paket-naziv{font-size:.92rem}
   .dawn-paket-bonus-img{width:46px;height:46px}
-  .social-proof{padding:8px 10px;gap:8px}
-  .social-proof-avatar{width:38px;height:38px;font-size:.85rem}
+  .social-proof{padding:4px 22px;gap:8px}
+  .social-proof-avatar{width:44px;height:50px;font-size:.85rem}
   .social-proof-text{font-size:.82rem}
   .dawn-story-stmt{font-size:1.05rem}
   .dawn-rating{font-size:.92rem}

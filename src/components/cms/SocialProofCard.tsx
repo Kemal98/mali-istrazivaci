@@ -59,7 +59,7 @@ export default function SocialProofCard({ reviews }: { reviews: Review[] }) {
       {reviews.length > 1 ? (
         <button
           type="button"
-          className="social-proof-nav"
+          className="social-proof-nav social-proof-nav-prev"
           aria-label="Prethodna recenzija"
           onClick={() => go(-1)}
         >
@@ -93,7 +93,7 @@ export default function SocialProofCard({ reviews }: { reviews: Review[] }) {
       {reviews.length > 1 ? (
         <button
           type="button"
-          className="social-proof-nav"
+          className="social-proof-nav social-proof-nav-next"
           aria-label="Sljedeća recenzija"
           onClick={() => go(1)}
         >
