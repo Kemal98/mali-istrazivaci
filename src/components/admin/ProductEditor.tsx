@@ -19,7 +19,7 @@ import {
   Toggle,
 } from "./fields";
 import { slugify } from "@/lib/cms/slug";
-import type { Block, GlobalSettings, Hero, Product, ProductBundle, ProductUpsell, Review, Seo } from "@/lib/cms/types";
+import type { Block, GlobalSettings, Hero, Product, ProductBundle, ProductUpsell, Review, Seo, SocialProofPozicija } from "@/lib/cms/types";
 import { CATEGORY_KEYS, CATEGORY_LABELS } from "@/lib/home/types";
 
 type Tab = "osnovno" | "hero" | "sadrzaj" | "recenzije" | "seo";
@@ -51,6 +51,7 @@ interface Draft {
   rasprodano: boolean;
   upsell: ProductUpsell;
   socialProofAktivno: boolean;
+  socialProofPozicija: SocialProofPozicija;
 }
 
 function toDraft(p: Product): Draft {
@@ -73,6 +74,7 @@ function toDraft(p: Product): Draft {
     rasprodano: p.rasprodano,
     upsell: p.upsell,
     socialProofAktivno: p.socialProofAktivno,
+    socialProofPozicija: p.socialProofPozicija,
   };
 }
 
@@ -809,10 +811,25 @@ export default function ProductEditor({
             Recenzije za ovaj proizvod
           </div>
           <Toggle
-            label="Prikaži traku sa recenzijama iznad cijene (ispod naslova)"
+            label="Prikaži traku sa recenzijama"
             value={draft.socialProofAktivno}
             onChange={(v) => patch({ socialProofAktivno: v })}
           />
+          {draft.socialProofAktivno ? (
+            <SelectField
+              label="Pozicija trake"
+              value={draft.socialProofPozicija}
+              onChange={(v) =>
+                patch({
+                  socialProofPozicija: v === "ispod_naslova" ? "ispod_naslova" : "iznad_cijene",
+                })
+              }
+              options={[
+                { value: "iznad_cijene", label: "Iznad cijene (preporučeno — tik prije dugmeta)" },
+                { value: "ispod_naslova", label: "Odmah ispod naslova (prije ocjena/zvjezdica)" },
+              ]}
+            />
+          ) : null}
           <p className="adm-hint" style={{ margin: "6px 0 14px" }}>
             Kad je uključeno, mala traka se automatski izmjenjuje sa
             recenzijama koje su dolje označene dugmetom „★ IZNAD CIJENE”.

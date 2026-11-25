@@ -3,7 +3,7 @@ import HeroGallery from "./HeroGallery";
 import PaketiPicker from "./PaketiPicker";
 import RichText from "./RichText";
 import SocialProofCard from "./SocialProofCard";
-import type { Hero, ProductBundle, Review } from "@/lib/cms/types";
+import type { Hero, ProductBundle, Review, SocialProofPozicija } from "@/lib/cms/types";
 import { ocjene } from "@/lib/cms/plural";
 
 /**
@@ -28,6 +28,7 @@ export default function CmsHero({
   povjerenje = [],
   paketi = [],
   socialProofReviews = [],
+  socialProofPozicija = "iznad_cijene",
 }: {
   povjerenje?: string[];
   hero: Hero;
@@ -36,15 +37,15 @@ export default function CmsHero({
   badge: string;
   /** Paketna ponuda — kad ima stavki, PRIKAZUJE SE UMJESTO obične cijene. */
   paketi?: ProductBundle[];
-  /** Ručno istaknute recenzije za traku na vrhu stranice — prazno = traka se ne prikazuje. */
+  /** Ručno istaknute recenzije za traku sa recenzijama — prazno = traka se ne prikazuje. */
   socialProofReviews?: Review[];
+  /** Gdje se traka prikazuje — vidi SocialProofPozicija. */
+  socialProofPozicija?: SocialProofPozicija;
 }) {
   const oskudicaPoruka = currentOskudicaPoruka(hero.oskudicaPoruke);
   return (
     <section className="dawn-product" id="top">
       <div className="dawn-col">
-        <SocialProofCard reviews={socialProofReviews} />
-
         {hero.slika ? (
           <HeroGallery
             main={hero.slika}
@@ -62,6 +63,10 @@ export default function CmsHero({
             </>
           ) : null}
         </h1>
+
+        {socialProofPozicija === "ispod_naslova" ? (
+          <SocialProofCard reviews={socialProofReviews} />
+        ) : null}
 
         {/* Bez teksta iznad -> jednoredni .dawn-rating (identično kao na
             ručno pisanim stranicama). Sa tekstom -> dvoredni "stack". */}
@@ -88,6 +93,10 @@ export default function CmsHero({
               {ocjene(Number(hero.ratingBrojOcjena) || 0)})
             </a>
           )
+        ) : null}
+
+        {socialProofPozicija === "iznad_cijene" ? (
+          <SocialProofCard reviews={socialProofReviews} />
         ) : null}
 
         {paketi.length > 0 ? (

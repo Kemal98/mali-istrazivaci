@@ -24,6 +24,9 @@ export type BlockType =
   | "faq"
   | "isticanja";
 
+/** Gdje se prikazuje social proof traka na stranici proizvoda — vidi CmsHero.tsx. */
+export type SocialProofPozicija = "ispod_naslova" | "iznad_cijene";
+
 export type Align = "left" | "center" | "right";
 export type Velicina = "S" | "M" | "L" | "XL";
 export type SpacerSize = "S" | "M" | "L";
@@ -178,10 +181,14 @@ export interface Product {
   upsell: ProductUpsell;
   /** Cross-sell/upsell — OBJAVLJENO (ono što checkout stvarno nudi). */
   publishedUpsell: ProductUpsell | null;
-  /** Social proof traka iznad cijene — NACRT. Koje recenzije se prikazuju bira se po recenziji (Review.featuredProductPage). */
+  /** Social proof traka — NACRT. Koje recenzije se prikazuju bira se po recenziji (Review.featuredProductPage). */
   socialProofAktivno: boolean;
   /** Social proof traka — OBJAVLJENO. */
   publishedSocialProofAktivno: boolean;
+  /** Pozicija social proof trake na stranici — NACRT. */
+  socialProofPozicija: SocialProofPozicija;
+  /** Pozicija social proof trake — OBJAVLJENO. */
+  publishedSocialProofPozicija: SocialProofPozicija;
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;

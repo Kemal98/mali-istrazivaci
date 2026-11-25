@@ -59,6 +59,10 @@ export async function PATCH(request: Request, { params }: Ctx) {
   if (body.rasprodano !== undefined) patch.rasprodano = bool(body.rasprodano);
   if (body.upsell !== undefined) patch.upsell = sanitizeUpsell(body.upsell);
   if (body.socialProofAktivno !== undefined) patch.socialProofAktivno = bool(body.socialProofAktivno);
+  if (body.socialProofPozicija !== undefined) {
+    patch.socialProofPozicija =
+      body.socialProofPozicija === "ispod_naslova" ? "ispod_naslova" : "iznad_cijene";
+  }
 
   const product = await updateProduct(id, patch);
   if (!product) return NextResponse.json({ error: "Nema proizvoda." }, { status: 404 });

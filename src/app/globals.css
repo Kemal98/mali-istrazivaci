@@ -761,6 +761,8 @@ body:has(.home-page-root){padding-bottom:0}
 .social-proof-nav:hover{color:var(--ink)}
 .social-proof-nav-prev{left:-4px}
 .social-proof-nav-next{right:-4px}
+.social-proof-link{flex:1;min-width:0;display:flex;align-items:flex-start;
+  gap:12px;color:inherit;text-decoration:none}
 .social-proof-avatar{flex:none;width:52px;height:60px;border-radius:12px;
   overflow:hidden;background:var(--orange-bg);color:var(--orange-d);
   display:flex;align-items:center;justify-content:center;

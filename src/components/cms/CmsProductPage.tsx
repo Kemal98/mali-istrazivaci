@@ -9,7 +9,7 @@ import CmsHero from "./CmsHero";
 import { CmsBlocks, IntroDescription, splitIntroSections } from "./CmsBlocks";
 import CmsCheckout from "./CmsCheckout";
 import CmsPixel from "./CmsPixel";
-import type { Block, Hero, ProductBundle, ResolvedUpsell, Review } from "@/lib/cms/types";
+import type { Block, Hero, ProductBundle, ResolvedUpsell, Review, SocialProofPozicija } from "@/lib/cms/types";
 import { getSettings } from "@/lib/cms/repo";
 
 // Renderer stranice proizvoda: uzme HERO + NIZ SEKCIJA i prođe kroz njih
@@ -27,6 +27,7 @@ export default async function CmsProductPage({
   paketi = [],
   upsell = null,
   socialProofAktivno = false,
+  socialProofPozicija = "iznad_cijene",
   preview = false,
 }: {
   naziv: string;
@@ -43,8 +44,10 @@ export default async function CmsProductPage({
   paketi?: ProductBundle[];
   /** Cross-sell checkbox u checkoutu — null = stranica se ponaša potpuno kao do sad. */
   upsell?: ResolvedUpsell | null;
-  /** Traka sa recenzijama na vrhu stranice — kad je isključena, traka se ne prikazuje. */
+  /** Traka sa recenzijama — kad je isključena, traka se ne prikazuje. */
   socialProofAktivno?: boolean;
+  /** Gdje se traka prikazuje — vidi SocialProofPozicija. */
+  socialProofPozicija?: SocialProofPozicija;
   preview?: boolean;
 }) {
   const { lead, rest } = splitIntroSections(sections);
@@ -74,6 +77,7 @@ export default async function CmsProductPage({
                   povjerenje={povjerenje}
                   paketi={aktivniPaketi}
                   socialProofReviews={socialProofReviews}
+                  socialProofPozicija={socialProofPozicija}
                 />
               </div>
               <IntroDescription blocks={lead} />

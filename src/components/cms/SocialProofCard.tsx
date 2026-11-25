@@ -67,28 +67,30 @@ export default function SocialProofCard({ reviews }: { reviews: Review[] }) {
         </button>
       ) : null}
 
-      <span className="social-proof-avatar">
-        {r.slika ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={r.slika} alt="" />
-        ) : (
-          <span>{r.inicijal || initials(r.ime)}</span>
-        )}
-      </span>
-
-      <span className="social-proof-body">
-        <span className="social-proof-top">
-          <b className="social-proof-name">{r.ime}</b>
-          <span className="social-proof-stars" aria-hidden="true">
-            {"★".repeat(Math.max(0, Math.min(5, r.rating)))}
-            {"☆".repeat(5 - Math.max(0, Math.min(5, r.rating)))}
-          </span>
+      <a href="#recenzije" className="social-proof-link">
+        <span className="social-proof-avatar">
+          {r.slika ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={r.slika} alt="" />
+          ) : (
+            <span>{r.inicijal || initials(r.ime)}</span>
+          )}
         </span>
-        <span className="social-proof-text">{r.tekst}</span>
-        {r.verified ? (
-          <span className="social-proof-verified">✓ Verifikovana kupovina</span>
-        ) : null}
-      </span>
+
+        <span className="social-proof-body">
+          <span className="social-proof-top">
+            <b className="social-proof-name">{r.ime}</b>
+            <span className="social-proof-stars" aria-hidden="true">
+              {"★".repeat(Math.max(0, Math.min(5, r.rating)))}
+              {"☆".repeat(5 - Math.max(0, Math.min(5, r.rating)))}
+            </span>
+          </span>
+          <span className="social-proof-text">{r.tekst}</span>
+          {r.verified ? (
+            <span className="social-proof-verified">✓ Verifikovana kupovina</span>
+          ) : null}
+        </span>
+      </a>
 
       {reviews.length > 1 ? (
         <button

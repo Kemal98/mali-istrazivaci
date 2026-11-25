@@ -12,6 +12,7 @@ import {
   ResolvedUpsell,
   Review,
   Seo,
+  SocialProofPozicija,
   Template,
   defaultHero,
   suggestPaketi,
@@ -86,6 +87,9 @@ function rowToProduct(r: Row): Product {
       : null,
     socialProofAktivno: Boolean(r.social_proof_aktivno),
     publishedSocialProofAktivno: Boolean(r.published_social_proof_aktivno),
+    socialProofPozicija: (r.social_proof_pozicija as SocialProofPozicija) ?? "iznad_cijene",
+    publishedSocialProofPozicija:
+      (r.published_social_proof_pozicija as SocialProofPozicija) ?? "iznad_cijene",
     createdAt: String(r.created_at),
     updatedAt: String(r.updated_at),
     publishedAt: r.published_at ? String(r.published_at) : null,
@@ -347,6 +351,7 @@ export interface UpdateProductInput {
   rasprodano?: boolean;
   upsell?: ProductUpsell;
   socialProofAktivno?: boolean;
+  socialProofPozicija?: SocialProofPozicija;
 }
 
 /** Sprema NACRT. Nikad ne mijenja objavljenu verziju. */
@@ -395,6 +400,7 @@ export async function updateProduct(
     rasprodano: patch.rasprodano ?? cur.rasprodano,
     upsell: patch.upsell ?? cur.upsell,
     socialProofAktivno: patch.socialProofAktivno ?? cur.socialProofAktivno,
+    socialProofPozicija: patch.socialProofPozicija ?? cur.socialProofPozicija,
   };
 
   await sql()`
@@ -420,6 +426,7 @@ export async function updateProduct(
       upsell_cijena = ${next.upsell.cijena},
       upsell_tekst = ${next.upsell.tekst},
       social_proof_aktivno = ${next.socialProofAktivno},
+      social_proof_pozicija = ${next.socialProofPozicija},
       updated_at = ${nowIso()}
      WHERE id = ${id}`;
 
@@ -500,6 +507,7 @@ export async function publishProduct(
       published_upsell_cijena = ${p.upsell.cijena},
       published_upsell_tekst = ${p.upsell.tekst},
       published_social_proof_aktivno = ${p.socialProofAktivno},
+      published_social_proof_pozicija = ${p.socialProofPozicija},
       published_at = ${ts},
       updated_at = ${ts}
      WHERE id = ${id}`;

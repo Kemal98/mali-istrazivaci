@@ -98,6 +98,11 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS published_upsell_tekst text NOT NU
 ALTER TABLE products ADD COLUMN IF NOT EXISTS social_proof_aktivno boolean NOT NULL DEFAULT false;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS published_social_proof_aktivno boolean NOT NULL DEFAULT false;
 
+-- Pozicija trake (2026-11-25): 'ispod_naslova' (odmah ispod naziva/slike)
+-- ili 'iznad_cijene' (default — tik prije dugmeta za naručivanje).
+ALTER TABLE products ADD COLUMN IF NOT EXISTS social_proof_pozicija text NOT NULL DEFAULT 'iznad_cijene';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS published_social_proof_pozicija text NOT NULL DEFAULT 'iznad_cijene';
+
 -- Admin ručno bira koje recenzije idu u social proof traku na stranici
 -- PROIZVODA (iznad cijene) — odvojeno od featured_homepage gore, jer su
 -- to dvije različite trake na dva različita mjesta.
