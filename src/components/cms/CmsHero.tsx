@@ -36,13 +36,15 @@ export default function CmsHero({
   badge: string;
   /** Paketna ponuda — kad ima stavki, PRIKAZUJE SE UMJESTO obične cijene. */
   paketi?: ProductBundle[];
-  /** Ručno istaknute recenzije za traku ispod naslova — prazno = traka se ne prikazuje. */
+  /** Ručno istaknute recenzije za traku na vrhu stranice — prazno = traka se ne prikazuje. */
   socialProofReviews?: Review[];
 }) {
   const oskudicaPoruka = currentOskudicaPoruka(hero.oskudicaPoruke);
   return (
     <section className="dawn-product" id="top">
       <div className="dawn-col">
+        <SocialProofCard reviews={socialProofReviews} />
+
         {hero.slika ? (
           <HeroGallery
             main={hero.slika}
@@ -87,8 +89,6 @@ export default function CmsHero({
             </a>
           )
         ) : null}
-
-        <SocialProofCard reviews={socialProofReviews} />
 
         {paketi.length > 0 ? (
           <PaketiPicker paketi={paketi} />

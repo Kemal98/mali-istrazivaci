@@ -43,7 +43,7 @@ export default async function CmsProductPage({
   paketi?: ProductBundle[];
   /** Cross-sell checkbox u checkoutu — null = stranica se ponaša potpuno kao do sad. */
   upsell?: ResolvedUpsell | null;
-  /** Traka sa recenzijama ispod naslova — kad je isključena, traka se ne prikazuje. */
+  /** Traka sa recenzijama na vrhu stranice — kad je isključena, traka se ne prikazuje. */
   socialProofAktivno?: boolean;
   preview?: boolean;
 }) {
