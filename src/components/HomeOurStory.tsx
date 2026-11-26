@@ -12,7 +12,7 @@ export default function HomeOurStory() {
           <div className={styles.storyImg}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/img/knjiga_proizvod2.png"
+              src="/img/knjiga_proizvod2.webp"
               alt="Igračka Mali Istraživači, izbliza"
               loading="lazy"
             />

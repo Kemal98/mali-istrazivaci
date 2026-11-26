@@ -14,7 +14,7 @@ export default function HomeFooter() {
           <div>
             <div className={styles.footBrand}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/logo.png" alt="Mali Istraživači" />
+              <img src="/img/logo.webp" alt="Mali Istraživači" />
               Mali Istraživači
             </div>
             <p style={{ color: "var(--h-ink2)", maxWidth: "34ch", fontSize: ".9rem" }}>

@@ -36,7 +36,7 @@ isključivo iz `src/data/products.json`. Da dodaš proizvod, ne diraš nijedan
   "badge": "NOVO",
   "uzrast": ["4-6"],
   "kategorije": ["drvene-igracke"],
-  "slike": ["/img/igracke-izbor1.png"],
+  "slike": ["/img/igracke-izbor1.webp"],
   "ocjena": 4.8,
   "brojRecenzija": 5,
   "naStanju": true,

@@ -123,7 +123,7 @@ export default function BookCheckout() {
 
             <div className="dawn-modal-product">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/knjiga_proizvod2.png" alt="Interaktivna Montessori knjiga" />
+              <img src="/img/knjiga_proizvod2.webp" alt="Interaktivna Montessori knjiga" />
               <div>
                 <b>Interaktivna Montessori knjiga</b>
                 <span>Svijet malih istraživača</span>

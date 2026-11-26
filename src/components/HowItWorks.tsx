@@ -15,7 +15,7 @@ export default function HowItWorks({
         <div className="how-img">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/img/tutorijal.png"
+            src="/img/tutorijal.webp"
             alt="Montessori knjiga na čičak – naljepnice se lijepe i skidaju, koraci 1 do 4"
             loading="lazy"
           />

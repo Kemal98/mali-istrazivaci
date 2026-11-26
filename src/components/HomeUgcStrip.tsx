@@ -5,12 +5,12 @@ import styles from "./Home.module.css";
 // koristi postojeće slike proizvoda kao vizuelni placeholder. Zamijeni
 // src listu pravim fotografijama kupaca kad ih budeš imao/la.
 const PLACEHOLDER_TILES = [
-  "/img/set_hero2.png",
-  "/img/knjiga_proizvod2.png",
-  "/img/igracke-izbor.png",
-  "/img/tanagram.png",
-  "/img/set_hero.jpg",
-  "/img/igracke-izbor1.png",
+  "/img/set_hero2.webp",
+  "/img/knjiga_proizvod2.webp",
+  "/img/igracke-izbor.webp",
+  "/img/tanagram.webp",
+  "/img/set_hero.webp",
+  "/img/igracke-izbor1.webp",
 ];
 
 export default function HomeUgcStrip() {

@@ -7,7 +7,7 @@ import type { HomeContent } from "@/lib/home/types";
 export default function HomeHero({ content }: { content: HomeContent }) {
   const slike = content.heroGalerija.length
     ? content.heroGalerija
-    : [{ url: "/img/set_hero2.png", alt: "Igračke Mali Istraživači" }];
+    : [{ url: "/img/set_hero2.webp", alt: "Igračke Mali Istraživači" }];
 
   return (
     <section className={styles.hero} id="top">

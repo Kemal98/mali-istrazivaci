@@ -35,7 +35,7 @@ export default function HomeWhyUs() {
           <div className={styles.whyImg}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/img/set_hero.jpg"
+              src="/img/set_hero.webp"
               alt="Dijete se igra igračkama Mali Istraživači"
               loading="lazy"
             />

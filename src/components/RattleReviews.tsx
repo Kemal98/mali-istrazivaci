@@ -17,7 +17,7 @@ const reviews = [
     media: {
       type: "video" as const,
       src: "/img/rotirajuce-zvecke/recenzije/video-kuhinja.mp4",
-      poster: "/img/rotirajuce-zvecke/recenzije/poster-kuhinja.png",
+      poster: "/img/rotirajuce-zvecke/recenzije/poster-kuhinja.webp",
     },
   },
   {
@@ -27,7 +27,7 @@ const reviews = [
     media: {
       type: "video" as const,
       src: "/img/rotirajuce-zvecke/recenzije/video-kupanje.mp4",
-      poster: "/img/rotirajuce-zvecke/recenzije/poster-kupanje.png",
+      poster: "/img/rotirajuce-zvecke/recenzije/poster-kupanje.webp",
     },
   },
   {
@@ -37,7 +37,7 @@ const reviews = [
     media: {
       type: "video" as const,
       src: "/img/rotirajuce-zvecke/recenzije/video-pod.mp4",
-      poster: "/img/rotirajuce-zvecke/recenzije/poster-pod.png",
+      poster: "/img/rotirajuce-zvecke/recenzije/poster-pod.webp",
     },
   },
   {
@@ -47,7 +47,7 @@ const reviews = [
     media: {
       type: "video" as const,
       src: "/img/rotirajuce-zvecke/recenzije/video-prozor.mp4",
-      poster: "/img/rotirajuce-zvecke/recenzije/poster-prozor.png",
+      poster: "/img/rotirajuce-zvecke/recenzije/poster-prozor.webp",
     },
   },
   {
@@ -56,7 +56,7 @@ const reviews = [
     name: "Ivana L.",
     media: {
       type: "photo" as const,
-      src: "/img/rotirajuce-zvecke/recenzije/dijete-hranilica.png",
+      src: "/img/rotirajuce-zvecke/recenzije/dijete-hranilica.webp",
     },
   },
   {
@@ -65,7 +65,7 @@ const reviews = [
     name: "Selma R.",
     media: {
       type: "photo" as const,
-      src: "/img/rotirajuce-zvecke/recenzije/dijete-restoran.png",
+      src: "/img/rotirajuce-zvecke/recenzije/dijete-restoran.webp",
     },
   },
 ];

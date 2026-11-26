@@ -67,7 +67,7 @@ export default function Nav({
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/logo.png" alt="Mali Istraživači" />
+            <img src="/img/logo.webp" alt="Mali Istraživači" />
             Mali Istraživači
           </a>
           <nav className={`nav-links${simplified ? " nav-links-full" : ""}`}>

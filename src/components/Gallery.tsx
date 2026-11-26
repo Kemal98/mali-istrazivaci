@@ -1,7 +1,7 @@
 const items = [
   {
     badge: "01",
-    src: "/img/farma.png",
+    src: "/img/farma.webp",
     alt: "Životinje sa farme u Montessori knjizi – magarac, ćurka, krava na čičak",
     cap: "Životinje sa farme",
     skill: "Nazivi, boje i zvukovi životinja",
@@ -9,7 +9,7 @@ const items = [
   },
   {
     badge: "02",
-    src: "/img/alphabet.png",
+    src: "/img/alphabet.webp",
     alt: "Bosanska abeceda u Montessori knjizi – slova DŽ, Ć, Đ na čičak",
     cap: "Bosanska abeceda",
     skill: "Sva bosanska slova – Č, Ć, Dž, Đ, Š, Ž",
@@ -17,7 +17,7 @@ const items = [
   },
   {
     badge: "03",
-    src: "/img/emocije.png",
+    src: "/img/emocije.webp",
     alt: "Emocije u Montessori knjizi – sretan, tužan, ljut, zaljubljen na čičak",
     cap: "Emocije i osjećaji",
     skill: "Prepoznaje i imenuje kako se osjeća",
@@ -25,7 +25,7 @@ const items = [
   },
   {
     badge: "04",
-    src: "/img/vrijeme.png",
+    src: "/img/vrijeme.webp",
     alt: "Vrijeme i priroda u Montessori knjizi – sunce, kiša, snijeg, duga na čičak",
     cap: "Vrijeme i priroda",
     skill: "Povezivanje pojmova i logika",
@@ -33,7 +33,7 @@ const items = [
   },
   {
     badge: "05",
-    src: "/img/voce.png",
+    src: "/img/voce.webp",
     alt: "Voće i povrće u Montessori knjizi – razvrstavanje na čičak",
     cap: "Voće i povrće",
     skill: "Razvrstavanje i kategorije",
@@ -41,7 +41,7 @@ const items = [
   },
   {
     badge: "06",
-    src: "/img/tijelo.png",
+    src: "/img/tijelo.webp",
     alt: "Dijelovi tijela u Montessori knjizi – glava, oko, ruka, stopalo na čičak",
     cap: "Dijelovi tijela",
     skill: "Prepoznaje i imenuje dijelove tijela",
@@ -77,7 +77,7 @@ export default function Gallery({
           <div className="gal-feature-img">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/img/spelovanje.png"
+              src="/img/spelovanje.webp"
               alt="Dijete slaže prve riječi slova na čičak"
             />
           </div>

@@ -56,7 +56,7 @@ export default function DawnHeader({
         <div className="dawn-header-inner">
           <Link href={logoHref} className="dawn-logo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/img/logo.png" alt="Mali Istraživači" />
+            <img src="/img/logo.webp" alt="Mali Istraživači" />
             Mali Istraživači
           </Link>
           <nav className="dawn-nav-links">

@@ -27,7 +27,7 @@ export default function Offer() {
                 sadržajem raspoređenim — konvertuje bolje od zatvorene kutije */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/img/set_hero2.png"
+              src="/img/set_hero2.webp"
               alt="SAT MIRA Montessori set 3u1 – knjiga na čičak, drveni sat i magnetni tangram u poklon kutiji"
             />
           </div>

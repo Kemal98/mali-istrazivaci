@@ -17,7 +17,7 @@ export default function ProductSet() {
               <span className="set-num n1">1</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/img/knjiga_proizvod2.png"
+                src="/img/knjiga_proizvod2.webp"
                 alt="Montessori knjiga na čičak"
               />
             </div>
@@ -53,7 +53,7 @@ export default function ProductSet() {
               <span className="set-num n2">2</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/img/igracke-izbor.png"
+                src="/img/igracke-izbor.webp"
                 alt="Izbor drvenih Montessori igračaka – biramo jednu prema uzrastu djeteta"
               />
             </div>
@@ -86,7 +86,7 @@ export default function ProductSet() {
             <div className="set-media">
               <span className="set-num n3">3</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/img/tanagram.png" alt="Drvena mozgalica Tangram" />
+              <img src="/img/tanagram.webp" alt="Drvena mozgalica Tangram" />
             </div>
             <div className="set-body">
               <h3>Drvena mozgalica</h3>

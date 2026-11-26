@@ -16,7 +16,7 @@ export default function BookHero() {
         <div className="dawn-product-img">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/img/knjiga_proizvod2.png"
+            src="/img/knjiga_proizvod2.webp"
             alt="Interaktivna Montessori knjiga – Svijet malih istraživača"
           />
         </div>

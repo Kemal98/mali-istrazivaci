@@ -25,7 +25,12 @@ export default function HeroGallery({
     <div className="dawn-gallery">
       <div className="dawn-product-img">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={current.url} alt={current.alt || mainAlt} />
+        <img
+          src={current.url}
+          alt={current.alt || mainAlt}
+          fetchPriority={active === 0 ? "high" : undefined}
+          decoding="async"
+        />
       </div>
       {images.length > 1 ? (
         <div className="dawn-gallery-thumbs" role="tablist" aria-label="Ostale fotografije">
@@ -40,7 +45,7 @@ export default function HeroGallery({
               onClick={() => setActive(i)}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img.url} alt="" />
+              <img src={img.url} alt="" loading="lazy" decoding="async" />
             </button>
           ))}
         </div>
