@@ -61,6 +61,8 @@ export interface Hero {
   naslovLinija2?: string;
   prikaziCijenu: boolean;
   prikaziBadge: boolean;
+  /** "Ušteda X KM" pored cijene — računa se samo iz cijene/stare cijene, nema posebnog teksta. */
+  prikaziUstedu?: boolean;
   prikaziRating: boolean;
   ratingTekst?: string;
   ratingVrijednost?: string;
@@ -262,6 +264,7 @@ export function defaultHero(): Hero {
     naslovLinija2: "",
     prikaziCijenu: true,
     prikaziBadge: true,
+    prikaziUstedu: false,
     prikaziRating: false,
     ratingTekst: "",
     ratingVrijednost: "4.8",

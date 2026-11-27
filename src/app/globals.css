@@ -785,6 +785,8 @@ body:has(.home-page-root){padding-bottom:0}
 .dawn-price-new{font-size:3rem;font-weight:800;color:var(--red)}
 .dawn-badge-sale{background:var(--orange);color:#fff;font-weight:800;font-size:.68rem;
   padding:4px 9px;border-radius:3px;letter-spacing:.03em}
+.dawn-badge-ustedu{background:var(--green-bg);color:var(--green-d);font-weight:800;
+  font-size:.68rem;padding:4px 9px;border-radius:3px;letter-spacing:.03em}
 
 /* PAKETNE PONUDE — zamjenjuje .dawn-price-row kad su uključene (vidi
    CmsHero.tsx). Svaka opcija je svoj "radio card" sa SVOJOM cijenom. */

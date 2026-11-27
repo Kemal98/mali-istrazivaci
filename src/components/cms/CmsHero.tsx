@@ -110,6 +110,11 @@ export default function CmsHero({
             {hero.prikaziBadge && badge ? (
               <span className="dawn-badge-sale">{badge}</span>
             ) : null}
+            {hero.prikaziUstedu && staraCijena !== null && staraCijena > cijena ? (
+              <span className="dawn-badge-ustedu">
+                Ušteda {Math.round(staraCijena - cijena)} KM
+              </span>
+            ) : null}
           </div>
         ) : null}
 

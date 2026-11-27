@@ -104,6 +104,7 @@ export function sanitizeHero(v: unknown): Hero {
     naslovLinija2: str(raw.naslovLinija2),
     prikaziCijenu: raw.prikaziCijenu === undefined ? d.prikaziCijenu : bool(raw.prikaziCijenu),
     prikaziBadge: raw.prikaziBadge === undefined ? d.prikaziBadge : bool(raw.prikaziBadge),
+    prikaziUstedu: bool(raw.prikaziUstedu),
     prikaziRating: bool(raw.prikaziRating),
     ratingTekst: str(raw.ratingTekst),
     ratingVrijednost: str(raw.ratingVrijednost, 10),

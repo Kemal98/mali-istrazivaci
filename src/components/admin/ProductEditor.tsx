@@ -707,6 +707,18 @@ export default function ProductEditor({
             onChange={(v) => patchHero({ prikaziBadge: v })}
           />
           <Toggle
+            label="Prikaži uštedu u KM pored cijene"
+            value={draft.hero.prikaziUstedu ?? false}
+            onChange={(v) => patchHero({ prikaziUstedu: v })}
+          />
+          {draft.hero.prikaziUstedu ? (
+            <p className="adm-hint">
+              Računa se automatski iz "Cijena" i "Stara cijena" polja gore
+              (zaokruženo na KM) — npr. 29 KM umjesto 39 KM prikazuje
+              "Ušteda 10 KM". Ako nema stare cijene, ništa se ne prikazuje.
+            </p>
+          ) : null}
+          <Toggle
             label="Prikaži ocjenu / social proof iznad cijene"
             value={draft.hero.prikaziRating}
             onChange={(v) => patchHero({ prikaziRating: v })}
