@@ -966,6 +966,12 @@ body:has(.home-page-root){padding-bottom:0}
   justify-content:center;background:rgba(0,0,0,.25);color:#fff;font-size:1.4rem}
 .dawn-video-modal{padding:16px;max-width:420px}
 .dawn-video-player{width:100%;border-radius:8px;display:block;max-height:80vh}
+/* slika uz tekstualnu recenziju — mala kvadratna sličica, klik otvara
+   uvećano (isti .dawn-modal-* obrazac kao video sličica iznad) */
+.dawn-rev-photo-thumb{position:relative;display:block;width:110px;border:none;
+  padding:0;margin-bottom:14px;border-radius:8px;overflow:hidden;cursor:pointer;
+  background:#F5F5F5}
+.dawn-rev-photo-thumb img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover}
 
 /* checkout — sad popup, vidi .dawn-modal-* niže */
 .dawn-checkout-fields{text-align:left}

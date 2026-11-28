@@ -1,6 +1,7 @@
 import { cloneElement, type ReactElement } from "react";
 import BookOrderTrigger from "@/components/BookOrderTrigger";
 import RichText from "./RichText";
+import ReviewPhoto from "./ReviewPhoto";
 import type { Block, Review } from "@/lib/cms/types";
 import { recenzije as recenzijeLabel } from "@/lib/cms/plural";
 
@@ -492,15 +493,7 @@ function renderSolo({ block, reviews }: { block: Block; reviews: Review[] }) {
             <div className="dawn-rev-list">
               {reviews.map((r) => (
                 <div className="dawn-rev-card" key={r.id}>
-                  {r.slika ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={r.slika}
-                      alt=""
-                      loading="lazy"
-                      style={{ width: "100%", borderRadius: 8, marginBottom: 14 }}
-                    />
-                  ) : null}
+                  {r.slika ? <ReviewPhoto src={r.slika} /> : null}
                   <div className="dawn-rev-who">
                     <div className="dawn-rev-av">
                       {r.inicijal || r.ime.charAt(0).toUpperCase()}
