@@ -724,11 +724,13 @@ body:has(.home-page-root){padding-bottom:0}
 @media(max-width:640px){.dawn-nav-links{display:none}}
 
 /* product block */
-.dawn-product-img{aspect-ratio:1/1;overflow:hidden;margin-bottom:24px;
+.dawn-product-img{aspect-ratio:1/1;overflow:hidden;margin-bottom:14px;
   background:#F5F5F5;border-radius:4px}
-.dawn-product-img img{width:100%;height:100%;object-fit:cover}
+/* Blagi zoom (1.12x) — dosta proizvodnih fotki ima prazan bijeli rub oko
+   proizvoda; ovo ga dijelom "odreže" bez da siječe stvarni sadržaj. */
+.dawn-product-img img{width:100%;height:100%;object-fit:cover;transform:scale(1.12)}
 .dawn-gallery-thumbs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
-  margin-top:-14px;margin-bottom:24px}
+  margin-top:-4px;margin-bottom:14px}
 .dawn-gallery-thumb{width:56px;height:56px;padding:0;border-radius:6px;
   overflow:hidden;border:2px solid #E5E5E5;background:#F5F5F5;cursor:pointer;
   flex:none;transition:border-color .15s}
@@ -777,16 +779,16 @@ body:has(.home-page-root){padding-bottom:0}
 .social-proof-verified{font-size:.72rem;color:var(--ink3);font-weight:600}
 
 .dawn-price-row{display:flex;align-items:baseline;justify-content:center;
-  gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  gap:8px;margin-bottom:10px;flex-wrap:wrap;row-gap:6px}
 .dawn-price-old{font-size:1.35rem;color:#999;text-decoration:line-through;font-weight:600}
 .dawn-pay-line{font-size:.9rem;font-weight:700;color:#555;text-transform:uppercase;
   letter-spacing:.03em;margin-bottom:18px}
 .dawn-pay-line-below{margin-bottom:0;margin-top:14px}
 .dawn-price-new{font-size:3rem;font-weight:800;color:var(--red)}
-.dawn-badge-sale{background:var(--orange);color:#fff;font-weight:800;font-size:.68rem;
-  padding:4px 9px;border-radius:3px;letter-spacing:.03em}
+.dawn-badge-sale{background:var(--orange);color:#fff;font-weight:800;font-size:.65rem;
+  padding:3px 8px;border-radius:3px;letter-spacing:.03em;white-space:nowrap}
 .dawn-badge-ustedu{background:var(--green-bg);color:var(--green-d);font-weight:800;
-  font-size:.68rem;padding:4px 9px;border-radius:3px;letter-spacing:.03em}
+  font-size:.65rem;padding:3px 8px;border-radius:3px;letter-spacing:.03em;white-space:nowrap}
 
 /* PAKETNE PONUDE — zamjenjuje .dawn-price-row kad su uključene (vidi
    CmsHero.tsx). Svaka opcija je svoj "radio card" sa SVOJOM cijenom. */
